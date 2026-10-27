@@ -1,0 +1,1586 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>המארג הקבוצתי</title>
+<meta name="description" content="מפת מספרים לסדנה: כל משתתף מצטרף מהטלפון, מגלה את המפה האישית שלו, ואת מקומו במארג של הקבוצה.">
+<meta property="og:title" content="המארג הקבוצתי">
+<meta property="og:description" content="מפת מספרים למעגל של עד 10 משתתפים: מי אני, מה אני מביא/ה לקבוצה, ומה הקבוצה מביאה לי.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://boazbareket1.github.io/group-weave/">
+<meta property="og:image" content="https://boazbareket1.github.io/group-weave/og.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:locale" content="he_IL">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Assistant:wght@400;600;700&family=Cormorant+Garamond:wght@500;600&family=Frank+Ruhl+Libre:wght@500;700&display=swap">
+<style>
+/* group-weave: reduced copy of family-weave for an open workshop of up to 10 strangers. Board (projector) = header, stage stepper, circle of lights beside the stage content. Phone = my map / me in the group. */
+:root{
+  --bg:#f3efe6; --panel:#fffdf8; --panel2:#f7f2e8; --line:#e2d9c8;
+  --fg:#1d2a2c; --muted:#5e6b68; --gold:#9a6b14; --gold-soft:rgba(154,107,20,.12);
+  --teal:#2b6f68; --rose:#a4513d;
+  --night:#0f1c26; --night2:#16283a; --star:#fff4d6;
+  --t0:#7fd1c7; --t1:#f0c46a; --t2:#f2a08f;
+  --f-display:"Frank Ruhl Libre","David","Times New Roman",serif;
+  --f-body:"Assistant","Arial Hebrew","Segoe UI",Arial,sans-serif;
+  --f-num:"Cormorant Garamond","Georgia",serif;
+  color-scheme:light;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#0d171d; --panel:#14222a; --panel2:#101d24; --line:#24363f;
+  --fg:#ece6d8; --muted:#9aa9a6; --gold:#e0b45a; --gold-soft:rgba(224,180,90,.13);
+  --teal:#7cc2b8; --rose:#e09280; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0d171d; --panel:#14222a; --panel2:#101d24; --line:#24363f;
+  --fg:#ece6d8; --muted:#9aa9a6; --gold:#e0b45a; --gold-soft:rgba(224,180,90,.13);
+  --teal:#7cc2b8; --rose:#e09280; color-scheme:dark}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--bg);color:var(--fg);font-family:var(--f-body);font-size:17px;line-height:1.65;
+  padding:env(safe-area-inset-top,0) max(16px,env(safe-area-inset-right,0)) calc(40px + env(safe-area-inset-bottom,0)) max(16px,env(safe-area-inset-left,0))}
+[hidden]{display:none!important}
+h1,h2,h3{font-family:var(--f-display);margin:0;line-height:1.25;text-wrap:balance}
+button,input,select{font:inherit}
+button{cursor:pointer}
+:focus-visible{outline:3px solid var(--gold);outline-offset:2px}
+.wrap{max-width:760px;margin:0 auto}
+.wide{max-width:1280px}
+.muted{color:var(--muted)}
+.btn{border:0;border-radius:999px;padding:13px 26px;font-weight:700;background:var(--gold);color:#fffdf8;font-size:1.05rem}
+.btn.light{background:#fffdf7;color:#5c4210;box-shadow:0 6px 18px rgba(0,0,0,.25)}
+.btn.ghost{background:none;border:1px solid var(--line);color:var(--fg);font-weight:600}
+.btn.small{padding:8px 16px;font-size:.95rem}
+.link{background:none;border:0;color:var(--teal);text-decoration:underline;padding:4px;font-weight:600}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:18px;padding:20px}
+.eyebrow{font-size:.8rem;font-weight:700;letter-spacing:.05em;color:var(--teal)}
+.err{color:var(--rose);font-weight:600;min-height:1.4em}
+.status{color:var(--teal);font-weight:600;min-height:1.4em}
+
+/* night sky */
+.night{background:radial-gradient(120% 90% at 50% 20%,var(--night2),var(--night));color:#eef2f0;border-radius:24px}
+.hero{padding:34px 22px 28px;text-align:center;margin-top:24px}
+.hero .q{opacity:.85;margin:0 0 8px;font-size:1.05rem}
+.hero h1{font-size:clamp(2rem,7vw,2.8rem);margin:0 auto 10px;max-width:16ch}
+.hero p{margin:0 auto 18px;max-width:40ch;opacity:.88}
+.hero ul{list-style:none;padding:0;margin:22px auto 0;display:grid;gap:6px;max-width:36ch;text-align:right;font-size:.98rem;opacity:.92}
+.hero li::before{content:"✦ ";color:var(--t1)}
+.top{display:flex;justify-content:space-between;align-items:baseline;gap:12px;padding:22px 0 6px;flex-wrap:wrap}
+.top h1{font-size:clamp(1.6rem,5vw,2.3rem)}
+.code{font-family:var(--f-num);font-weight:600;letter-spacing:.18em;color:var(--gold);direction:ltr;display:inline-block}
+
+/* forms */
+label.f{display:flex;flex-direction:column;gap:5px;font-weight:600;font-size:.95rem;margin-top:14px}
+label.f small{font-weight:400;color:var(--muted)}
+input[type=text],select{color:var(--fg);background:var(--panel2);border:1px solid var(--line);border-radius:10px;padding:11px 12px;width:100%;font-size:1rem}
+.dsel{display:grid;grid-template-columns:.8fr 1.4fr 1fr;gap:6px}
+.dsel select{padding:11px 6px}
+.row{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-top:18px}
+
+/* circle of lights */
+.sky{position:relative}
+.sky svg{width:100%;height:auto;max-height:68vh;display:block;margin:0 auto}
+.sky text{font-family:var(--f-body);fill:#eef2f0}
+.legend{display:flex;flex-wrap:wrap;gap:6px 14px;justify-content:center;font-size:.85rem;opacity:.9;padding:0 12px 14px}
+.legend i{display:inline-block;width:10px;height:10px;border-radius:50%;margin-inline-end:5px;vertical-align:-1px}
+
+/* board */
+.board{display:grid;grid-template-columns:minmax(300px,440px) 1fr;gap:22px;align-items:start;margin-top:14px}
+.board .side{position:sticky;top:12px;padding:12px 6px 4px}
+.steps{display:flex;gap:6px;overflow-x:auto;padding:8px 0 10px;margin-top:6px;scrollbar-width:thin}
+.steps button{flex:none;border:1px solid var(--line);background:var(--panel);color:var(--muted);border-radius:999px;padding:7px 13px;font-size:.92rem;font-weight:600}
+.steps button.on{background:var(--gold);border-color:var(--gold);color:#fffdf8}
+.steps button.done{color:var(--fg)}
+.stage h2{font-size:clamp(1.6rem,3.6vw,2.4rem);margin:4px 0 6px}
+.stage .lead{color:var(--muted);margin:0 0 16px;max-width:60ch;font-size:1.05rem}
+.ask{margin-top:20px;border-inline-start:4px solid var(--gold);background:var(--gold-soft);border-radius:10px;padding:12px 16px;font-size:1.05rem}
+.ask b{display:block;font-size:.8rem;letter-spacing:.05em;color:var(--gold)}
+.nav{display:flex;justify-content:space-between;gap:10px;margin-top:22px}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:12px}
+.pc{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:14px 16px;min-width:0}
+.pc .who{display:flex;align-items:center;gap:10px;margin-bottom:6px}
+.pc .who b{font-family:var(--f-display);font-size:1.15rem}
+.pc p{margin:4px 0;font-size:.98rem}
+.dot{width:14px;height:14px;border-radius:50%;flex:none;box-shadow:0 0 8px currentColor}
+.num{font-family:var(--f-num);font-weight:600;color:var(--gold);font-size:1.6rem;line-height:1}
+.big{display:flex;gap:18px;align-items:center;flex-wrap:wrap}
+.big .num{font-size:clamp(4rem,10vw,6.5rem)}
+.big h3{font-size:clamp(1.3rem,3vw,1.8rem)}
+.chips{display:flex;flex-wrap:wrap;gap:8px;margin:8px 0}
+.chip{border:1px solid var(--line);border-radius:999px;padding:5px 12px;background:var(--panel2);font-size:.95rem}
+.chip b{font-family:var(--f-num);color:var(--gold);font-size:1.15rem;margin-inline-end:4px}
+.thread{display:grid;grid-template-columns:auto 1fr;gap:10px;align-items:start;padding:10px 0;border-top:1px solid var(--line)}
+.thread:first-child{border-top:0}
+.tag{font-size:.75rem;font-weight:700;border-radius:999px;padding:2px 10px;white-space:nowrap;color:#10202a}
+.qr{display:grid;place-items:center;background:#fffdf8;border-radius:16px;padding:12px;width:min(260px,100%);margin:0 auto}
+.qr svg{width:100%;height:auto}
+.join-box{text-align:center;padding:4px 10px 12px}
+.join-box .code{font-size:2.2rem}
+.members{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
+.mem{display:inline-flex;align-items:center;gap:6px;background:var(--panel);border:1px solid var(--line);border-radius:999px;padding:5px 6px 5px 12px;font-size:.95rem}
+.mem button{border:0;background:none;color:var(--muted);font-size:1.1rem;line-height:1;padding:2px 6px;border-radius:50%}
+.mystery{font-family:var(--f-display);font-size:clamp(1.3rem,3vw,1.9rem);line-height:1.5;background:var(--gold-soft);border-radius:16px;padding:22px;margin:10px 0}
+.notes{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:12px}
+.note{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:12px 14px}
+.note b{font-family:var(--f-display)}
+.toggle{display:inline-flex;align-items:center;gap:8px;font-size:.92rem;color:var(--muted);cursor:pointer}
+.toggle input{accent-color:var(--gold);width:18px;height:18px}
+
+/* phone */
+.tabs{display:grid;grid-template-columns:1fr 1fr;gap:6px;background:var(--panel2);border:1px solid var(--line);border-radius:14px;padding:5px;margin:14px 0 18px;position:sticky;top:max(8px,env(safe-area-inset-top,0));z-index:5}
+.tabs button{border:0;border-radius:10px;padding:10px;font-weight:700;background:none;color:var(--muted)}
+.tabs button.on{background:var(--panel);color:var(--fg);box-shadow:0 1px 5px rgba(0,0,0,.12)}
+.essence{padding:22px 20px}
+.essence .num{font-size:3.6rem;color:var(--t1)}
+.essence h2{font-size:1.7rem;color:#fff}
+.essence p{margin:10px 0 0;opacity:.92}
+.tiles{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:16px}
+.tile{background:rgba(255,255,255,.07);border-radius:12px;padding:10px 4px;text-align:center}
+.tile .num{color:var(--t1);font-size:1.9rem}
+.tile small{display:block;font-size:.75rem;opacity:.85;line-height:1.3}
+.sec{margin-top:22px}
+.sec>h3{font-size:1.3rem;margin-bottom:8px}
+.ix{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:14px 16px;margin-top:10px}
+.ix b{display:block;font-family:var(--f-display);font-size:1.08rem;margin-bottom:2px}
+.ix p{margin:0}
+details.more{margin-top:12px}
+details.more summary{cursor:pointer;color:var(--teal);font-weight:700}
+.st{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:16px;margin-top:12px;scroll-margin-top:80px}
+.st.now{border-color:var(--gold);box-shadow:0 0 0 2px var(--gold-soft)}
+.st h3{font-size:1.2rem}
+.st .grp{margin:6px 0 0}
+.st .me{margin-top:10px;background:var(--gold-soft);border-radius:10px;padding:10px 12px}
+.st .me b{color:var(--gold)}
+.locked{color:var(--muted);text-align:center;padding:14px;border:1px dashed var(--line);border-radius:14px;margin-top:12px}
+.now-pill{display:inline-block;font-size:.72rem;font-weight:700;background:var(--gold);color:#fffdf8;border-radius:999px;padding:1px 9px;margin-inline-start:8px;vertical-align:middle}
+dialog{border:1px solid var(--line);border-radius:18px;background:var(--panel);color:var(--fg);padding:20px;width:min(440px,calc(100vw - 32px))}
+dialog::backdrop{background:rgba(10,20,24,.5)}
+
+/* facilitator page: circle in the middle, a framed card per participant around it, reading overlay */
+.lead-top{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;padding:12px 0 8px}
+.lead-top h1{font-size:clamp(1.3rem,3vw,1.9rem)}
+.lead-actions{display:flex;flex-wrap:wrap;gap:6px}
+.lead-actions button,.lead-actions a{border:1px solid var(--line);background:var(--panel);color:var(--fg);border-radius:999px;padding:7px 14px;font-weight:600;font-size:.92rem;text-decoration:none}
+.lead-actions button:hover,.lead-actions a:hover{border-color:var(--gold)}
+#leadStage{position:relative;width:100%;margin:0 auto}
+#leadStage .bg{position:absolute;inset:0;width:100%;height:100%}
+.lc{position:absolute;transform:translate(-50%,-50%);text-align:right;background:var(--panel);color:var(--fg);border:1.5px solid var(--line);border-radius:14px;padding:9px 11px;box-shadow:0 6px 18px rgba(0,0,0,.12);font-size:.86rem;line-height:1.35;display:grid;gap:3px;transition:border-color .15s,box-shadow .15s}
+.lc:hover,.lc:focus-visible{border-color:var(--gold);box-shadow:0 8px 22px rgba(0,0,0,.18)}
+.lc .nm{display:flex;align-items:center;gap:7px;font-family:var(--f-display);font-weight:700;font-size:1.08rem}
+.lc .r{display:block;line-height:1.3}
+.lc .r .num{font-size:.85rem;color:#10202a;background:var(--t1);border-radius:999px;padding:0 7px;margin-inline-start:5px;font-family:var(--f-num);font-weight:600}
+.lc .r small{display:inline;color:var(--fg);font-weight:700;font-size:.82rem}
+.lc .r .v{display:block;color:var(--muted);font-size:.8rem}
+.lc .more{color:var(--teal);font-size:.75rem;font-weight:700}
+.lc .cr{display:flex;align-items:center;gap:3px;flex-wrap:wrap}.lc .cr .num{margin-inline-start:0;margin-inline-end:4px}
+.lcenter{position:absolute;transform:translate(-50%,-50%);text-align:center;color:#eef2f0;pointer-events:none}
+.lcenter .num{color:var(--t1);font-size:clamp(2.6rem,6vw,4.4rem)}
+.lcenter button{pointer-events:auto;margin-top:6px;border:1px solid rgba(255,244,214,.4);background:rgba(255,244,214,.08);color:#fff4d6;border-radius:999px;padding:6px 14px;font-weight:600;font-size:.88rem}
+.lcenter small{display:block;opacity:.75;font-size:.8rem;margin-top:6px}
+.hit{cursor:pointer}
+.hit:hover+.vis,.hit:focus+.vis{stroke-width:5;opacity:1}
+#leadList{display:grid;gap:10px;margin-top:14px}
+#leadList .lc{position:static;transform:none;width:100%}
+.reader{position:fixed;inset:0;z-index:50;background:rgba(10,18,22,.62);display:flex;align-items:center;justify-content:center;padding:16px}
+.reader .box{background:var(--panel);color:var(--fg);border-radius:22px;width:min(980px,100%);max-height:calc(100dvh - 32px);overflow:auto;padding:26px clamp(18px,4vw,44px) 22px;box-shadow:0 30px 70px rgba(0,0,0,.4);font-size:clamp(1.15rem,2.1vw,1.55rem);line-height:1.7;position:relative}
+.reader h2{font-size:clamp(1.7rem,3.6vw,2.6rem);margin:0 0 4px}
+.reader .chips .chip{font-size:clamp(.95rem,1.6vw,1.15rem)}
+.reader h3{font-size:clamp(1.1rem,2vw,1.4rem);color:var(--teal);margin:18px 0 2px;font-family:var(--f-body);font-weight:700}
+.reader p{margin:4px 0}
+.reader .x{position:absolute;top:12px;left:14px;border:0;background:var(--panel2);color:var(--fg);border-radius:50%;width:42px;height:42px;font-size:1.5rem;line-height:1}
+.reader .rnav{display:flex;justify-content:space-between;gap:10px;margin-top:22px;position:sticky;bottom:-22px;background:var(--panel);padding:10px 0 4px}
+
+/* identification game */
+.game-row{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:14px 16px;margin-top:12px}
+.game-row .tr{font-family:var(--f-display);font-size:clamp(1.15rem,2.4vw,1.5rem);line-height:1.45;display:flex;gap:10px;align-items:baseline}
+.game-row .tr .k{font-family:var(--f-num);color:var(--gold);font-weight:600;font-size:1.2em;min-width:1.4em}
+.pick{display:flex;flex-wrap:wrap;gap:7px;margin-top:10px;align-items:center}
+.pick button.nm{border:1.5px solid var(--line);background:var(--panel2);color:var(--fg);border-radius:999px;padding:7px 14px;font-weight:600;font-size:.98rem}
+.pick button.nm[aria-pressed="true"]{border-color:var(--gold);background:var(--gold);color:#fffdf8}
+.pick button.nm.ok{border-color:#2f8a5b;background:#2f8a5b;color:#fff}
+.pick button.nm.bad{border-color:var(--rose);background:none;color:var(--rose);text-decoration:line-through}
+.pick button.nm.miss{border:2px dashed #2f8a5b;color:#2f8a5b;background:none}
+.pick .rv{margin-inline-start:auto}
+.why{margin:8px 0 0;color:var(--muted);font-size:.95rem}
+.score{position:sticky;top:8px;z-index:4;display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:10px 14px;margin-top:10px;box-shadow:0 4px 14px rgba(0,0,0,.08)}
+.score b{font-family:var(--f-num);font-size:1.5rem;color:var(--gold)}
+
+/* parameter blocks: name first, short definition, then the personal reading; number small */
+.param{border-top:1px solid rgba(255,255,255,.12);padding:14px 0 2px}
+.param:first-of-type{border-top:0;padding-top:6px}
+.param .ph{display:flex;align-items:center;gap:9px;flex-wrap:wrap}
+.param .pn{font-family:var(--f-display);font-weight:700;font-size:1.35rem;color:#fff4d6}
+.param .pv{font-family:var(--f-num);font-weight:600;font-size:1rem;line-height:1;color:#10202a;background:var(--t1);border-radius:999px;padding:3px 9px}
+.param .pt{font-weight:700;color:var(--t1)}
+.param .pd{font-size:.82rem;opacity:.72;margin:2px 0 6px;line-height:1.4}
+.param .pa{margin:0;font-size:1.02rem;line-height:1.65;opacity:.95}
+.reader .param{border-top:1px solid var(--line);padding:16px 0 4px}
+.reader .param .pn{color:var(--fg);font-size:clamp(1.4rem,2.6vw,1.9rem)}
+.reader .param .pt{color:var(--gold)}
+.reader .param .pd{font-size:clamp(.85rem,1.3vw,1rem);color:var(--muted);opacity:1}
+.reader .param .pa{font-size:inherit}
+
+.cm-tg{border:1px solid rgba(255,244,214,.4);background:rgba(255,244,214,.08);color:#fff4d6;border-radius:999px;padding:3px 11px;font-size:.8rem;font-weight:600}
+.lead-actions [data-cm]{color:var(--fg)}
+.pick button.nm{display:inline-flex;align-items:center;gap:7px}
+.pick button.nm .dot,.why .dot,.pdots .dot{width:11px;height:11px}
+.pick button.nm.close{border-color:#c9922a;background:none;color:#a8750f}
+.pdots{display:inline-flex;gap:6px;align-items:center;margin-inline-start:auto;padding-inline-start:8px}
+.why .dot{display:inline-block;vertical-align:-1px}
+
+/* global navigation: pill row on wide screens, fixed bottom bar on phones */
+.gnav{display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-start;padding:14px 0 2px}
+.gnav button{display:inline-flex;align-items:center;gap:7px;border:1px solid var(--line);background:var(--panel);color:var(--fg);border-radius:999px;padding:8px 16px;font-weight:700;font-size:.95rem}
+.gnav button:hover{border-color:var(--gold)}
+.gnav button[aria-current="page"]{background:var(--gold);border-color:var(--gold);color:#fffdf8}
+.gnav .gi{font-size:1rem;line-height:1}
+@media (max-width:760px){
+  body{padding-bottom:calc(84px + env(safe-area-inset-bottom,0))}
+  .gnav{position:fixed;z-index:30;left:0;right:0;bottom:0;margin:0;padding:6px 6px calc(6px + env(safe-area-inset-bottom,0));gap:2px;flex-wrap:nowrap;justify-content:space-around;background:var(--panel);border-top:1px solid var(--line);box-shadow:0 -6px 18px rgba(0,0,0,.08)}
+  .gnav button{flex:1;flex-direction:column;gap:2px;border:0;border-radius:12px;padding:6px 2px;font-size:.74rem;background:none;color:var(--muted)}
+  .gnav button[aria-current="page"]{background:var(--gold-soft);color:var(--gold)}
+  .gnav .gi{font-size:1.25rem}
+  .tabs{top:max(6px,env(safe-area-inset-top,0))}
+}
+.steps button:disabled{opacity:.45;cursor:not-allowed}
+
+.sharebar{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-top:18px;padding-top:14px;border-top:1px solid var(--line)}
+.reader .sharebar .btn{font-size:.95rem}
+#printArea{display:none}
+@media print{
+  body.printing>*:not(#printArea){display:none!important}
+  body.printing #printArea{display:block!important;color:#111;font-size:13pt;line-height:1.6}
+  body.printing #printArea .param{border-color:#ccc}
+  body.printing #printArea .param .pn{color:#111}
+  body.printing #printArea .param .pv{background:#eee;color:#111}
+  .gnav,.sharebar{display:none!important}
+}
+
+.qterm{border:1px solid currentColor;background:none;color:inherit;opacity:.65;border-radius:50%;width:22px;height:22px;font-size:.8rem;font-weight:700;line-height:1;padding:0;display:inline-grid;place-items:center}
+.qterm:hover{opacity:1}
+details.deep{margin-top:10px;background:rgba(255,255,255,.06);border-radius:12px;padding:8px 12px}
+details.deep summary{cursor:pointer;font-weight:700;color:var(--t1)}
+details.deep .dx{margin-top:10px}
+details.deep .dx b{display:block;font-size:.95rem}
+details.deep .dx p{margin:2px 0 0;opacity:.92}
+.reader details.deep{background:var(--panel2)}
+.reader details.deep summary{color:var(--gold)}
+dl.gloss{display:grid;grid-template-columns:minmax(130px,220px) 1fr;gap:10px 18px;margin:16px 0 0}
+dl.gloss dt{font-weight:700;font-family:var(--f-display);scroll-margin-top:40px}
+dl.gloss dd{margin:0;color:var(--fg);font-size:.92em}
+dl.gloss dt.hl,dl.gloss dt.hl+dd{background:var(--gold-soft);border-radius:6px}
+@media (max-width:620px){dl.gloss{grid-template-columns:1fr}dl.gloss dd{margin-bottom:8px}}
+@media (max-width:760px){.gnav button{font-size:.68rem}.gnav .gi{font-size:1.1rem}}
+
+.sopts{display:grid;gap:8px;margin-top:12px}
+.sopt{display:flex;gap:10px;align-items:flex-start;border:1px solid var(--line);border-radius:12px;padding:10px 12px;cursor:pointer}
+.sopt:has(input:checked){border-color:var(--gold);background:var(--gold-soft)}
+.sopt input{accent-color:var(--gold);margin-top:5px}
+.sopt b{display:block}.sopt small{color:var(--muted)}
+#shareDlg{width:min(520px,calc(100vw - 24px))}
+@media print{body.printing #printArea .pbreak{break-before:page}body.printing #printArea .ask{display:none}}
+
+.fbk{display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin-top:6px}
+.fbk button{border:1px solid var(--line);background:transparent;color:inherit;opacity:.7;border-radius:999px;padding:2px 10px;font-size:.78rem}
+.fbk button:hover{opacity:1}
+.fbk button[aria-pressed="true"]{opacity:1;border-color:var(--gold);background:var(--gold-soft)}
+.night .fbk button{border-color:rgba(255,255,255,.25)}
+.fbnote{flex:1;min-width:160px;font-size:.85rem!important;padding:5px 9px!important}
+.fbrow{border-top:1px solid var(--line);padding:10px 0}
+.fbrow p{margin:4px 0}.fbn{color:var(--rose);font-size:.92em}
+.cyc{border-top:1px solid rgba(255,255,255,.12);padding:10px 0}
+.reader .cyc,.ix .cyc{border-color:var(--line)}
+.cyc.now{background:rgba(240,196,106,.12);border-radius:10px;padding:10px}
+.cyc p{margin:3px 0}
+.fyears{display:flex;gap:6px;overflow-x:auto}
+.fy{flex:1 0 70px;text-align:center;border:1px solid var(--line);border-radius:10px;padding:6px 4px;background:var(--panel)}
+.fy.now{border-color:var(--gold);background:var(--gold-soft)}
+.fy small{display:block;font-size:.75rem;color:var(--muted)}
+.fy .num{font-size:1.5rem}
+@media print{.fbk{display:none!important}}
+
+@media (max-width:900px){.board{grid-template-columns:1fr}.board .side{position:static;order:2}}
+@media (prefers-reduced-motion:no-preference){.lit{animation:pop .6s ease-out;transform-box:fill-box;transform-origin:center}@keyframes pop{from{opacity:0;transform:scale(.4)}}}
+@media print{body{background:#fff}.steps,.nav,.btn,.tabs{display:none!important}}
+</style>
+</head>
+<body>
+<div id="demoNote" hidden style="background:#f6e6c4;color:#5c4210;border-radius:0 0 12px 12px;padding:6px 12px;font-size:.88rem;text-align:center;max-width:760px;margin:0 auto">תצוגת הדגמה: הכול נשמר בדפדפן הזה בלבד, בלי חיבור בין טלפונים. בגרסה שבגיטהאב המכשירים מתחברים.</div>
+<div id="app"></div>
+
+<dialog id="shareDlg" aria-label="שיתוף"></dialog>
+<dialog id="addDlg" aria-labelledby="addTitle">
+  <h2 id="addTitle" style="font-size:1.4rem">הוספת משתתף/ת</h2>
+  <p class="muted" style="margin:6px 0 0">למי שלא מצטרף/ת מהטלפון בעצמו/ה.</p>
+  <div id="addForm"></div>
+</dialog>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcode-generator/1.4.4/qrcode.min.js"></script>
+<script>
+/* ================= numerology engine (copied from מפת המספרים) ================= */
+const N={
+1:{title:"המוביל/ה",kw:"עצמאות, יוזמה ומנהיגות",gift:"אומץ ליזום",
+essence:"מספר 1 הוא הניצוץ הראשון: אנרגיה של התחלה, עצמאות ורצון לסלול דרך משלך. יש בך דחף פנימי להוביל, להחליט ולהיות מקורי/ת. הלמידה המרכזית היא לעמוד על שלך בלי לסגור את הלב לאחרים.",
+strengths:["אומץ ויוזמה","מקוריות","כוח רצון ונחישות","יכולת לפעול לבד"],
+shadow:["עקשנות ושתלטנות","חוסר סבלנות","קושי לבקש עזרה","ספק עצמי שמוסתר מאחורי ביטחון"],
+career:"תחומים שיש בהם חופש החלטה: יזמות, ניהול, עבודה עצמאית, חלוציות בתחום חדש. קשה לך במקומות שבהם מכתיבים לך כל צעד.",
+love:"דרוש לך בן/בת זוג שמכבד/ת את העצמאות שלך ולא מתחרה בה. הלמידה בזוגיות היא להקשיב ולתת מקום, לא רק להוביל.",
+money:"כסף מגיע ממהלכים יזומים ומעבודה עצמאית. כדאי להיזהר מהחלטות פזיזות.",
+growth:"לתרגל שיתוף פעולה ולגלות שתלות הדדית אינה חולשה.",
+soul:"בפנים את/ה רוצה להיות ראשון/ה, להשאיר חותם ולהיות אדון/ת לחייך. מה שמזין אותך הוא תחושת עצמאות והישג אישי.",
+persona:"אחרים רואים בך אדם בטוח, ישיר ונמרץ, לפעמים מעט מאיים. הרושם הראשון הוא של מי שיודע לאן הוא הולך.",
+expr:"הכישרון שלך הוא ליזום ולהוביל. נועדת לפתוח דרכים, ליצור דברים חדשים ולהיות מקור השראה בזכות האומץ שלך.",
+year:"שנת התחלות. זמן לשתול זרעים, להתחיל פרויקטים, לקבל החלטות אמיצות ולשים את עצמך במרכז. מה שמתחיל עכשיו ילווה אותך במחזור של תשע שנים.",
+pm:"חודש של התחלות ויוזמה.",
+pinnacle:"תקופה של עמידה על הרגליים, פיתוח עצמאות ונטילת אחריות על החיים. נדרשים אומץ ויוזמה.",
+challenge:"האתגר הוא לבסס ביטחון עצמי בלי לגלוש לשתלטנות, ולפעול גם כשאין אישור מבחוץ.",
+lesson:"שיעור של עצמאות ועמידה על דעתך. ייתכן שקשה לך לקבל החלטות לבד או להציב את עצמך במקום הראשון.",
+passion:"תשוקה לעצמאות, להובלה ולמקוריות."},
+2:{title:"המגשר/ת",kw:"שיתוף, רגישות ודיפלומטיה",gift:"רגישות דקה לאנשים ולמצבים",
+essence:"מספר 2 הוא אנרגיה של חיבור. יש בך רגישות עמוקה לאנשים ולאווירה, יכולת להקשיב ולגשר בין עמדות. כוחך בעדינות, בסבלנות ובשותפות. הלמידה היא לא לוותר על עצמך כדי לשמור על השקט.",
+strengths:["אמפתיה והקשבה","דיפלומטיה ויכולת גישור","סבלנות ותשומת לב לפרטים","נאמנות ושותפות"],
+shadow:["רגישות יתר ונטייה להיעלב","ריצוי וקושי לומר לא","היסוס וחוסר החלטיות","תלות באישור מבחוץ"],
+career:"תחומים של קשר ותיווך: ייעוץ, טיפול, הוראה, גישור, עבודת צוות, ומוזיקה או אמנות שמשלבות הקשבה. את/ה פורח/ת לצד שותף/ה ולא בהכרח בקדמת הבמה.",
+love:"הזוגיות חשובה לך מאוד, ואת/ה מביא/ה אליה מסירות ועדינות. חשוב לבחור מי שמעריך/ה את הרגישות ולא מנצל/ת אותה, ולזכור לבטא צרכים בקול.",
+money:"כסף מגיע דרך שיתופי פעולה ושותפויות. חשוב לתמחר את עצמך בהגינות ולא להמעיט בערך העבודה השקטה שלך.",
+growth:"לתרגל גבולות. \"לא\" שנאמר ברכות הוא גם מעשה של אהבה.",
+soul:"בפנים את/ה כמה/ה להרמוניה, לשלום ולקשר קרוב. מה שמזין אותך הוא תחושה שאת/ה חלק משלם ושאוהבים אותך.",
+persona:"אחרים רואים בך אדם נעים, עדין ונגיש, שקל לפתוח בפניו את הלב.",
+expr:"הכישרון שלך הוא לחבר. נועדת לגשר, ללוות, לתמוך ולהביא שיתוף פעולה לכל מקום שאליו את/ה מגיע/ה.",
+year:"שנת סבלנות ושותפויות. הזרעים שנשתלו בשנה הקודמת צומחים לאט. זמן לטפח קשרים, לשתף פעולה ולהקשיב, ולא לדחוק בדברים.",
+pm:"חודש של הקשבה ושיתוף פעולה.",
+pinnacle:"תקופה שבה קשרים ושותפויות במרכז. לומדים סבלנות, דיפלומטיה ורגישות לאחרים.",
+challenge:"האתגר הוא רגישות יתר: לא לתת לפחד מדחייה או מביקורת לשתק, ולמצוא את הקול הפנימי בתוך הקשר.",
+lesson:"שיעור של סבלנות, שיתוף ותשומת לב לפרטים. ייתכן קושי לעבוד עם אחרים או לחכות.",
+passion:"תשוקה לקשר, לשותפות ולהרמוניה."},
+3:{title:"היוצר/ת",kw:"ביטוי עצמי, יצירה ושמחה",gift:"כושר ביטוי והשראה",
+essence:"מספר 3 הוא אנרגיה של ביטוי. מילים, צלילים, צבעים והומור זורמים דרכך. יש בך אופטימיות מדבקת ויכולת להאיר חדר. הלמידה היא לתעל את הכישרון הרב למשהו מתמשך ולא להתפזר.",
+strengths:["יצירתיות ודמיון","כושר ביטוי בדיבור ובכתיבה","חוש הומור ושמחת חיים","חברותיות וכריזמה"],
+shadow:["פיזור ובזבוז אנרגיה","בריחה מכאב אל החגיגה","ביקורתיות כשדברים לא מתנהלים","מצבי רוח משתנים"],
+career:"אמנות, מוזיקה, כתיבה, משחק, הוראה, שיווק ותקשורת. כל מקום שבו הביטוי העצמי הוא חלק מהעבודה.",
+love:"את/ה מביא/ה לזוגיות קלילות, רומנטיקה ושמחה. חשוב לך קשר שיש בו שיחה, צחוק והשראה. הלמידה היא להישאר גם כשהקסם הראשוני מתחלף בשגרה.",
+money:"כסף מגיע מכישרונות יצירתיים ומחשיפה. דרושה משמעת כדי שההכנסה לא תהיה תנודתית.",
+growth:"לסיים את מה שמתחילים. לבחור ערוץ עיקרי אחד ולהעמיק בו.",
+soul:"בפנים את/ה רוצה להתבטא, ליצור ולשמח. מה שמזין אותך הוא חופש יצירתי וקהל שמגיב.",
+persona:"אחרים רואים בך אדם חם, שנון ומלא חיים, שמעניין להיות לידו.",
+expr:"הכישרון שלך הוא הביטוי. נועדת לספר, לנגן, לכתוב ולהעניק השראה ושמחה דרך היצירה.",
+year:"שנת יצירה וחברה. זמן לבטא את עצמך, ליצור, להיפגש עם אנשים וליהנות. כדאי להיזהר מלהתפזר על יותר מדי כיוונים.",
+pm:"חודש של יצירה, מפגשים וביטוי עצמי.",
+pinnacle:"תקופה של פריחה יצירתית וחברתית. הכישרונות מבקשים לצאת החוצה.",
+challenge:"האתגר הוא ביטוי עצמי: להתגבר על פחד מביקורת או מבוכה, ולהעז להשמיע את הקול האמיתי בלי להתפזר.",
+lesson:"שיעור של ביטוי עצמי ושמחה. ייתכן קושי לשתף רגשות או להאמין ביכולת היצירתית.",
+passion:"תשוקה ליצירה, לביטוי ולבמה."},
+4:{title:"הבונה",kw:"יציבות, סדר והתמדה",gift:"יסודיות ואמינות",
+essence:"מספר 4 הוא אנרגיה של יסודות. את/ה בונה דברים שעומדים לאורך זמן, בעבודה שיטתית, ביושר ובנאמנות. אנשים סומכים עליך. הלמידה היא להשאיר מקום לגמישות ולהנאה בתוך המבנה.",
+strengths:["אמינות ויושר","כושר עבודה והתמדה","חשיבה מעשית ומאורגנת","נאמנות למשפחה ולערכים"],
+shadow:["נוקשות ועקשנות","התנגדות לשינוי","עבודה יתר ושחיקה","ראייה צרה ושיפוטיות"],
+career:"הנדסה, בנייה, ניהול תפעול, חשבונאות, טכנולוגיה ומלאכת יד. כל תחום שבו בונים צעד אחר צעד ונמדדים בתוצאה מוחשית.",
+love:"את/ה בן/בת זוג נאמן/ה ויציב/ה, שמבטא/ת אהבה במעשים יותר מבמילים. חשוב לזכור גם ספונטניות, רומנטיקה ומילה טובה.",
+money:"כסף נבנה לאט ובבטחה: חיסכון, תכנון ונכסים. הימורים פיננסיים מתאימים לך פחות.",
+growth:"להרפות. לא כל דבר צריך להיות מושלם ומתוכנן כדי להיות טוב.",
+soul:"בפנים את/ה כמה/ה לביטחון, לסדר ולתחושה שהקרקע יציבה מתחת לרגליים.",
+persona:"אחרים רואים בך אדם רציני, אחראי ואמין, שאפשר לסמוך עליו.",
+expr:"הכישרון שלך הוא להפוך רעיונות למציאות. נועדת לבנות מבנים, מערכות ומסגרות שאחרים יכולים להישען עליהן.",
+year:"שנת עבודה ובנייה. זמן להניח יסודות, לסדר, לתכנן ולהשקיע מאמץ. העבודה הקשה עכשיו תשתלם בהמשך.",
+pm:"חודש של סדר, עבודה ממוקדת וטיפול בפרטים.",
+pinnacle:"תקופה של עבודה קשה ובניית בסיס: בית, קריירה ויציבות כלכלית.",
+challenge:"האתגר הוא משמעת בלי נוקשות: להתמיד גם כשמשעמם, ובו בזמן לא להיתקע בשיטה אחת.",
+lesson:"שיעור של סדר, משמעת והתמדה. ייתכן קושי לסיים משימות או לבנות שגרה.",
+passion:"תשוקה לסדר, לבנייה ולביטחון."},
+5:{title:"ההרפתקן/ית",kw:"חופש, שינוי וחוויה",gift:"הסתגלות מהירה וסקרנות",
+essence:"מספר 5 הוא אנרגיה של תנועה. את/ה סקרן/ית, מסתגל/ת במהירות ונמשך/ת לחוויות, למקומות ולאנשים חדשים. החיים שלך עשירים בתפניות. הלמידה היא חופש עם אחריות: לבחור לעומק ולא רק לרוחב.",
+strengths:["גמישות והסתגלות","סקרנות ואהבת למידה","כושר שכנוע ותקשורת","אומץ לשנות"],
+shadow:["חוסר מנוחה ושעמום מהיר","קושי במחויבות","נטייה להגזמה ולהתמכרויות","פזיזות"],
+career:"מכירות, תקשורת, תיירות, יזמות, עיתונאות, הדרכה ואמנויות הבמה. כל עבודה מגוונת עם תנועה ואנשים חדשים.",
+love:"דרוש לך בן/בת זוג שהוא/היא גם שותף/ה להרפתקה ושנותן/ת מרחב. מחויבות אפשרית כשהיא לא מרגישה כמו כלוב.",
+money:"כסף מגיע ממגוון מקורות ובגלים. כדאי לבנות כרית ביטחון לתקופות השקטות.",
+growth:"לגלות את החופש שבמחויבות. לעומק יש טעם שאין לרוחב.",
+soul:"בפנים את/ה כמה/ה לחופש, לגיוון ולטעום מכל מה שהחיים מציעים.",
+persona:"אחרים רואים בך אדם תוסס, מסקרן ומלא אנרגיה, לפעמים בלתי צפוי.",
+expr:"הכישרון שלך הוא לחבר בין עולמות. נועדת להביא שינוי, רעננות ותנועה, ולהפיץ רעיונות.",
+year:"שנת שינויים. צפויות תנועה, הפתעות והזדמנויות חדשות. זמן להיות גמיש/ה, לטייל, ללמוד ולשחרר את מה שכבר לא מתאים.",
+pm:"חודש של תנועה, הפתעות והזדמנויות.",
+pinnacle:"תקופה של שינויים, נסיעות וחוויות מגוונות. לומדים להסתגל ולבחור.",
+challenge:"האתגר הוא חופש מאוזן: לא לברוח מכל מסגרת, ומצד שני לא לפחד משינוי.",
+lesson:"שיעור של גמישות והתנסות. ייתכן חשש משינוי או מיציאה מאזור הנוחות.",
+passion:"תשוקה לחופש, לגיוון ולחוויה."},
+6:{title:"המטפל/ת",kw:"אחריות, אהבה ובית",gift:"חום ואכפתיות",
+essence:"מספר 6 הוא אנרגיה של אכפתיות. משפחה, קהילה ויופי חשובים לך. את/ה מטפל/ת, מלמד/ת ומרפא/ה, ונושא/ת באחריות לאחרים באופן טבעי. הלמידה היא לתת בלי לשלוט, ולזכור לטפל גם בעצמך.",
+strengths:["אכפתיות ונדיבות","חוש אחריות","חוש אסתטי והרמוני","יכולת ריפוי והוראה"],
+shadow:["התערבות ושליטה מתוך דאגה","פרפקציוניזם","הקרבה עצמית ותחושת אשמה","קושי לקבל"],
+career:"טיפול, רפואה, חינוך, ייעוץ, עיצוב, אמנות ועבודה קהילתית. כל מקום שבו דואגים לאחרים או יוצרים יופי.",
+love:"את/ה בן/בת זוג מסור/ה ואוהב/ת שבונה בית חם. הלמידה היא לאהוב בלי לנסות \"לתקן\" את האחר, ולאפשר לעצמך גם לקבל.",
+money:"כסף מגיע משירות ומאחריות. כדאי להיזהר מלתת יותר ממה שאפשר להרשות לעצמך.",
+growth:"לטפל בעצמך באותה מסירות שבה את/ה מטפל/ת באחרים.",
+soul:"בפנים את/ה כמה/ה לאהוב ולהיות נאהב/ת, לבית הרמוני ולתחושה שאת/ה נחוץ/ה.",
+persona:"אחרים רואים בך אדם חם, מגונן ואמין, שפונים אליו לעצה ולתמיכה.",
+expr:"הכישרון שלך הוא לטפח. נועדת לרפא, לחנך, ליצור הרמוניה ויופי, ולהחזיק קהילה.",
+year:"שנת משפחה ואחריות. נושאי בית, זוגיות וקהילה במרכז. זמן לטפל ביחסים, לתת וגם לקבל.",
+pm:"חודש של משפחה, בית ואחריות כלפי אחרים.",
+pinnacle:"תקופה של אחריות משפחתית וקהילתית. בונים בית, מטפלים ומלמדים.",
+challenge:"האתגר הוא אידיאליזם: לא לדרוש שלמות מעצמך ומאחרים, ולתת בלי להעמיס על עצמך את כל העולם.",
+lesson:"שיעור של אחריות ונתינה. ייתכן קושי להתחייב לבית, למשפחה או לקהילה.",
+passion:"תשוקה לאהבה, לבית ולשירות."},
+7:{title:"החוקר/ת",kw:"עומק, חכמה ורוחניות",gift:"תובנה ואינטואיציה חדה",
+essence:"מספר 7 הוא אנרגיה של חיפוש. את/ה שואל/ת שאלות עמוקות, לא מסתפק/ת בתשובות שטחיות, ומחפש/ת את האמת שמאחורי הדברים, בשכל וברוח. הלמידה היא לבטוח, ולא להסתגר בתוך העולם הפנימי.",
+strengths:["חשיבה אנליטית ועמוקה","אינטואיציה","עצמאות מחשבתית","חיבור לרוחניות ולחכמה"],
+shadow:["הסתגרות ובדידות","חשדנות וציניות","ביקורתיות","קושי לשתף רגשות"],
+career:"מחקר, מדע, פילוסופיה, טכנולוגיה, כתיבה, הנחיה רוחנית ומוזיקה מעמיקה. עבודה שמאפשרת שקט, ריכוז ועומק.",
+love:"דרוש לך בן/בת זוג שמכבד/ת את המרחב הפנימי שלך ושאפשר לשוחח איתו/ה לעומק. האמון נבנה לאט, אבל הוא עמוק.",
+money:"כסף מגיע מהמומחיות. כסף מניע אותך פחות, ולכן חשוב לא להזניח את הצד המעשי.",
+growth:"לפתוח את הלב, לא רק את המחשבה. לשתף גם לפני שהכול מובן עד הסוף.",
+soul:"בפנים את/ה כמה/ה להבין, לדעת ולהתחבר למשהו גדול ונסתר.",
+persona:"אחרים רואים בך אדם שקט, מסתורי ועמוק, לפעמים מרוחק.",
+expr:"הכישרון שלך הוא להעמיק. נועדת לחקור, לנתח, לגלות חכמה ולהעביר אותה הלאה.",
+year:"שנת התבוננות. זמן ללמוד, להעמיק, לנוח, להתבודד ולהתחבר פנימה. פחות זמן לדחוף קדימה בעולם החיצוני.",
+pm:"חודש של התבוננות, לימוד ומנוחה.",
+pinnacle:"תקופה של העמקה, לימוד וחיפוש רוחני. לעתים כרוכה בבדידות שמולידה חכמה.",
+challenge:"האתגר הוא אמון: להתגבר על ספקנות והסתגרות, ולתת לאחרים להיכנס.",
+lesson:"שיעור של העמקה ואמונה. ייתכן קושי להתבונן פנימה או לבטוח בתהליכים.",
+passion:"תשוקה לידע, לאמת ולעומק."},
+8:{title:"המממש/ת",kw:"עוצמה, הישג ושפע",gift:"כושר ניהול ומימוש",
+essence:"מספר 8 הוא אנרגיה של כוח בעולם החומרי. יש בך יכולת ניהול, שאפתנות ותבונה מעשית לייצר תוצאות, כסף והשפעה. הלמידה היא לאזן בין חומר לרוח ולהשתמש בכוח לטובה.",
+strengths:["ראייה אסטרטגית","כושר ניהול וארגון","שאפתנות ונחישות","חוסן מול קשיים"],
+shadow:["שתלטנות ומאבקי כוח","עבודה בלי הפסקה","מדידת ערך עצמי לפי הצלחה","קשיחות רגשית"],
+career:"ניהול, עסקים, פיננסים, משפטים, נדל\"ן והפקה. כל תפקיד שבו מובילים מערכות ומגייסים משאבים.",
+love:"את/ה בן/בת זוג מגונן/ת ומחויב/ת. חשוב להביא הביתה גם רכות, ולא רק את ראש העבודה.",
+money:"כאן המספר בביתו: יכולת גבוהה לייצר שפע, לצד תנודות. ההצלחה החומרית יציבה כשהיא נשענת על יושר.",
+growth:"לזכור שהערך שלך אינו תלוי בהישגים. כוח אמיתי כולל גם פגיעות.",
+soul:"בפנים את/ה כמה/ה להצליח, להשפיע ולהגיע לעצמאות כלכלית ולהכרה.",
+persona:"אחרים רואים בך אדם סמכותי, בטוח ובעל נוכחות, שמנהל את העניינים.",
+expr:"הכישרון שלך הוא לממש. נועדת לנהל, לבנות מערכות גדולות ולהביא שפע לעולם.",
+year:"שנת קציר והישגים. זמן לקדם קריירה, כסף ומעמד, ולקצור את פירות המאמץ. נדרשים איזון ויושר.",
+pm:"חודש של עשייה, החלטות כלכליות והתקדמות.",
+pinnacle:"תקופה של הישגים חומריים, ניהול וכוח. לומדים להשתמש בסמכות בתבונה.",
+challenge:"האתגר הוא היחס לכוח ולכסף: לא להיבלע בחומריות, וגם לא לפחד מהצלחה.",
+lesson:"שיעור של ניהול כספים וכוח אישי. ייתכן קושי לעמוד על ערכך או לנהל משאבים.",
+passion:"תשוקה להישג, להשפעה ולשפע."},
+9:{title:"ההומניסט/ית",kw:"חמלה, נתינה והשלמה",gift:"ראייה רחבה וחמלה",
+essence:"מספר 9 הוא אנרגיה של סיום ושלמות. הוא מכיל את כל המספרים שלפניו, ולכן יש בך חכמה רחבה, חמלה ורצון לתרום לעולם. הלמידה היא לשחרר אנשים, עבר וציפיות, ולתת מתוך שפע ולא מתוך הקרבה.",
+strengths:["חמלה ונדיבות","ראייה רחבה ואוניברסלית","יצירתיות והשראה","סובלנות"],
+shadow:["קושי לשחרר","אכזבה מהעולם","נתינה שהופכת להקרבה","ריחוק רגשי"],
+career:"עבודה חברתית, אמנות, חינוך, רפואה וארגונים ללא מטרות רווח. כל עבודה שיש בה שליחות גדולה ממך.",
+love:"את/ה אוהב/ת בעומק ובנדיבות, ולעתים נמשך/ת לאנשים שצריכים \"הצלה\". הלמידה היא אהבה בגובה העיניים.",
+money:"כסף זורם כשהעבודה משרתת מטרה גדולה. מלחמה בכסף או זלזול בו פוגעים בשליחות עצמה.",
+growth:"לשחרר את מה שהסתיים, ולסמוך שמקום ריק יתמלא בטוב.",
+soul:"בפנים את/ה כמה/ה לעולם טוב יותר, לתת ולהיות חלק ממשהו משמעותי.",
+persona:"אחרים רואים בך אדם רחב לב, אצילי ומעורר השראה.",
+expr:"הכישרון שלך הוא לתת השראה ולרפא. נועדת לשרת אנשים דרך אמנות, חינוך או חמלה.",
+year:"שנת סיומים. מחזור של תשע שנים נסגר. זמן לשחרר, לסכם, לסלוח ולפנות מקום לחדש שיגיע בשנה הבאה.",
+pm:"חודש של סיכומים, שחרור וסגירת מעגלים.",
+pinnacle:"תקופה של נתינה, השלמה ושחרור. החיים מזמינים לראות את התמונה הגדולה.",
+challenge:"האתגר הוא שחרור: לסיים פרקים בלי מרירות, ולאזן בין נתינה לעולם לבין הצרכים שלך.",
+lesson:"שיעור של חמלה וראייה רחבה. ייתכן קושי לסלוח או לראות מעבר לטובתך האישית.",
+passion:"תשוקה לתרום, לרפא ולהעניק."},
+11:{title:"המאיר/ה",kw:"אינטואיציה, השראה והארה",gift:"אינטואיציה והשראה",
+essence:"11 הוא מספר מאסטר: אנרגיית ה-2 בעוצמה כפולה. יש בך רגישות גבוהה, אינטואיציה חזקה ויכולת להעניק השראה לאחרים. את/ה מעין אנטנה שקולטת את מה שאחרים לא רואים. המתח הפנימי גבוה, בין חזון גדול לבין פחד וחרדה. הלמידה היא לבטוח בקול הפנימי ולקרקע אותו.",
+strengths:["אינטואיציה חדה","כושר השראה","רגישות רוחנית","חזון"],
+shadow:["חרדה ועצבנות","רגישות יתר","חוסר מעשיות","ספק עצמי עמוק"],
+career:"הוראה רוחנית, טיפול, אמנות, מוזיקה וכתיבה מעוררת השראה. כל תחום שבו מעבירים מסר.",
+love:"קשר עמוק ורוחני חשוב לך. דרוש/ה לך בן/בת זוג יציב/ה שיכול/ה להכיל את עוצמת הרגש.",
+money:"כסף מגיע כשהשליחות מקבלת צורה מעשית. בלי קרקוע, הרעיונות נשארים באוויר.",
+growth:"לקרקע: שגרה, גוף ותנועה מעגנים את עוצמת ההשראה.",
+soul:"בפנים את/ה כמה/ה להאיר ולעורר אחרים, ולחיות לפי אמת פנימית גבוהה.",
+persona:"אחרים רואים בך אדם מיוחד, רגיש ומעורר השראה, עם נוכחות שקשה להגדיר.",
+expr:"הכישרון שלך הוא להעביר השראה. נועדת להיות גשר בין העולם הרוחני לעולם היומיומי.",
+pinnacle:"תקופה של התעוררות רוחנית והשראה, ואפשרות להפוך למורה או למקור השראה."},
+22:{title:"הבונה הגדול/ה",kw:"חזון מעשי בקנה מידה גדול",gift:"יכולת להגשים חזון",
+essence:"22 הוא מספר מאסטר, \"הבונה הגדול\": החזון של 11 יחד עם המעשיות של 4. יש בך פוטנציאל לבנות דברים גדולים שמשפיעים על אנשים רבים, והלחץ גבוה בהתאם. הלמידה היא לא להיבהל מגודל הפוטנציאל, ולבנות אותו לבנה אחר לבנה.",
+strengths:["חזון יחד עם ביצוע","כושר ארגון גבוה","מנהיגות שקטה","התמדה"],
+shadow:["לחץ פנימי עצום","פחד מכישלון","נוקשות","שחיקה"],
+career:"יזמות רחבת היקף, אדריכלות, ניהול ארגונים, הקמת מוסדות ומיזמים חברתיים.",
+love:"את/ה מחפש/ת שותפות יציבה ונאמנה שתומכת בחזון. חשוב להשאיר זמן לזוגיות ולא רק לפרויקט.",
+money:"פוטנציאל לשפע רב כשמשתמשים בו כדי לבנות משהו שמשרת רבים.",
+growth:"לפרק את החזון הגדול לצעדים קטנים ולסמוך על התהליך.",
+soul:"בפנים את/ה כמה/ה להשאיר אחריך משהו מוחשי ומשמעותי לעולם.",
+persona:"אחרים רואים בך אדם יציב, רציני וחזק, שמעורר אמון.",
+expr:"הכישרון שלך הוא להגשים חזונות גדולים. נועדת לבנות מבנים ומערכות שמשרתים רבים.",
+pinnacle:"תקופה של בנייה גדולה ואפשרות להגשים חזון רחב השפעה."},
+33:{title:"המורה המרפא/ה",kw:"אהבה, ריפוי ושירות",gift:"אהבה מרפאת",
+essence:"33 הוא הנדיר במספרי המאסטר, \"המורה המרפא\". יש בו את האחריות של 6 בעוצמה רוחנית. הפוטנציאל הוא נתינה, ריפוי והוראה מתוך אהבה ללא תנאים. הלמידה היא לא לשאת את כל העולם על הכתפיים.",
+strengths:["חמלה עמוקה","יכולת ריפוי","הוראה מתוך דוגמה אישית","מסירות"],
+shadow:["הקרבה עצמית","תחושת אחריות מוגזמת","ביקורתיות כלפי עצמך","תחושת קורבן"],
+career:"טיפול, ריפוי, חינוך, הנחיה רוחנית ואמנות מרפאת.",
+love:"אהבה גדולה ומכילה. חשוב לבחור קשר הדדי, שבו גם את/ה מקבל/ת.",
+money:"כסף מגיע מתוך שירות. חשוב לא להתבייש לקבל תמורה.",
+growth:"לרפא קודם את עצמך. אהבה עצמית היא הבסיס לאהבה לאחרים.",
+soul:"בפנים את/ה כמה/ה לרפא ולהעניק אהבה בלי תנאים.",
+persona:"אחרים רואים בך אדם חם, מכיל ומרגיע, שאפשר להישען עליו.",
+expr:"הכישרון שלך הוא לרפא וללמד. נועדת להעלות את התודעה של הסובבים דרך אהבה.",
+pinnacle:"תקופה של שירות, ריפוי והוראה."}
+};
+const CH0="אתגר האפס: אין אתגר מוגדר אחד. כל האפשרויות פתוחות, והמשימה היא לבחור. זה יכול להעיד על חופש גדול או על קושי למצוא כיוון.";
+const DEBT={
+13:"חוב 13/4, חוב של עבודה. לפי המסורת הנומרולוגית הוא מצביע על נטייה לקיצורי דרך. בחיים האלה נדרשים התמדה, סדר ועבודה עקבית, וההצלחה מגיעה דווקא בזכות מאמץ שיטתי.",
+14:"חוב 14/5, חוב של חירות. מצביע על שימוש לא מאוזן בחופש. הלמידה היא מתינות ואיפוק, והתמודדות עם שינויים בלי לברוח לקיצוניות או להתמכרויות.",
+16:"חוב 16/7, חוב של אגו. החיים מזמנים פירוק של מבנים שנבנו על גאווה או אשליה, כדי לפתוח מקום לענווה ולקשר רוחני אמיתי.",
+19:"חוב 19/1, חוב של כוח. מצביע על שימוש אנוכי בעצמאות. הלמידה היא עצמאות שאינה מתנשאת, והיכולת לבקש עזרה כשצריך."};
+const YKW={1:"התחלה",2:"שותפות",3:"ביטוי",4:"בנייה",5:"שינוי",6:"אחריות",7:"התבוננות",8:"קציר",9:"סיום"};
+const HEB={'א':1,'ב':2,'ג':3,'ד':4,'ה':5,'ו':6,'ז':7,'ח':8,'ט':9,'י':1,'כ':2,'ך':2,'ל':3,'מ':4,'ם':4,'נ':5,'ן':5,'ס':6,'ע':7,'פ':8,'ף':8,'צ':9,'ץ':9,'ק':1,'ר':2,'ש':3,'ת':4};
+const HEBV="אהוי", LATV="AEIOU", MASTER=[11,22,33], DEBTS=[13,14,16,19];
+const COMPAT=new Set(["1-3","1-9","2-6","2-9","3-5","4-6","4-7","5-9","6-8","2-3"]);
+/* ---------- math ---------- */
+const dsum=n=>String(n).split('').reduce((a,b)=>a+(+b),0);
+function red(n,keep=true){const ch=[n];while(n>9&&!(keep&&MASTER.includes(n))){n=dsum(n);ch.push(n);}return{v:n,ch};}
+const rv=(n,k=true)=>red(n,k).v, single=n=>rv(n,false);
+const debtIn=n=>red(n).ch.find(x=>DEBTS.includes(x));
+const comp=(c,v)=>(c>9&&c!==v)?`${c}/${v}`:"";
+function get(n,f){if(N[n]&&N[n][f]!==undefined)return N[n][f];const s=single(n);return N[s]?N[s][f]:"";}
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const grp=n=>{n=single(n);return [1,5,7].includes(n)?0:[2,4,8].includes(n)?1:2;};
+const GRP=["משולש העצמאות והמחשבה (1, 5, 7)","משולש החומר והעשייה (2, 4, 8)","משולש הרגש והיצירה (3, 6, 9)"];
+function relation(a,b){a=single(a);b=single(b);if(a===b)return 4;if(grp(a)===grp(b))return 3;const k=[a,b].sort().join('-');return COMPAT.has(k)?2:1;}
+const scriptOf=s=>/[א-ת]/.test(s)?"he":"la";
+
+function analyzeName(raw,sys){
+  const parts=raw.trim().split(/[\s\-־'"׳״.]+/).filter(Boolean);
+  const words=[];const counts=Array(10).fill(0);
+  for(const p of parts){
+    const letters=[];
+    if(sys==="he"){
+      const w=p.replace(/[֑-ׇ]/g,'').replace(/[^א-ת]/g,'');
+      for(const ch of w){if(HEB[ch])letters.push({ch,val:HEB[ch],vow:HEBV.includes(ch)});}
+    }else{
+      const w=p.toUpperCase().replace(/[^A-Z]/g,'');
+      [...w].forEach((ch,i)=>{const val=((ch.charCodeAt(0)-65)%9)+1;let vow=LATV.includes(ch);
+        if(ch==="Y"){const pr=w[i-1],nx=w[i+1];vow=!(pr&&LATV.includes(pr))&&!(nx&&LATV.includes(nx));}
+        letters.push({ch,val,vow});});
+    }
+    if(!letters.length)continue;
+    const sum=letters.reduce((a,l)=>a+l.val,0),vs=letters.filter(l=>l.vow).reduce((a,l)=>a+l.val,0),cs=sum-vs;
+    letters.forEach(l=>counts[l.val]++);
+    words.push({letters,sum,vs,cs});
+  }
+  if(!words.length)return null;
+  const mk=key=>{const c=words.reduce((a,w)=>a+rv(w[key]),0);return{c,v:rv(c),trace:words.map(w=>`${w[key]}→${rv(w[key])}`).join(" + ")+` = ${c}`+(c>9?` → ${rv(c)}`:"")};};
+  const expr=mk("sum"),soul=mk("vs"),pers=mk("cs");
+  const initials=words.reduce((a,w)=>a+w.letters[0].val,0);
+  const max=Math.max(...counts.slice(1));
+  const passion=max>0?counts.map((c,i)=>i&&c===max?i:0).filter(Boolean):[];
+  const lessons=[1,2,3,4,5,6,7,8,9].filter(i=>!counts[i]);
+  let planes=null;
+  if(sys==="la"){planes={};for(const k in PLANES){planes[k]=words.reduce((a,w)=>a+w.letters.filter(l=>PLANES[k].ch.includes(l.ch)).length,0);}}
+  const debts=[["ביטוי",expr.c],["דחף הנשמה",soul.c],["אישיות",pers.c]].map(([l,c])=>[l,debtIn(c)]).filter(x=>x[1]);
+  return{sys,raw,words,expr,soul,pers,balance:{c:initials,v:single(initials)},counts,passion,lessons,sub:9-lessons.length,planes,debts};
+}
+
+function birth(dateStr){
+  const [y,m,d]=dateStr.split('-').map(Number);
+  const dR=rv(d),mR=rv(m),yR=rv(dsum(y));
+  const c=dR+mR+yR,LP=rv(c);
+  return{y,m,d,dR,mR,yR,c,LP,trace:`${d}→${dR} + ${m}→${mR} + ${y}→${yR} = ${c}`+(c>9?` → ${LP}`:""),debt:debtIn(c)};
+}
+function ageAt(b,t){let a=t.y-b.y;if(t.m<b.m||(t.m===b.m&&t.d<b.d))a--;return a;}
+
+
+/* ================= group texts ================= */
+const FAM={
+1:{role:"המצית/ה",give:"יוזמה ואומץ. מי שפותח/ת את השיחה ראשון/ה ומזיז/ה את הקבוצה קדימה.",learn:"להוביל בלי לרמוס, ולגלות שגם הקשבה היא כוח.",mission:"קבוצה של חלוצים. כל אחד פורץ דרך משלו, והשליחות המשותפת היא לעודד העזה בלי לאבד את החיבור.",dom:"הרבה רצון עצמאי: כוח גדול להתחלות, וגם מקור אפשרי למאבקי הובלה.",miss:"קשה להתחיל ולהחליט. כדאי להסכים מראש מי מניע/ה את הצעד הבא."},
+2:{role:"הגשר",give:"הקשבה ורגישות. מי שמרגיש/ה את האווירה במעגל ומרכך/ת מתחים.",learn:"להשמיע את הקול שלך, ולא רק לשמור על השקט של כולם.",mission:"קבוצה של שותפות. השליחות היא להקשיב באמת, ולבנות אמון גם בין אנשים שרק נפגשו.",dom:"רגישות גבוהה וצורך בהרמוניה: אווירה חמה, וגם נטייה להימנע מאי־הסכמה.",miss:"פחות סבלנות ועדינות. כדאי לעצור לפעמים ולשאול: איך זה מרגיש לך?"},
+3:{role:"המשמח/ת",give:"שמחה, הומור וביטוי. מי שמכניס/ה צבע ומילים למפגש.",learn:"להעמיק ולהתמיד, ולא רק להאיר את החדר.",mission:"קבוצה של יצירה. השליחות היא לבטא, לשחק, ולהפוך את המפגש לחוויה משותפת.",dom:"הרבה ביטוי ושמחה: מפגש חי ורועש, ולעתים קושי להתמקד.",miss:"פחות ביטוי במילים. כדאי להזמין כל אחד לשתף, גם בקצרה."},
+4:{role:"העוגן",give:"יציבות וסדר. מי שמחזיק/ה את המסגרת, ושאפשר לסמוך עליו/ה.",learn:"לשחרר שליטה, ולתת מקום לספונטניות של אחרים.",mission:"קבוצה של בונים. השליחות היא ליצור מסגרת בטוחה שכל אחד יכול להישען עליה.",dom:"הרבה אחריות וסדר: ביטחון גדול, ולעתים נוקשות והתנגדות לשינוי.",miss:"מעט מבנה. רעיונות מתפזרים, וכדאי להחליט מי מחזיק/ה את הזמן ואת הסדר."},
+5:{role:"הרוח הנושבת",give:"תנועה וסקרנות. מי שמביא/ה רעיונות חדשים ומוציא/ה את המפגש מהצפוי.",learn:"להישאר גם כשמשעמם, ולגלות את העומק שבמחויבות.",mission:"קבוצה של הרפתקנים. השליחות היא לטעום, להתנסות ולגדול דרך המפגש עם השונה.",dom:"הרבה צורך בחופש ובגיוון: מפגש תוסס, ולעתים חסר מנוחה.",miss:"פחות גמישות. שינויים מאיימים יותר, וכדאי להעז יחד בניסוי קטן."},
+6:{role:"הלב החם",give:"אכפתיות וחום. מי שדואג/ת שלכולם במעגל יהיה טוב.",learn:"לתת בלי לשלוט, ולאפשר לאחרים לדאוג גם לך.",mission:"קבוצה של לב. השליחות היא אכפתיות הדדית ומקום שכל אחד מרגיש בו רצוי.",dom:"הרבה אחריות ונתינה: חום גדול, ולעתים דאגה שהופכת להתערבות.",miss:"פחות תשומת לב לאחר. כדאי לשאול בפתיחה ובסגירה מה כל אחד צריך."},
+7:{role:"החוקר/ת",give:"עומק ותובנה. מי ששואל/ת את השאלות האמיתיות ורואה מתחת לפני השטח.",learn:"לשתף מבפנים, ולתת לאחרים להיכנס לעולם שלך.",mission:"קבוצה של מחפשים. השליחות היא ללמוד, להעמיק ולחפש משמעות יחד.",dom:"הרבה עומק ומחשבה: שיחות עמוקות, ולעתים כל אחד בעולם משלו.",miss:"פחות שקט והתבוננות. כדאי לשמור רגע של שקט לפני שעונים."},
+8:{role:"המממש/ת",give:"כוח ביצוע וראייה מעשית. מי שיודע/ת להחליט ולהביא דברים לידי מעשה.",learn:"להביא רכות, ולזכור שהערך שלך לא נמדד בהישגים.",mission:"קבוצה של מימוש. השליחות היא להפוך השראה למעשה, ולהשתמש בכוח לטובה.",dom:"הרבה שאפתנות ועוצמה: אנרגיה של תוצאות, ולעתים מאבקי שליטה.",miss:"קשה להוריד רעיונות לקרקע. כדאי לסיים כל שיחה בצעד מעשי אחד."},
+9:{role:"החזון",give:"חמלה וראייה רחבה. מי שמזכיר/ה לכולם את התמונה הגדולה ואת מה שחשוב באמת.",learn:"לשחרר ולסלוח, ולתת מתוך שפע ולא מתוך הקרבה.",mission:"קבוצה של נתינה. השליחות היא חמלה, ראייה רחבה ומשהו שממשיך מעבר למפגש.",dom:"הרבה רגש ואידיאלים: לב גדול, ולעתים קושי להיפרד ולשחרר.",miss:"פחות ראייה של התמונה הגדולה. כדאי לשאול: בשביל מה התכנסנו?"},
+11:{role:"המאיר/ה",give:"השראה ואינטואיציה. מי שקולט/ת את מה שלא נאמר ומעורר/ת אחרים.",learn:"לקרקע את ההשראה, ולבטוח בקול הפנימי.",mission:"קבוצה עם שליחות של השראה: לגלות יחד אמת פנימית ולהאיר זה את זה."},
+22:{role:"הבונה הגדול/ה",give:"חזון מעשי. מי שמסוגל/ת לבנות משהו גדול לאורך זמן.",learn:"לפרק את החזון לצעדים קטנים, ולא לשאת הכול לבד.",mission:"קבוצה שהתכנסה כדי לבנות משהו גדול ממנה."},
+33:{role:"המרפא/ה",give:"אהבה מרפאת. מי שמחבק/ת ומרגיע/ה בעצם הנוכחות.",learn:"לרפא קודם את עצמך, ולקבל כמו שאת/ה נותן/ת.",mission:"קבוצה של ריפוי ואהבה ללא תנאים."}
+};
+const fam=(n,f)=>(FAM[n]&&FAM[n][f])||(FAM[single(n)]&&FAM[single(n)][f])||"";
+const TRIBE=["העצמאות והמחשבה","החומר והעשייה","הרגש והיצירה"];
+const TRIBE_NUMS=["1, 5, 7","2, 4, 8","3, 6, 9"];
+const PCOL=["#ff8a7a","#ffc857","#7ee0c3","#7fb8ff","#c79bff","#ff9fd2","#a6e36b","#ffa94d","#5fd3e6","#e6d26b","#9aa7ff","#f07b9a","#5ec98f","#d9a3ff","#ffd1a1"];
+const TRIBEC=["#7fd1c7","#f0c46a","#f2a08f"];
+let colorMode="person";try{colorMode=localStorage.getItem("grp-colormode")||"person"}catch(e){}
+const fillOf=p=>colorMode==="tribe"?TRIBEC[p.tribe]:p.color;
+const TCOL=["var(--t0)","var(--t1)","var(--t2)"];
+const STAGES=[
+ {k:"join",t:"המעגל נדלק",short:"הצטרפות"},
+ {k:"who",t:"מי אני",short:"מי אני"},
+ {k:"num",t:"המספר שלנו",short:"המספר שלנו"},
+ {k:"miss",t:"מה חסר, ומי שומר עליו",short:"מה חסר"},
+ {k:"roles",t:"התפקידים בקבוצה",short:"תפקידים"},
+ {k:"threads",t:"חוטים במארג",short:"חוטים"},
+ {k:"close",t:"מה אני לוקח/ת",short:"סגירה"}
+];
+const MAXP=10;
+const ASK={
+ who:"לפני שחושפים: מה אתם רואים במי שיושב/ת מולכם, גם אם רק נפגשתם? איפה זה פוגש את מה שכתוב?",
+ num:"מה הביא כל אחד מכם לכאן היום? איפה זה פוגש את השליחות של הקבוצה?",
+ miss:"מי מוכן/ה לקחת על עצמו/ה משהו ממה שחסר, לאורך המפגש?",
+ roles:"איזה תפקיד אתם לוקחים בדרך כלל בקבוצות, ואיזה הייתם רוצים לנסות?",
+ threads:"בחרו חוט אחד, ותגידו לאדם שבקצה השני מה אתם רואים בו/ה.",
+ close:"מה אני לוקח/ת מהמפגש, ומה נתתי לקבוצה?"
+};
+
+/* ================= storage: Firebase REST (or local mock with ?local) ================= */
+const DB="https://group-numerology-default-rtdb.europe-west1.firebasedatabase.app";
+const qs=new URLSearchParams(location.search);
+const LOCAL=qs.has("local")||!/github\.io$/.test(location.hostname)&&!qs.has("live");
+const BASE=location.origin+location.pathname;
+let ROOM=(qs.get("r")||"").toUpperCase().replace(/[^A-Z0-9]/g,"").slice(0,8);
+const ls={get(k){try{return localStorage.getItem(k)}catch(e){return null}},set(k,v){try{localStorage.setItem(k,v)}catch(e){}},del(k){try{localStorage.removeItem(k)}catch(e){}}};
+
+function setPath(root,path,data){
+  const segs=path.split("/").filter(Boolean);
+  if(!segs.length)return data&&typeof data==="object"?data:{};
+  let o=root||{};const top=o;
+  for(let i=0;i<segs.length-1;i++){if(typeof o[segs[i]]!=="object"||!o[segs[i]])o[segs[i]]={};o=o[segs[i]];}
+  const last=segs[segs.length-1];
+  if(data===null)delete o[last];else o[last]=data;
+  return top;
+}
+const newId=()=>Date.now().toString(36)+Math.random().toString(36).slice(2,8);
+
+const fb={
+  async req(method,path,body){
+    const r=await fetch(`${DB}/${path}.json`,{method,headers:{"Content-Type":"application/json"},body:body===undefined?undefined:JSON.stringify(body)});
+    if(!r.ok)throw new Error("db "+r.status);return r.json();
+  },
+  get(p){return this.req("GET",p)},
+  put(p,v){return this.req("PUT",p,v)},
+  patch(p,v){return this.req("PATCH",p,v)},
+  async post(p,v){const r=await this.req("POST",p,v);return r.name},
+  del(p){return this.req("DELETE",p)},
+  listen(p,cb){
+    let state={};
+    if(window.EventSource){
+      const es=new EventSource(`${DB}/${p}.json`);
+      const on=(e,patch)=>{try{const m=JSON.parse(e.data);
+        if(patch){for(const k in m.data)state=setPath(state,(m.path+"/"+k),m.data[k]);}
+        else state=setPath(state,m.path,m.data);
+        cb(state,true);}catch(err){}};
+      es.addEventListener("put",e=>on(e,false));
+      es.addEventListener("patch",e=>on(e,true));
+      es.onerror=()=>cb(state,false);
+      return;
+    }
+    const poll=async()=>{try{state=(await this.get(p))||{};cb(state,true);}catch(e){cb(state,false)}};
+    poll();setInterval(poll,4000);
+  }
+};
+const mock={
+  K:"grp-mock-db",
+  read(){try{return JSON.parse(localStorage.getItem(this.K))||{}}catch(e){return{}}},
+  write(db){localStorage.setItem(this.K,JSON.stringify(db));this._fire()},
+  at(p){return p.split("/").filter(Boolean).reduce((o,k)=>o&&o[k],this.read())},
+  async get(p){return this.at(p)??null},
+  async put(p,v){this.write(setPath(this.read(),p,v))},
+  async patch(p,v){let db=this.read();for(const k in v)db=setPath(db,p+"/"+k,v[k]);this.write(db)},
+  async post(p,v){const id=newId();this.write(setPath(this.read(),p+"/"+id,v));return id},
+  async del(p){this.write(setPath(this.read(),p,null))},
+  subs:[],
+  _fire(){this.subs.forEach(f=>f())},
+  listen(p,cb){const f=()=>cb(JSON.parse(JSON.stringify(this.at(p)||{})),true);this.subs.push(f);addEventListener("storage",e=>{if(e.key===this.K)f()});setTimeout(f,30)}
+};
+const store=LOCAL?mock:fb;
+
+/* ================= helpers ================= */
+const $=id=>document.getElementById(id);
+const app=$("app");
+const TODAY=new Date();const TY=TODAY.getFullYear();
+const MONTHS=["ינואר","פברואר","מרץ","אפריל","מאי","יוני","יולי","אוגוסט","ספטמבר","אוקטובר","נובמבר","דצמבר"];
+const opt=(v,t)=>`<option value="${v}">${t}</option>`;
+function dateSel(id){
+  const ys=[];for(let y=TY;y>=1910;y--)ys.push(y);
+  return `<div class="dsel" id="${id}"><select data-p="d" aria-label="יום">${opt("","יום")}${Array.from({length:31},(_,i)=>opt(i+1,i+1)).join("")}</select><select data-p="m" aria-label="חודש">${opt("","חודש")}${MONTHS.map((m,i)=>opt(i+1,m)).join("")}</select><select data-p="y" aria-label="שנה">${opt("","שנה")}${ys.map(y=>opt(y,y)).join("")}</select></div>`;
+}
+function dateVal(id){
+  const b=$(id),g=p=>b.querySelector(`[data-p="${p}"]`).value;const d=g("d"),m=g("m"),y=g("y");
+  if(!d||!m||!y)return "";
+  const max=new Date(+y,+m,0).getDate();if(+d>max)return "bad";
+  return `${y}-${String(m).padStart(2,"0")}-${String(d).padStart(2,"0")}`;
+}
+const joinURL=()=>BASE+"?r="+ROOM+(LOCAL?"&local=1":"");
+const leadURL=()=>BASE+"?r="+ROOM+"&lead=1"+(LOCAL&&qs.has("local")?"&local=1":"");
+const boardURL=()=>BASE+"?r="+ROOM+"&board=1"+(LOCAL?"&local=1":"");
+const isHost=()=>ls.get("grp-host:"+ROOM)==="1";
+const myId=()=>ls.get("grp-me:"+ROOM);
+function qrSVG(text){
+  try{const q=qrcode(0,"M");q.addData(text);q.make();return q.createSvgTag({cellSize:6,margin:2,scalable:true});}
+  catch(e){return `<p style="color:#1d2a2c;direction:ltr;word-break:break-all;font-size:.9rem;margin:0">${esc(text)}</p>`;}
+}
+const he=s=>/[א-ת]/.test(s||"");
+
+/* ================= analysis ================= */
+function personOf(id,m){
+  const an=analyzeName(m.name,"he");const B=birth(m.bdate);
+  const cur=m.cur&&he(m.cur)?analyzeName(m.cur,"he"):null;
+  const py=single(single(B.d)+single(B.m)+single(dsum(TY)));
+  return {id,name:m.name.trim(),first:m.name.trim().split(/\s+/)[0],an,B,LP:B.LP,
+    expr:an?an.expr.v:B.LP,soul:an&&an.soul.v?an.soul.v:B.LP,pers:an&&an.pers.v?an.pers.v:B.LP,
+    bday:rv(B.d),lessons:an?an.lessons:[],py,cur,tribe:grp(B.LP),t:m.t||0};
+}
+function analyzeFamily(members){
+  const P=Object.entries(members||{}).filter(([id,m])=>m&&m.name&&/^\d{4}-\d{2}-\d{2}$/.test(m.bdate)).map(([id,m])=>personOf(id,m)).sort((a,b)=>a.t-b.t);
+  // unique display names
+  const cnt={};P.forEach(p=>cnt[p.first]=(cnt[p.first]||0)+1);P.forEach(p=>p.label=cnt[p.first]>1?p.name:p.first);P.forEach((p,i)=>p.color=PCOL[i%PCOL.length]);
+  const G={P,n:P.length};
+  if(!P.length)return G;
+  const sumLP=P.reduce((a,p)=>a+p.LP,0);
+  G.LP=rv(sumLP);G.sumLP=sumLP;
+  G.year=single(P.reduce((a,p)=>a+p.py,0));
+  const core=Array(10).fill(0),carriers=Array.from({length:10},()=>[]);
+  P.forEach(p=>{p.core=new Set([single(p.LP),single(p.expr),single(p.soul),single(p.pers)]);p.core.forEach(n=>{core[n]++;carriers[n].push(p)});});
+  G.core=core;G.carriers=carriers;
+  const max=Math.max(...core.slice(1));
+  G.dom=max>1?[1,2,3,4,5,6,7,8,9].filter(n=>core[n]===max):[];
+  G.missing=[1,2,3,4,5,6,7,8,9].filter(n=>!core[n]);
+  G.rare=P.length>2?[1,2,3,4,5,6,7,8,9].filter(n=>core[n]===1):[];
+  G.tribes=[0,1,2].map(t=>P.filter(p=>p.tribe===t));
+  // threads
+  const T=[];const key=(a,b)=>[a.id,b.id].sort().join("|");const seen=new Set();
+  P.forEach(a=>{
+    // A really lacks n: missing from the letters of the name AND not one of A's core numbers.
+    // B brings n: it is B's life path or expression. (A, who has n as a core number, never 'receives' it.)
+    for(const n of a.lessons){
+      if(a.core.has(n))continue;
+      const b=P.find(b=>b!==a&&(single(b.LP)===n||single(b.expr)===n));
+      if(b){const role=single(b.LP)===n?"שביל החיים":"מספר הביטוי";
+        T.push({type:"give",a:b,b:a,n,text:`ל${a.label} חסר בשם המספר ${n} (${N[n].kw}). אצל ${b.label} זה ${role}, ולכן ${b.label} יכול/ה להביא ל${a.label} את מה שחסר לו/ה.`});break;}
+    }
+  });
+  [1,2,3,4,5,6,7,8,9].forEach(n=>{const grpS=P.filter(p=>single(p.soul)===n);if(grpS.length<2)return;
+    const names=grpS.map(p=>p.label);const list=names.length===2?names.join(" ו"):names.slice(0,-1).join(", ")+" ו"+names[names.length-1];
+    const cl={type:"soul",members:grpS,n,text:`${list} צריכים מבפנים את אותו דבר: ${N[n].kw}. קל להם להבין זה את זה בלי מילים.`};
+    for(let i=0;i<grpS.length-1;i++)T.push({type:"soul",a:grpS[i],b:grpS[i+1],n,line:true,ref:cl});
+    T.push(cl);
+  });
+  P.forEach(a=>P.forEach(b=>{
+    if(a!==b&&single(a.pers)===single(b.soul)&&single(a.soul)!==single(b.soul)&&!seen.has("m"+key(a,b))){seen.add("m"+key(a,b));if(T.filter(t=>t.type==="mirror").length<2)T.push({type:"mirror",a,b,n:single(a.pers),text:`דחף הנשמה של ${b.label} הוא מספר האישיות של ${a.label} (${single(a.pers)}: ${N[single(a.pers)].kw}). מה ש${b.label} צריך/ה בפנים, ${a.label} מראה כלפי חוץ, ולכן כל אחד יכול לראות בשני צד של עצמו.`});}
+  }));
+  G.threads=T;
+  // frictions
+  const F=[];
+  P.forEach((a,i)=>P.slice(i+1).forEach(b=>{
+    const r=relation(a.LP,b.LP);const lead=single(a.LP)===single(b.LP)&&[1,8].includes(single(a.LP));
+    if(r===1||lead)F.push({a,b,lead,score:lead?2:1});
+  }));
+  F.sort((x,y)=>y.score-x.score);G.frictions=F.slice(0,Math.max(2,Math.ceil(P.length/2)));
+  return G;
+}
+function myThreads(G,p){return (G.threads||[]).filter(t=>t.text&&(t.a===p||t.b===p||(t.members&&t.members.includes(p))));}
+function myFriction(G,p){return (G.frictions||[]).find(f=>f.a===p||f.b===p);}
+function familyRel(p,G){
+  const r=relation(p.LP,G.LP);
+  return {4:"את/ה נושא/ת בעצמך את המספר של הקבוצה. השליחות המשותפת עוברת דרכך באופן ישיר.",3:"את/ה מאותו שבט מספרים כמו השליחות של הקבוצה, ולכן קל לך להתחבר אליה באופן טבעי.",2:"את/ה משלים/ה את השליחות של הקבוצה מזווית אחרת, ומוסיף/ה לה כלים שאין לה.",1:"את/ה מביא/ה לקבוצה צבע שונה מהשליחות המרכזית שלה. דווקא ההבדל הזה מרחיב אותה."}[r];
+}
+
+/* ================= state & routing ================= */
+let S={meta:null,members:{},notes:{}};let G={P:[]};let online=true;let view="";let phoneTab="me";let boardStage=null;let mysteryIdx=-1,mysteryShown=false;
+function onData(st,ok){
+  online=ok;S={meta:st.meta||null,members:st.members||{},notes:st.notes||{},fb:st.fb||{}};
+  G=analyzeFamily(S.members);
+  route(true);
+}
+let VIEW=qs.get("v")||(qs.has("game")?"game":qs.has("lead")?"circle":qs.has("board")?"stages":"");
+const FACIL=()=>isHost()||qs.has("board");
+const isMember=()=>{const me=myId();return !!(me&&S.members[me]);};
+function defaultView(){return isHost()?"stages":isMember()?"me":"join";}
+function go(v){
+  VIEW=v;closeReader();
+  try{const u=new URL(location.href);["board","lead","game"].forEach(k=>u.searchParams.delete(k));u.searchParams.set("v",v);history.replaceState(null,"",u);}catch(e){}
+  view="";route();window.scrollTo({top:0});
+}
+document.addEventListener("click",e=>{const b=e.target.closest("[data-go]");if(!b)return;e.preventDefault();if(b.dataset.go==="gloss"){openGlossary();return;}go(b.dataset.go);});
+function route(fromData){
+  if(!ROOM)return renderHome();
+  if(!S.meta&&fromData&&online){return renderMissing();}
+  if(!S.meta)return renderLoading();
+  let v=VIEW||defaultView();
+  if(v==="me"&&!isMember())v="join";
+  if(v==="game")return renderGame();
+  if(v==="circle")return renderLead();
+  if(v==="stages")return renderBoard();
+  if(v==="fam")return renderFamily();
+  if(v==="me")return renderPhone();
+  if(view!=="join")renderJoin();else updateJoin();
+}
+function navHTML(cur){
+  const items=[isMember()?["me","המפה שלי","◉"]:["join","הצטרפות","+"],["fam","הקבוצה","☷"],["circle","המעגל","◎"],["stages","שלבים","☰"],["game","משחק","✦"],["gloss","מילון","?"]];
+  return `<nav class="gnav" aria-label="ניווט בכלי">${items.map(([k,t,i])=>`<button type="button" data-go="${k}" ${k===cur?'aria-current="page"':""}><span class="gi" aria-hidden="true">${i}</span><span>${t}</span></button>`).join("")}</nav>`;
+}
+function addNav(cur){const w=app.querySelector(".wrap");if(w)w.insertAdjacentHTML("afterbegin",navHTML(cur));}
+function renderLoading(){view="loading";app.innerHTML=`<div class="wrap"><p class="muted" style="text-align:center;margin-top:30vh">מתחברים למעגל…</p></div>`;}
+function renderMissing(){view="missing";app.innerHTML=`<div class="wrap"><div class="card" style="margin-top:20vh;text-align:center"><h2>לא מצאנו את המעגל</h2><p class="muted">ייתכן שהקוד שגוי. אפשר לבקש קישור חדש ממי שפתח/ה את המעגל.</p><a class="btn" href="${BASE}${LOCAL?"?local=1":""}" style="text-decoration:none;display:inline-block">לדף הפתיחה</a></div></div>`;}
+
+/* ---------- home ---------- */
+function renderHome(){
+  view="home";
+  app.innerHTML=`<div class="wrap">
+  <section class="night hero">
+    <p class="q">מה המספרים מספרים על המעגל שהתכנס כאן?</p>
+    <h1>המארג הקבוצתי</h1>
+    <p>כל משתתף מצטרף מהטלפון, מגלה את המפה האישית שלו, ואז רואים יחד איך אנשים שרק נפגשו נארגים לקבוצה אחת.</p>
+    <label class="f" style="max-width:340px;margin:0 auto 14px;text-align:right">איך נקרא למעגל?<input type="text" id="famName" placeholder="למשל: סדנת יום שישי" autocomplete="off"></label>
+    <button class="btn light" id="createBtn">פתיחת מעגל חדש ←</button>
+    <p class="err" id="homeErr" style="margin-top:10px"></p>
+    <ul>
+      <li>עד 10 משתתפים. סורקים קוד, ממלאים שם ותאריך לידה. בלי הרשמה.</li>
+      <li>כל אחד מקבל בטלפון את המפה האישית שלו.</li>
+      <li>אחר כך נחשפים בהדרגה: השליחות של הקבוצה, מה חסר, התפקידים והחוטים שמחברים ביניכם.</li>
+    </ul>
+  </section>
+  <div class="card" style="margin-top:16px">
+    <h2 style="font-size:1.2rem">קיבלתם קוד מעגל?</h2>
+    <div class="row" style="margin-top:10px"><input type="text" id="codeIn" placeholder="קוד המעגל" style="max-width:200px;direction:ltr;text-transform:uppercase;letter-spacing:.15em" autocomplete="off"><button class="btn small" id="codeBtn">כניסה</button></div>
+  </div>
+  <p class="muted" style="font-size:.85rem;margin-top:22px">החישוב מבוסס על גימטריה עברית בשיטת המספר הקטן ועל תאריך הלידה. זהו כלי להתבוננות ולשיחה, לא אבחון. הפרטים נשמרים רק בתוך המעגל, ומי שיש לו את הקישור יכול לראות אותם.</p>
+  </div>`;
+  $("createBtn").onclick=createRoom;
+  $("codeBtn").onclick=()=>{const c=$("codeIn").value.toUpperCase().replace(/[^A-Z0-9]/g,"");if(c)location.href=BASE+"?r="+c+(LOCAL?"&local=1":"");};
+  $("codeIn").onkeydown=e=>{if(e.key==="Enter")$("codeBtn").click();};
+}
+async function createRoom(){
+  const name=$("famName").value.trim()||"המעגל שלנו";
+  $("createBtn").disabled=true;$("homeErr").textContent="";
+  const A="ABCDEFGHJKMNPQRSTUVWXYZ23456789";
+  try{
+    let code;for(let i=0;i<5;i++){code=Array.from({length:5},()=>A[Math.floor(Math.random()*A.length)]).join("");if(!(await store.get(`rooms/${code}/meta`)))break;}
+    await store.put(`rooms/${code}/meta`,{name:name.slice(0,60),created:Date.now(),stage:0,open:false,type:"group"});
+    ls.set("grp-host:"+code,"1");
+    location.href=BASE+"?r="+code+(LOCAL?"&local=1":"");
+  }catch(e){$("homeErr").textContent="לא הצלחנו לפתוח מעגל. בדקו את החיבור לאינטרנט ונסו שוב.";$("createBtn").disabled=false;}
+}
+
+/* ---------- join (phone) ---------- */
+function renderJoin(){
+  view="join";
+  if(G.n>=MAXP){app.innerHTML=`<div class="wrap"><div class="top"><h1>${esc(S.meta.name)}</h1></div><div class="card" style="text-align:center"><h2 style="font-size:1.4rem">המעגל מלא</h2><p class="muted">במעגל כבר ${MAXP} משתתפים, וזה המקסימום. אם כבר הצטרפת ממכשיר אחר, פנה/י למנחה.</p></div></div>`;return;}
+  app.innerHTML=`<div class="wrap">
+  <div class="top"><h1>${esc(S.meta.name)}</h1><span class="muted" id="joinCount"></span></div>
+  <div class="card">
+    <h2 style="font-size:1.4rem">הצטרפות למעגל</h2>
+    <p class="muted" style="margin:4px 0 0">השם המלא כפי שניתן בלידה, כולל שם המשפחה מהלידה.</p>
+    <label class="f">שם מלא מהלידה, בעברית<input type="text" id="jName" autocomplete="off" placeholder="למשל: נועה כהן"></label>
+    <div class="f" style="display:flex;flex-direction:column;gap:5px;font-weight:600;font-size:.95rem;margin-top:14px">תאריך לידה${dateSel("jDate")}</div>
+    <details class="more"><summary>שם אחר שבו את/ה משתמש/ת היום <span class="muted" style="font-weight:400">(לא חובה)</span></summary>
+      <label class="f">השם של היום<small>אחרי נישואין, כינוי או שם שהוחלף</small><input type="text" id="jCur" autocomplete="off"></label></details>
+    <div class="row"><button class="btn" id="jBtn">להצטרפות ←</button></div>
+    <p class="err" id="jErr"></p>
+  </div>
+  <p class="muted" style="font-size:.85rem;margin-top:16px">הפרטים נשמרים רק בתוך המעגל הזה, ומי שיש לו את הקישור למעגל יכול לראות אותם. אפשר לבקש מהמנחה להסיר אותך מהמעגל בכל שלב.</p>
+  </div>`;
+  $("jBtn").onclick=join;updateJoin();addNav("join");
+}
+function updateJoin(){if(G.n>=MAXP)return renderJoin();const c=$("joinCount");if(c)c.textContent=G.n?`${G.n} מתוך ${MAXP} כבר במעגל`:"";}
+function validPerson(name,bd,errEl){
+  if(!name||!he(name)){errEl.textContent="חסר שם מלא בעברית.";return false;}
+  if(!bd){errEl.textContent="חסר תאריך לידה.";return false;}
+  if(bd==="bad"){errEl.textContent="התאריך הזה לא קיים בלוח השנה.";return false;}
+  return true;
+}
+async function join(){
+  const name=$("jName").value.trim(),bd=dateVal("jDate"),cur=$("jCur").value.trim();
+  if(!validPerson(name,bd,$("jErr")))return;
+  if(G.n>=MAXP){$("jErr").textContent=`המעגל מלא (${MAXP} משתתפים).`;return;}
+  $("jBtn").disabled=true;
+  try{const id=await store.post(`rooms/${ROOM}/members`,{name:name.slice(0,70),bdate:bd,cur:cur.slice(0,70),t:Date.now(),self:true});
+    ls.set("grp-me:"+ROOM,id);view="";S.members[id]={name,bdate:bd,cur,t:Date.now()};G=analyzeFamily(S.members);go("me");}
+  catch(e){$("jErr").textContent="השליחה לא הצליחה. בדקו את החיבור ונסו שוב.";$("jBtn").disabled=false;}
+}
+
+/* ---------- add member dialog (board + phone) ---------- */
+function openAdd(editId){
+  const m=editId?S.members[editId]:null;
+  if(!m&&G.n>=MAXP){alert(`המעגל מלא: אפשר עד ${MAXP} משתתפים.`);return;}
+  $("addTitle").textContent=m?"עריכת פרטים":"הוספת משתתף/ת";
+  $("addDlg").querySelector("p.muted").textContent=m?"תיקון השם או תאריך הלידה. הניתוח יתעדכן מיד אצל כולם.":"למי שלא מצטרף/ת מהטלפון בעצמו/ה.";
+  $("addForm").innerHTML=`<label class="f">שם מלא מהלידה, בעברית<small>כולל שם המשפחה מהלידה</small><input type="text" id="aName" autocomplete="off"></label>
+  <div style="display:flex;flex-direction:column;gap:5px;font-weight:600;font-size:.95rem;margin-top:14px">תאריך לידה${dateSel("aDate")}</div>
+  <label class="f">השם של היום <small>לא חובה</small><input type="text" id="aCur" autocomplete="off"></label>
+  <div class="row"><button class="btn small" id="aBtn">${m?"שמירה":"הוספה"}</button><button class="btn ghost small" id="aCancel">ביטול</button></div><p class="err" id="aErr"></p>`;
+  if(m){$("aName").value=m.name||"";$("aCur").value=m.cur||"";const [y,mo,dd]=(m.bdate||"").split("-").map(Number);const g=k=>$("aDate").querySelector(`[data-p="${k}"]`);if(y){g("y").value=String(y);g("m").value=String(mo);g("d").value=String(dd);}}
+  const d=$("addDlg");d.showModal?d.showModal():d.setAttribute("open","");
+  $("aCancel").onclick=()=>d.close();
+  $("aBtn").onclick=async()=>{const name=$("aName").value.trim(),bd=dateVal("aDate"),cur=$("aCur").value.trim();
+    if(!validPerson(name,bd,$("aErr")))return;$("aBtn").disabled=true;
+    try{if(m){await store.patch(`rooms/${ROOM}/members/${editId}`,{name:name.slice(0,70),bdate:bd,cur:cur.slice(0,70)});closeReader();}
+        else await store.post(`rooms/${ROOM}/members`,{name:name.slice(0,70),bdate:bd,cur:cur.slice(0,70),t:Date.now(),self:false});d.close();}
+    catch(e){$("aErr").textContent=m?"השמירה לא הצליחה. נסו שוב.":"ההוספה לא הצליחה. נסו שוב.";$("aBtn").disabled=false;}};
+}
+
+/* ---------- circle of lights ---------- */
+function skySVG(opts={}){
+  const P=G.P,n=P.length,cx=200,cy=200,R=n<=1?0:(n<=4?118:148);
+  const pos=new Map();P.forEach((p,i)=>{const a=-Math.PI/2+i*2*Math.PI/Math.max(n,1);pos.set(p,[cx+R*Math.cos(a),cy+R*Math.sin(a)]);});
+  let lines="";
+  if(opts.threads){const col={give:"#f0c46a",soul:"#7fd1c7",mirror:"#c7b6f5"};
+    (opts.threads).filter(t=>t.a&&t.b).forEach(t=>{const [x1,y1]=pos.get(t.a),[x2,y2]=pos.get(t.b);lines+=`<path d="M${x1},${y1} Q${cx},${cy} ${x2},${y2}" fill="none" stroke="${col[t.type]}" stroke-width="2.4" opacity=".8" ${t.type==="mirror"?'stroke-dasharray="5 6"':""}/>`;});}
+  if(opts.friction){opts.friction.forEach(f=>{const [x1,y1]=pos.get(f.a),[x2,y2]=pos.get(f.b);lines+=`<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke="#f2a08f" stroke-width="2.4" stroke-dasharray="3 7" stroke-linecap="round"/>`;});}
+  const ring=n>1?`<circle cx="${cx}" cy="${cy}" r="${R}" fill="none" stroke="rgba(255,244,214,.18)" stroke-width="1.5"/>`:"";
+  const center=opts.center?`<text x="${cx}" y="${cy+14}" text-anchor="middle" font-size="52" font-family="Cormorant Garamond,Georgia,serif" font-weight="600" fill="#f0c46a">${opts.center}</text><text x="${cx}" y="${cy+40}" text-anchor="middle" font-size="13" opacity=".8">${opts.centerLabel||""}</text>`:"";
+  const dots=P.map(p=>{const [x,y]=pos.get(p);const c=fillOf(p);const lab=esc(p.label.length>12?p.label.slice(0,11)+"…":p.label);
+    const below=y>cy+20||n===1;const ty=below?y+34:y-22;
+    const num=opts.num?`<text x="${x}" y="${y+6}" text-anchor="middle" font-size="17" font-weight="700" fill="#10202a">${opts.num(p)}</text>`:"";
+    const hi=opts.hi&&opts.hi===p.id?`<circle cx="${x}" cy="${y}" r="27" fill="none" stroke="#fff4d6" stroke-width="2"/>`:"";
+    return `<g class="lit">${hi}<circle cx="${x}" cy="${y}" r="20" fill="${c}" opacity=".22"/><circle cx="${x}" cy="${y}" r="${opts.num?15:9}" fill="${c}" filter="url(#glow)"/>${colorMode==="person"?`<circle cx="${x}" cy="${y}" r="${opts.num?18.5:12.5}" fill="none" stroke="${TRIBEC[p.tribe]}" stroke-width="2.5"/>`:""}${num}<text x="${x}" y="${ty}" text-anchor="middle" font-size="15" font-weight="600">${lab}</text></g>`;}).join("");
+  const empty=!n?`<text x="${cx}" y="${cy+6}" text-anchor="middle" font-size="16" opacity=".7">המעגל מחכה לנקודת האור הראשונה</text>`:"";
+  return `<svg viewBox="0 0 400 400" role="img" aria-label="מעגל המשתתפים"><defs><filter id="glow" x="-80%" y="-80%" width="260%" height="260%"><feGaussianBlur stdDeviation="4" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter></defs>${ring}${lines}${center}${dots}${empty}</svg>`;
+}
+const tribeLegend=()=>`<div class="legend">${colorMode==="person"?'<span style="opacity:.8">הטבעת מסמנת את השבט:</span>':""}${[0,1,2].map(t=>`<span><i style="${colorMode==="person"?`background:transparent;box-shadow:inset 0 0 0 2.5px ${TRIBEC[t]}`:`background:${TRIBEC[t]}`}"></i>${TRIBE[t]}</span>`).join("")}<button class="cm-tg" data-cm type="button">${colorMode==="person"?"צביעה לפי שבט":"צביעה לפי משתתף"}</button></div>`;
+const dotOf=p=>`<span class="dot" style="background:${fillOf(p)};${colorMode==="person"?`box-shadow:0 0 0 2px var(--panel),0 0 0 4px ${TRIBEC[p.tribe]}`:`box-shadow:0 0 8px ${TRIBEC[p.tribe]}`}" title="${esc(p.label)}"></span>`;
+document.addEventListener("click",e=>{if(!e.target.closest("[data-cm]"))return;colorMode=colorMode==="person"?"tribe":"person";try{localStorage.setItem("grp-colormode",colorMode)}catch(err){}const y=scrollY;route();scrollTo(0,y);});
+
+/* ---------- board ---------- */
+function curStage(){return Math.min(Math.max(+((S.meta&&S.meta.stage)||0),0),STAGES.length-1);}
+function renderBoard(){
+  view="board";
+  const maxSt=FACIL()||S.meta.open?STAGES.length-1:curStage();
+  const st=Math.min(boardStage==null?curStage():boardStage,maxSt);
+  const k=STAGES[st].k;
+  const needTwo=st>1&&G.n<2;
+  const skyOpts={};
+  if(k==="who")skyOpts.num=p=>p.LP;
+  if(k==="num"&&G.n)Object.assign(skyOpts,{num:p=>p.LP,center:G.LP,centerLabel:"המספר של הקבוצה"});
+  if(k==="roles")skyOpts.num=p=>p.LP;
+  if(k==="threads")skyOpts.threads=G.threads;
+  if(k==="who"&&mysteryShown&&G.P[mysteryIdx])skyOpts.hi=G.P[mysteryIdx].id;
+  app.innerHTML=`<div class="wrap wide">
+   <div class="top"><h1>${esc(S.meta.name)}</h1>
+     <span class="muted">קוד המעגל <span class="code">${ROOM}</span> · ${G.n<MAXP?`<button class="link" id="addBtn">+ הוספת משתתף/ת</button>`:`<span>המעגל מלא (${MAXP})</span>`} · <button class="link" type="button" data-sharedlg="">שיתוף / PDF</button> · <button class="link" type="button" data-fbopen>משוב על הניתוחים</button>${online?"":" · <span style='color:var(--rose)'>אין חיבור</span>"}</span></div>
+   <nav class="steps" aria-label="שלבי המפגש">${STAGES.map((s,i)=>`<button data-st="${i}" class="${i===st?"on":i<=curStage()?"done":""}" ${i>maxSt?'disabled title="נפתח כשהמנחה מתקדם"':""}>${i}. ${s.short}</button>`).join("")}</nav>${FACIL()?"":`<p class="muted" style="margin:0 0 6px;font-size:.9rem">${S.meta.open?"כל השלבים פתוחים.":"השלבים נפתחים כשהמנחה מתקדם במפגש."}</p>`}
+   <div class="board">
+     <aside class="side night">${st===0?`<div class="join-box"><p style="margin:6px 0 10px;opacity:.9">סרקו כדי להצטרף</p><div class="qr">${qrSVG(joinURL())}</div><p style="margin:10px 0 0;opacity:.85">או היכנסו לקישור והקלידו את הקוד</p><div class="code">${ROOM}</div></div>`:""}
+       <div class="sky">${skySVG(skyOpts)}</div>${tribeLegend()}</aside>
+     <section class="stage" id="stage">${needTwo?`<div class="eyebrow">${STAGES[st].t}</div><h2>מחכים לעוד משתתפים</h2><p class="lead">התמונה הקבוצתית נפתחת כשיש לפחות שני משתתפים במעגל.</p>`:stageHTML(st)}
+       <div class="nav"><button class="btn ghost small" id="prevBtn" ${st===0?"disabled":""}>→ הקודם</button>
+       ${FACIL()?`<label class="toggle"><input type="checkbox" id="openTg" ${S.meta.open?"checked":""}> כל השלבים פתוחים בטלפונים</label>`:"<span></span>"}
+       <button class="btn small" id="nextBtn" ${st>=maxSt?"disabled":""}>${st===0?"מתחילים ←":"הבא ←"}</button></div>
+     </section>
+   </div></div>`;
+  app.querySelectorAll("[data-st]").forEach(b=>b.onclick=()=>goStage(+b.dataset.st));
+  $("prevBtn").onclick=()=>goStage(st-1);$("nextBtn").onclick=()=>goStage(st+1);
+  if($("addBtn"))$("addBtn").onclick=()=>openAdd();
+  if($("openTg"))$("openTg").onchange=e=>store.patch(`rooms/${ROOM}/meta`,{open:e.target.checked});
+  app.querySelectorAll("[data-del]").forEach(b=>b.onclick=()=>{const p=G.P.find(p=>p.id===b.dataset.del);if(p&&confirmDel(p))store.del(`rooms/${ROOM}/members/${p.id}`);});
+  const ms=$("mysteryBtn");if(ms)ms.onclick=()=>{if(!mysteryShown&&mysteryIdx>=0){mysteryShown=true;}else{mysteryIdx=(mysteryIdx+1)%G.n;mysteryShown=false;}renderBoard();};
+  const wa=$("waBtn");if(wa)wa.href="https://wa.me/?text="+encodeURIComponent(`מצטרפים למעגל "${S.meta.name}" במארג הקבוצתי: ממלאים שם ותאריך לידה ומקבלים מפה אישית\n${joinURL()}`);
+  addNav("stages");
+  const cp=$("copyBtn");if(cp)cp.onclick=async()=>{try{await navigator.clipboard.writeText(joinURL());cp.textContent="הקישור הועתק ✓";}catch(e){prompt("העתיקו את הקישור:",joinURL());}};
+}
+function confirmDel(p){return window.confirm?confirm(`להסיר את ${p.name} מהמעגל?`):true;}
+function goStage(i){
+  i=Math.max(0,Math.min(STAGES.length-1,i));boardStage=i;mysteryIdx=-1;mysteryShown=false;
+  if(FACIL()&&i>curStage())store.patch(`rooms/${ROOM}/meta`,{stage:i});
+  renderBoard();window.scrollTo({top:0,behavior:"smooth"});
+}
+function personCard(p,body){return `<div class="pc"><div class="who">${dotOf(p)}<b>${esc(p.label)}</b></div>${body}</div>`;}
+function stageHTML(st){
+  const k=STAGES[st].k,P=G.P;let h=`<div class="eyebrow">שלב ${st} מתוך ${STAGES.length-1}</div><h2>${STAGES[st].t}</h2>`;
+  if(k==="join"){
+    h+=`<p class="lead">כל אחד סורק את הקוד בטלפון, ממלא שם ותאריך לידה, ונקודת אור נדלקת במעגל. מי שאין לו טלפון: "הוספת משתתף/ת" למעלה. עד ${MAXP} משתתפים.</p>
+    <div class="row" style="margin-top:0"><a class="btn ghost small" id="waBtn" target="_blank" rel="noopener" style="text-decoration:none">שליחת הקישור בוואטסאפ</a><button class="btn ghost small" id="copyBtn">העתקת הקישור</button></div>
+    <h3 style="margin-top:22px;font-size:1.15rem">במעגל עכשיו: ${G.n} מתוך ${MAXP}</h3><div class="members">${P.map(p=>`<span class="mem">${dotOf(p)}${esc(p.name)}<button data-edit="${p.id}" aria-label="עריכת ${esc(p.name)}" title="עריכה">✎</button><button data-del="${p.id}" aria-label="הסרת ${esc(p.name)}">×</button></span>`).join("")||'<span class="muted">עוד אין משתתפים</span>'}</div>
+    <p class="muted" style="margin-top:16px;font-size:.92rem">מי שמצטרף/ת באיחור נכנס/ת אוטומטית לתמונה הקבוצתית. כדי להציג את הלוח ממחשב או מקרן אחרים: <span style="direction:ltr;display:inline-block;word-break:break-all">${esc(boardURL())}</span></p>`;
+    return h;
+  }
+  if(k==="who"){
+    h+=`<p class="lead">לכל אחד יש מספר דרך: הכיוון של החיים שלו. כל אחד כבר רואה בטלפון את המפה האישית המלאה שלו. כאן משחקים: מי זה?</p>`;
+    const mp=P[mysteryIdx];
+    h+=mp?`<div class="mystery">"${esc(N[single(mp.LP)].essence.split(". ").slice(0,2).join(". ").replace(/את\/ה/g,"הוא/היא"))}."${mysteryShown?`<div style="margin-top:12px;font-family:var(--f-body);font-size:1.1rem;color:var(--gold)">זה ${esc(mp.label)}: ${get(mp.LP,"title")}, שביל חיים ${mp.LP}</div>`:""}</div>`:"";
+    h+=`<div class="row" style="margin-top:6px"><button class="btn ghost small" data-go="game" type="button">משחק הזיהוי</button><button class="btn small" id="mysteryBtn">${mysteryIdx<0?"משפט מסתורי: על מי מדובר?":mysteryShown?"המשפט הבא":"חשיפה"}</button></div>`;
+    h+=`<div class="grid" style="margin-top:18px">${P.map(p=>personCard(p,`<p><span class="num">${p.LP}</span> <b>${get(p.LP,"title")}</b></p><p class="muted">${get(p.LP,"kw")}</p>`)).join("")}</div>`;
+  }
+  if(k==="num"){
+    h+=`<p class="lead">מחברים את מספרי הדרך של כולם (${P.map(p=>p.LP).join(" + ")} = ${G.sumLP}) ומצמצמים למספר אחד: הכיוון המשותף של הקבוצה שהתכנסה כאן.</p>
+    <div class="big"><span class="num">${G.LP}</span><div><h3>${get(G.LP,"title")}</h3><p class="muted" style="margin:2px 0 0">${get(G.LP,"kw")}</p></div></div>
+    <p style="font-size:1.15rem;max-width:60ch">${fam(G.LP,"mission")}</p>`;
+    if(G.dom.length)h+=`<h3 style="margin-top:20px;font-size:1.2rem">האנרגיה הדומיננטית: ${G.dom.join(" ו־")}</h3><p>${G.dom.map(n=>fam(n,"dom")).join(" ")}</p>`;
+    h+=`<h3 style="margin-top:20px;font-size:1.2rem">שלושת השבטים</h3><p class="muted" style="margin:2px 0 8px">המספרים מתחלקים לשלושה שבטים. מאותו שבט מבינים זה את זה בקלות, גם בלי היכרות מוקדמת.</p>
+    <div class="grid">${[0,1,2].map(t=>`<div class="pc"><div class="who"><span class="dot" style="color:${TCOL[t]};background:${TCOL[t]}"></span><b>${TRIBE[t]}</b></div><p class="muted">${TRIBE_NUMS[t]}</p><p>${G.tribes[t].map(p=>esc(p.label)).join(", ")||"<span class='muted'>אף אחד</span>"}</p></div>`).join("")}</div>`;
+  }
+  if(k==="miss"){
+    h+=`<p class="lead">לכל אחד ארבעה מספרי ליבה: הדרך, הביטוי, הנשמה והאישיות. כך נראים כל המספרים של הקבוצה ביחד.</p>
+    <div class="chips">${[1,2,3,4,5,6,7,8,9].map(n=>`<span class="chip" style="${G.core[n]?"":"opacity:.45;border-style:dashed"}"><b>${n}</b>${G.core[n]?"×"+G.core[n]:"חסר"}</span>`).join("")}</div>`;
+    if(G.missing.length)h+=`<h3 style="margin-top:18px;font-size:1.2rem">מה חסר בקבוצה</h3>${G.missing.map(n=>`<p><b>${n} · ${N[n].kw}.</b> ${fam(n,"miss")}</p>`).join("")}`;
+    else h+=`<p style="font-size:1.1rem">כל המספרים מ־1 עד 9 נמצאים בקבוצה. יש לכם ארגז כלים מלא, והאתגר הוא לדעת מתי להשתמש בכל כלי.</p>`;
+    if(G.rare.length)h+=`<h3 style="margin-top:18px;font-size:1.2rem">שומרי האוצרות</h3><p class="muted" style="margin:2px 0 8px">מספר שרק אחד בקבוצה נושא. הוא/היא שומר/ת עליו בשביל כולם.</p><div class="grid">${G.rare.map(n=>{const p=G.carriers[n][0];return personCard(p,`<p><span class="num">${n}</span> שומר/ת ה${N[n].kw.split(",")[0]}</p><p class="muted">${fam(n,"give")}</p>`);}).join("")}</div>`;
+  }
+  if(k==="roles"){
+    h+=`<p class="lead">מכל מספר דרך נגזר תפקיד טבעי בקבוצה: מה כל אחד נותן למעגל, ומה המעגל יכול ללמד אותו.</p>
+    <div class="grid">${P.map(p=>personCard(p,`<p><span class="num">${p.LP}</span> <b>${fam(p.LP,"role")}</b></p><p>${fam(p.LP,"give")}</p><p class="muted"><b>לומד/ת בקבוצה:</b> ${fam(p.LP,"learn")}</p>`)).join("")}</div>`;
+  }
+  if(k==="threads"){
+    const lab={give:["נותן־מקבל","#f0c46a"],soul:["תאומי נשמה","#7fd1c7"],mirror:["מראה","#c7b6f5"]};
+    h+=`<p class="lead">חוטים שמחברים בין המשתתפים: מי משלים למי את מה שחסר, מי צריך מבפנים את אותו דבר, ומי משקף למי צד נסתר.</p>
+    <div class="legend" style="justify-content:flex-start;padding:0 0 6px">${Object.values(lab).map(l=>`<span><i style="background:${l[1]}"></i>${l[0]}</span>`).join("")}</div>
+    <div>${G.threads.some(t=>t.text)?G.threads.filter(t=>t.text).map(t=>`<div class="thread"><span class="tag" style="background:${lab[t.type][1]}">${lab[t.type][0]}</span><p style="margin:0">${esc(t.text)}</p></div>`).join(""):`<p>החוטים בקבוצה הזו עדינים: אין חפיפות בולטות, וכל אחד מביא צבע משלו. שווה לשאול מה מחבר ביניכם מעבר למספרים.</p>`}</div>`;
+  }
+  if(k==="close"){
+    const notes=Object.values(S.notes||{}).sort((a,b)=>(a.t||0)-(b.t||0));
+    h+=`<p class="lead">כל אחד כותב בטלפון משפט אחד: מה אני לוקח/ת מהמפגש, ומה נתתי לקבוצה.</p>
+    <div class="notes">${notes.map(n=>`<div class="note"><b>${esc(n.who||"")}</b>${n.take?`<p style="margin:6px 0 0"><span class="muted">לוקח/ת:</span> ${esc(n.take)}</p>`:""}${n.give?`<p style="margin:4px 0 0"><span class="muted">נתתי:</span> ${esc(n.give)}</p>`:""}</div>`).join("")||'<p class="muted">המשפטים יופיעו כאן כשיישלחו מהטלפונים.</p>'}</div>`;
+  }
+  if(ASK[k])h+=`<div class="ask"><b>שאלה למעגל</b>${ASK[k]}</div>`;
+  return h;
+}
+
+/* ---------- phone ---------- */
+function renderPhone(){
+  view="phone";
+  const me=G.P.find(p=>p.id===myId());if(!me){ls.del("grp-me:"+ROOM);return renderJoin();}
+  const scrollY=window.scrollY;const keep=$("noteTake")?{t:$("noteTake").value,g:$("noteGive").value}:null;
+  app.innerHTML=`<div class="wrap">
+   <div class="top"><h1>שלום ${esc(me.first)}</h1><span class="muted">${esc(S.meta.name)}</span></div>
+   <div id="pbody">${myMap(me)}</div>
+   <p style="margin-top:28px;text-align:center"><button class="link" id="pOut">זה לא אני</button></p>
+  </div>`;
+  addNav("me");
+  $("pOut").onclick=()=>{ls.del("grp-me:"+ROOM);go("join");};
+  window.scrollTo({top:scrollY});
+}
+function bindNotes(me){
+  const nb=$("noteBtn");if(!nb||!me)return;nb.onclick=async()=>{const take=$("noteTake").value.trim(),give=$("noteGive").value.trim();if(!take&&!give)return;nb.disabled=true;
+    try{const id=ls.get("grp-note:"+ROOM)||newId();ls.set("grp-note:"+ROOM,id);await store.put(`rooms/${ROOM}/notes/${id}`,{who:me.label,take:take.slice(0,240),give:give.slice(0,240),t:Date.now()});$("noteSt").textContent="נשלח למעגל ✓";}
+    catch(e){$("noteSt").textContent="השליחה לא הצליחה, נסו שוב.";}nb.disabled=false;};
+}
+/* ---------- group view: everyone's maps + my place in the group ---------- */
+let famTab="all";
+function renderFamily(){
+  view="fam";
+  const me=G.P.find(p=>p.id===myId());
+  const scrollY=window.scrollY;const keep=$("noteTake")?{t:$("noteTake").value,g:$("noteGive").value}:null;
+  const P=G.P;
+  app.innerHTML=`<div class="wrap">
+   <div class="top"><h1>הקבוצה</h1><span class="muted">${esc(S.meta.name)} · ${G.n} משתתפים</span></div>
+   ${me?`<div class="tabs" role="tablist"><button role="tab" data-ft="all" class="${famTab==="all"?"on":""}" aria-selected="${famTab==="all"}">המפות של כולם</button><button role="tab" data-ft="mine" class="${famTab==="mine"?"on":""}" aria-selected="${famTab==="mine"}">המקום שלי בקבוצה</button></div>`:""}
+   ${me&&famTab==="mine"?meInFamily(me):`
+    <p class="muted" style="margin:6px 0 12px">לחיצה על כרטיס פותחת את המפה המלאה של אותו משתתף. ${G.n>1?`המספר של הקבוצה: <b style="color:var(--gold)">${G.LP}</b> · ${get(G.LP,"title")}`:""}</p>
+    <div id="leadList" style="margin-top:0">${P.map((p,i)=>cardHTML(p,i,null,0)).join("")||'<div class="locked">עוד אין משתתפים במעגל.</div>'}</div>
+    ${G.n>1?`<div class="lead-actions" style="margin-top:16px"><button data-g="mission">המספר שלנו</button><button data-g="miss">מה חסר</button><button data-g="links">כל החיווטים</button></div>`:""}`}
+   <p style="margin-top:24px;text-align:center"><button class="btn small" type="button" data-sharedlg="">שיתוף / שליחה / PDF</button></p>
+  </div>`;
+  addNav("fam");
+  app.querySelectorAll("[data-ft]").forEach(b=>b.onclick=()=>{famTab=b.dataset.ft;renderFamily();window.scrollTo({top:0});});
+  app.querySelectorAll(".lc").forEach(b=>b.onclick=()=>{const i=+b.dataset.i;openReader(personReading(P[i]),P,i);});
+  app.querySelectorAll("[data-g]").forEach(b=>b.onclick=()=>openReader(groupReading(b.dataset.g)));
+  if(keep&&$("noteTake")){$("noteTake").value=keep.t;$("noteGive").value=keep.g;}
+  bindNotes(me);
+  window.scrollTo({top:scrollY});
+}
+function personIx(p){
+  const ix=[];
+  const r=relation(p.LP,p.expr);
+  ix.push(["שביל החיים מול מספר הביטוי: הדרך והכלים",r>=3?`הדרך שלך (${get(p.LP,"kw")}) והכלים שקיבלת בשם (${get(p.expr,"kw")}) מאותה משפחה. מה שבאת ללמוד ומה שקל לך הולכים יד ביד.`:r===2?`הכלים שבשם שלך (${get(p.expr,"kw")}) תומכים בדרך שלך (${get(p.LP,"kw")}), גם אם בדרך עקיפה.`:`יש מתח בין הדרך שלך (${get(p.LP,"kw")}) לבין הכלים שבשם (${get(p.expr,"kw")}). לפעמים מה שקל לך הוא לא מה שהדרך מבקשת, ושם בדיוק הצמיחה.`]);
+  ix.push(["דחף הנשמה מול מספר האישיות: מה בפנים ומה רואים מבחוץ",grp(p.soul)===grp(p.pers)?`דחף הנשמה (${p.soul}) מתאר מה את/ה צריך/ה בפנים: ${get(p.soul,"kw")}. מספר האישיות (${p.pers}) מתאר את הרושם הראשון שאנשים מקבלים ממך: ${get(p.pers,"kw")}. השניים מאותה משפחת מספרים, ולכן אנשים פוגשים אותך די כמו שאת/ה באמת.`:`דחף הנשמה (${p.soul}) מתאר מה את/ה צריך/ה בפנים: ${get(p.soul,"kw")}. מספר האישיות (${p.pers}) מתאר את הרושם הראשון שאנשים מקבלים ממך: ${get(p.pers,"kw")}. ייתכן שאנשים מכירים רק חלק ממך, וכדאי לשתף גם את מה שבפנים.`]);
+  ix.push(["המתנה של יום הלידה",`נולדת ב־${p.B.d} לחודש, וזה מעניק לך ${get(p.bday,"gift")}.`]);
+  ix.push([`השנה שלך: ${p.py}, ${YKW[p.py]}`,N[p.py].year]);
+  return ix;
+}
+const PARAMS={
+ LP:{n:"שביל החיים",d:"המספר החשוב ביותר במפה, מחושב מתאריך הלידה: הכיוון והשיעור המרכזי של החיים."},
+ expr:{n:"מספר הביטוי",d:"סכום כל אותיות השם: הכישרונות והכלים שאיתם נולדת."},
+ soul:{n:"דחף הנשמה",d:"סכום התנועות בשם: מה שמניע אותך מבפנים, כשאף אחד לא רואה."},
+ pers:{n:"מספר האישיות",d:"סכום העיצורים בשם: הרושם הראשון שאנשים מקבלים ממך."}
+};
+function paramHTML(key,p){
+  const v=p[key],P=PARAMS[key];
+  const body={LP:`<span class="pt">${get(v,"title")}.</span> ${get(v,"essence")}`,expr:get(v,"expr"),soul:get(v,"soul"),pers:get(v,"persona")}[key];
+  const term={LP:"shvil",expr:"bitui",soul:"neshama",pers:"ishiut"}[key];
+  return `<div class="param"><div class="ph"><span class="pn">${P.n}</span><span class="pv">${v}</span><button type="button" class="qterm" data-term="${term}" aria-label="מה זה ${P.n}?">?</button></div><p class="pd">${P.d}</p><p class="pa">${body}</p>${fbBtns(p.id,key+":"+v,body)}${key==="LP"?lpDeep(p):""}</div>`;
+}
+function myMap(p){
+  const lp=p.LP,ess=get(lp,"essence");
+  const ix=personIx(p);
+  let curH="";
+  if(p.cur){const a=p.an,c=p.cur;curH=`<div class="ix"><b>השם של היום</b><p>${c.expr.v===a.expr.v?"מספר הביטוי נשאר זהה.":`השם של היום מוסיף ${get(c.expr.v,"kw")}.`} ${c.soul.v&&single(c.soul.v)!==single(a.soul.v)?`מבפנים נוספה כמיהה ל${get(c.soul.v,"kw")}.`:""}</p></div>`;}
+  return `<section class="night essence">
+    <div style="opacity:.8;font-size:.9rem;margin-bottom:4px">המספרים שלך</div>
+    ${["LP","expr","soul","pers"].map(k=>paramHTML(k,p)).join("")}
+  </section>
+  <div class="sec"><h3>הצמתים שלך</h3>${ix.map((x,i)=>`<div class="ix"><b>${x[0]}</b><p>${x[1]}</p>${fbBtns(p.id,"ix"+i+":"+[p.LP+"/"+p.expr,p.soul+"/"+p.pers,"bday"+p.bday,"py"+p.py][i],x[1])}</div>`).join("")}${curH}</div>
+  <details class="more"><summary>עוד עליי: חוזקות, צל וכיוונים</summary>
+    <div class="ix"><b>חוזקות</b><p>${get(lp,"strengths").join(" · ")}</p></div>
+    <div class="ix"><b>הצל</b><p>${get(lp,"shadow").join(" · ")}</p></div>
+    <div class="ix"><b>אהבה</b><p>${get(lp,"love")}</p></div>
+    <div class="ix"><b>שליחות ועבודה</b><p>${get(lp,"career")}</p></div>
+  </details>
+  <div class="sec"><div class="ix" style="border-color:var(--gold)"><b>שאלה לדרך</b><p>${get(lp,"growth")}</p></div></div>
+  <div class="sec"><h3>לשמור ולשתף</h3><p class="muted" style="margin:0 0 6px;font-size:.92rem">"המפה האישית המורחבת" פותחת את כלי מפת המספרים עם הפרטים שלך, ובו ניתוח מעמיק יותר: מחזורי חיים, טבלת לידה, שיעורים קרמתיים ועוד. אפשר לשמור אותה גם אחרי הסדנה.</p>${shareBlock(p)}</div>
+  <p style="text-align:center;margin-top:20px"><button class="btn small" type="button" onclick="famTab='mine';go('fam')">ומה המקום שלי בקבוצה? ←</button></p>`;
+}
+function meInFamily(p){
+  const open=S.meta.open,cs=curStage(),CL=STAGES.length-1;
+  if(G.n<2)return `<div class="locked">מחכים לעוד משתתפים. התמונה הקבוצתית תיפתח כשיצטרפו עוד אנשים.</div>`;
+  const items=[];
+  const th=myThreads(G,p);
+  items.push([2,"המספר שלנו",`השליחות של הקבוצה: ${fam(G.LP,"mission")}`,familyRel(p,G)]);
+  const keeps=G.rare.filter(n=>G.carriers[n][0]===p),lacks=G.missing;
+  items.push([3,"מה חסר, ומי שומר עליו",lacks.length?`בקבוצה חסרים המספרים ${lacks.join(", ")}.`:"בקבוצה נמצאים כל המספרים מ־1 עד 9.",
+    keeps.length?`את/ה שומר/ת בקבוצה את ה־${keeps.join(" וה־")}: ${keeps.map(n=>fam(n,"give")).join(" ")}`:(lacks.length?`גם את/ה יכול/ה להשלים את מה שחסר. מה מתוך "${N[lacks[0]].kw}" מתאים לך לקחת על עצמך במפגש?`:"את/ה חלק מארגז כלים מלא. מה הכלי שאת/ה הכי אוהב/ת להביא?")]);
+  items.push([4,"התפקיד שלי",`לכל אחד בקבוצה תפקיד טבעי לפי מספר הדרך שלו.`,`את/ה <b>${fam(p.LP,"role")}</b>. ${fam(p.LP,"give")} <br><b>מה הקבוצה יכולה ללמד אותך:</b> ${fam(p.LP,"learn")}`]);
+  items.push([5,"החוטים שלי",`בקבוצה ${G.threads.filter(t=>t.text).length} חוטים של השלמה, נשמה ומראה.`,th.length?th.map(t=>esc(t.text)).join("<br>"):"החוטים שלך עדינים: את/ה מביא/ה צבע משלך. עם מי במעגל הרגשת חיבור, ולמה?"]);
+  let h="";let shown=0;
+  items.forEach(([s,t,g,m])=>{if(!open&&s>cs)return;shown++;h+=`<div class="st${s===cs?" now":""}" id="pst${s}"><h3>${t}${s===cs&&!open?'<span class="now-pill">עכשיו במעגל</span>':""}</h3><p class="grp">${g}</p><div class="me"><b>ואצלך:</b> ${m}</div></div>`;});
+  if(open||cs>=CL){h+=`<div class="st${cs===CL?" now":""}" id="pst${CL}"><h3>מה אני לוקח/ת</h3><label class="f">מה אני לוקח/ת מהמפגש<input type="text" id="noteTake" maxlength="240" autocomplete="off"></label><label class="f">מה נתתי לקבוצה<input type="text" id="noteGive" maxlength="240" autocomplete="off"></label><div class="row"><button class="btn small" id="noteBtn">שליחה למעגל</button><span class="status" id="noteSt"></span></div></div>`;shown++;}
+  if(!open&&cs<CL)h+=`<div class="locked">עוד ${CL-Math.max(cs,1)} שלבים ייפתחו כשהמעגל יתקדם.</div>`;
+  if(!shown)h=`<div class="locked">המפגש עוד לא התחיל. בינתיים אפשר לקרוא את "המפה שלי". השלבים הקבוצתיים ייפתחו כאן אחד אחרי השני.</div>`+h;
+  return h;
+}
+
+
+/* ---------- facilitator page (?lead=1) ---------- */
+const short=(n,k=2)=>get(n,"kw").split(",").slice(0,k).join(",").trim();
+function personReading(p){
+  const ix=personIx(p),th=myThreads(G,p);
+  let h=`<div class="eyebrow">המפה של</div><h2>${esc(p.name)}</h2>
+  ${["LP","expr","soul"].map(k=>paramHTML(k,p)).join("")}
+  <h3>${ix[0][0]}</h3><p>${ix[0][1]}</p>
+  <h3>${ix[1][0]}</h3><p>${ix[1][1]}</p>`;
+  if(G.n>1){
+    h+=`<h3>במעגל: ${fam(p.LP,"role")}</h3><p>${fam(p.LP,"give")}</p><p class="muted">מה המעגל מלמד: ${fam(p.LP,"learn")}</p>`;
+    if(th.length)h+=`<h3>החוטים</h3>${th.map(t=>`<p>${esc(t.text)}</p>`).join("")}`;
+  }
+  h+=`<h3>שאלה לדרך</h3><p>${get(p.LP,"growth")}</p>`;
+  return h;
+}
+const LINKLAB={give:"נותן־מקבל",soul:"תאומי נשמה",mirror:"מראה",friction:"חיכוך וצמיחה"};
+function linkReading(t){
+  if(t.type==="friction"){const f=t;return `<div class="eyebrow">${LINKLAB.friction}</div><h2>${esc(f.a.label)} ו${esc(f.b.label)}</h2>
+    <p>${f.lead?`שני אנשים עם כוח הובלה (${f.a.LP}). כל אחד רוצה לקבוע את הכיוון.`:`${get(f.a.LP,"kw")} מול ${get(f.b.LP,"kw")}: שתי דרכים שונות לראות את העולם.`}</p>
+    <h3>${esc(f.a.label)} יכול/ה ללמוד מ${esc(f.b.label)}</h3><p>${get(f.b.LP,"gift")}. ${fam(f.b.LP,"give")}</p>
+    <h3>${esc(f.b.label)} יכול/ה ללמוד מ${esc(f.a.label)}</h3><p>${get(f.a.LP,"gift")}. ${fam(f.a.LP,"give")}</p>
+    <div class="ask"><b>שאלה למעגל</b>${ASK.friction}</div>`;}
+  const r=t.ref||t;
+  if(r.type==="soul")return `<div class="eyebrow">${LINKLAB.soul}</div><h2>${r.members.map(p=>esc(p.label)).join(" · ")}</h2><p>${esc(r.text)}</p><h3>מה הלב הזה צריך (${r.n})</h3><p>${N[r.n].soul.replace(/את\/ה/g,"אתם").replace(/כמה\/ה/g,"כמהים")}</p>`;
+  if(r.type==="give")return `<div class="eyebrow">${LINKLAB.give}</div><h2>${esc(r.a.label)} ← ${esc(r.b.label)}</h2><p>${esc(r.text)}</p><h3>מה ${esc(r.a.label)} מביא/ה (${r.n})</h3><p>${fam(r.n,"give")}</p><h3>מה ${esc(r.b.label)} לומד/ת</h3><p>${N[r.n].lesson}</p>`;
+  if(r.type==="mirror")return `<div class="eyebrow">${LINKLAB.mirror}</div><h2>${esc(r.a.label)} ו${esc(r.b.label)}</h2><p>${esc(r.text)}</p><h3>מה ${esc(r.a.label)} מקרין/ה</h3><p>${get(r.a.pers,"persona")}</p><h3>מה ${esc(r.b.label)} מרגיש/ה בפנים</h3><p>${get(r.b.soul,"soul")}</p>`;
+  return `<p>${esc(r.text||"")}</p>`;
+}
+function groupReading(k){
+  const P=G.P;
+  if(G.n<2)return `<h2>מחכים לעוד משתתפים</h2><p>התמונה הקבוצתית נפתחת כשיש לפחות שני משתתפים.</p>`;
+  if(k==="mission")return `<div class="eyebrow">המספר שלנו</div><h2>${G.LP} · ${get(G.LP,"title")}</h2><p class="muted">${P.map(p=>p.LP).join(" + ")} = ${G.sumLP}</p><p>${fam(G.LP,"mission")}</p>${G.dom.length?`<h3>האנרגיה הדומיננטית: ${G.dom.join(", ")}</h3><p>${G.dom.map(n=>fam(n,"dom")).join(" ")}</p>`:""}<h3>שלושת השבטים</h3>${[0,1,2].map(t=>`<p><b>${TRIBE[t]}:</b> ${G.tribes[t].map(p=>esc(p.label)).join(", ")||"אף אחד"}</p>`).join("")}<div class="ask"><b>שאלה למעגל</b>${ASK.num}</div>`;
+  if(k==="miss")return `<div class="eyebrow">מה חסר, ומי שומר עליו</div><h2>${G.missing.length?"חסרים: "+G.missing.join(", "):"כל המספרים נמצאים"}</h2>${G.missing.map(n=>`<h3>${n} · ${N[n].kw}</h3><p>${fam(n,"miss")}</p>`).join("")}${G.rare.length?`<h3>שומרי האוצרות</h3>${G.rare.map(n=>`<p><b>${esc(G.carriers[n][0].label)}</b> שומר/ת את ה־${n}: ${fam(n,"give")}</p>`).join("")}`:""}<div class="ask"><b>שאלה למעגל</b>${ASK.miss}</div>`;
+  if(k==="links")return `<div class="eyebrow">כל החיווטים</div><h2>החוטים במארג</h2>${G.threads.filter(t=>t.text).map(t=>`<h3>${LINKLAB[t.type]}</h3><p>${esc(t.text)}</p>`).join("")||"<p>החוטים בקבוצה הזו עדינים: אין חפיפות בולטות.</p>"}<div class="ask"><b>שאלה למעגל</b>${ASK.threads}</div>`;
+  return "";
+}
+let reader=null;
+function openReader(html,seq,idx){
+  closeReader();
+  reader=document.createElement("div");reader.className="reader";
+  const nav=seq&&seq.length>1?`<div class="rnav"><button class="btn ghost small" data-rv="-1">→ ${esc(seq[(idx-1+seq.length)%seq.length].label)}</button><button class="btn small" data-rv="1">${esc(seq[(idx+1)%seq.length].label)} ←</button></div>`:"";
+  const pp=seq&&seq[idx];
+  reader.innerHTML=`<div class="box" role="dialog" aria-modal="true" tabindex="-1"><button class="x" aria-label="סגירה">×</button>${html}${pp?shareBlock(pp):""}${nav}</div>`;
+  document.body.appendChild(reader);
+  reader.addEventListener("click",e=>{if(e.target===reader||e.target.closest(".x"))closeReader();const b=e.target.closest("[data-rv]");if(b){const j=(idx+ +b.dataset.rv+seq.length)%seq.length;openReader(personReading(seq[j]),seq,j);}});
+  reader.querySelector(".box").focus();
+}
+function closeReader(){if(reader){reader.remove();reader=null;}}
+addEventListener("keydown",e=>{if(e.key==="Escape")closeReader();});
+function renderLead(){
+  view="lead";
+  const keepOpen=reader?reader.innerHTML:null;
+  app.innerHTML=`<div class="wrap" style="max-width:1600px">
+   <div class="lead-top"><h1>${esc(S.meta.name)} <span class="muted" style="font-size:.6em">· תצוגת הנחיה</span></h1>
+    <div class="lead-actions"><button data-g="mission">המספר שלנו</button><button data-g="miss">מה חסר</button><button data-g="links">כל החיווטים</button><button data-cm type="button">${colorMode==="person"?"צביעה לפי שבט":"צביעה לפי משתתף"}</button><button type="button" data-sharedlg="">שיתוף / PDF</button><button type="button" data-fbopen>משוב</button></div></div>
+   <div id="leadStage"></div><div id="leadList"></div>
+   <p class="muted" style="text-align:center;font-size:.88rem;margin-top:8px">לחיצה על כרטיס פותחת את הניתוח המלא להקראה. לחיצה על קו במרכז מקריאה את החיבור.</p></div>`;
+  app.querySelectorAll("[data-g]").forEach(b=>b.onclick=()=>openReader(groupReading(b.dataset.g)));
+  addNav("circle");
+  layoutLead();
+}
+function leadLinks(){
+  const L=(G.threads||[]).filter(t=>t.a&&t.b);
+  return L;
+}
+function layoutLead(){
+  const st=$("leadStage"),list=$("leadList");if(!st)return;
+  const P=G.P,n=P.length,W=st.clientWidth,narrow=W<760;
+  const H=narrow?Math.min(W,520):Math.max(560,innerHeight-st.getBoundingClientRect().top-50+scrollY*0);
+  st.style.height=H+"px";
+  const compact=n>6,cardW=narrow?0:compact?Math.max(160,Math.min(200,W*0.14)):Math.max(160,Math.min(240,W*0.17)),cardH=compact?92:172;
+  const cx=W/2,cy=H/2;
+  const D=narrow?Math.min(W,H)-110:Math.max(240,Math.min(W-2*cardW-70,H-2*cardH+10,H-40));
+  const R=D/2,rDot=R-16;
+  const rx=narrow?0:Math.min(W/2-cardW/2-6,R+cardW/2+40),ry=narrow?0:Math.min(H/2-cardH/2-2,R+cardH/2+14);
+  const pos=new Map();
+  P.forEach((p,i)=>{const a=-Math.PI/2+i*2*Math.PI/Math.max(n,1);pos.set(p,{a,dx:cx+rDot*Math.cos(a),dy:cy+rDot*Math.sin(a),kx:cx+rx*Math.cos(a),ky:cy+ry*Math.sin(a)});});
+  const L=leadLinks();
+  const col={give:"#f0c46a",soul:"#7fd1c7",mirror:"#c7b6f5",friction:"#f2a08f"};
+  let lines="";
+  L.forEach((t,i)=>{const A=pos.get(t.a),B=pos.get(t.b);if(!A||!B)return;const d=`M${A.dx},${A.dy} Q${cx},${cy} ${B.dx},${B.dy}`;
+    lines+=`<path class="hit" data-li="${i}" d="${d}" fill="none" stroke="transparent" stroke-width="16" tabindex="0" role="button" aria-label="${LINKLAB[t.type]}: ${esc(t.a.label)} ו${esc(t.b.label)}"/><path class="vis" d="${d}" fill="none" stroke="${col[t.type]}" stroke-width="2.6" opacity=".85" ${t.type==="mirror"?'stroke-dasharray="6 6"':t.type==="friction"?'stroke-dasharray="3 7" stroke-linecap="round"':""} pointer-events="none"/>`;});
+  const conn=narrow?"":P.map(p=>{const q=pos.get(p);const ex=cx+(rx-cardW/2+8)*Math.cos(q.a),ey=cy+(ry-cardH/2+18)*Math.sin(q.a);return `<line x1="${q.dx}" y1="${q.dy}" x2="${ex}" y2="${ey}" stroke="var(--line)" stroke-width="1.5"/>`;}).join("");
+  const dots=P.map(p=>{const q=pos.get(p),c=fillOf(p);return `<circle cx="${q.dx}" cy="${q.dy}" r="16" fill="${c}" opacity=".25"/><circle cx="${q.dx}" cy="${q.dy}" r="8" fill="${c}" filter="url(#glow2)"/>${colorMode==="person"?`<circle cx="${q.dx}" cy="${q.dy}" r="12" fill="none" stroke="${TRIBEC[p.tribe]}" stroke-width="2.5"/>`:""}${narrow?`<text x="${cx+(rDot-34)*Math.cos(q.a)}" y="${cy+(rDot-34)*Math.sin(q.a)+5}" text-anchor="middle" font-size="13" font-weight="600" fill="#eef2f0" font-family="Assistant,Arial">${esc(p.label)}</text>`:""}`;}).join("");
+  st.innerHTML=`<svg class="bg" viewBox="0 0 ${W} ${H}" aria-hidden="false"><defs><radialGradient id="sky2" cx="50%" cy="35%" r="65%"><stop offset="0" stop-color="#16283a"/><stop offset="1" stop-color="#0f1c26"/></radialGradient><filter id="glow2" x="-80%" y="-80%" width="260%" height="260%"><feGaussianBlur stdDeviation="4" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter></defs>
+    ${conn}<circle cx="${cx}" cy="${cy}" r="${R}" fill="url(#sky2)"/><circle cx="${cx}" cy="${cy}" r="${rDot}" fill="none" stroke="rgba(255,244,214,.16)"/>${lines}${dots}</svg>
+    <div class="lcenter" style="left:${cx}px;top:${cy}px;width:${D*0.5}px">${G.n>1?`<span class="num">${G.LP}</span><div style="font-size:.9rem;opacity:.85">${get(G.LP,"title")}</div><button data-g2="mission">השליחות שלנו</button><small>${L.length?"לחצו על קו להקראה":""}</small>`:`<small style="font-size:1rem">${n?"מחכים לעוד משתתפים":"המעגל עוד ריק"}</small>`}</div>
+    ${narrow?"":P.map((p,i)=>cardHTML(p,i,pos.get(p),cardW,compact)).join("")}`;
+  list.innerHTML=narrow?P.map((p,i)=>cardHTML(p,i,null,0)).join(""):"";
+  const seq=P;
+  app.querySelectorAll(".lc").forEach(b=>b.onclick=()=>{const i=+b.dataset.i;openReader(personReading(seq[i]),seq,i);});
+  st.querySelectorAll("[data-li]").forEach(el=>{const go=()=>openReader(linkReading(L[+el.dataset.li]));el.addEventListener("click",go);el.addEventListener("keydown",e=>{if(e.key==="Enter")go();});});
+  const g2=st.querySelector("[data-g2]");if(g2)g2.onclick=()=>openReader(groupReading("mission"));
+}
+function cardHTML(p,i,q,w,compact){
+  const style=q?`left:${q.kx}px;top:${q.ky}px;width:${w}px`:"";
+  if(compact)return `<button class="lc" data-i="${i}" style="${style}"><span class="nm">${dotOf(p)}${esc(p.label)}</span>
+    <span class="r cr"><small>שביל</small><span class="num">${p.LP}</span><small>ביטוי</small><span class="num">${p.expr}</span><small>נשמה</small><span class="num">${p.soul}</span></span>
+    <span class="r"><span class="v">${get(p.LP,"title")} · <span class="more">להקראה ←</span></span></span></button>`;
+  return `<button class="lc" data-i="${i}" style="${style}"><span class="nm">${dotOf(p)}${esc(p.label)}</span>
+    <span class="r"><small>שביל החיים</small><span class="num">${p.LP}</span><span class="v">${get(p.LP,"title")}</span></span>
+    <span class="r"><small>ביטוי</small><span class="num">${p.expr}</span><span class="v">${short(p.expr)}</span></span>
+    <span class="r"><small>דחף הנשמה</small><span class="num">${p.soul}</span><span class="v">${short(p.soul)}</span></span>
+    <span class="more">להקראה ←</span></button>`;
+}
+addEventListener("resize",()=>{if(view==="lead")layoutLead();});
+
+
+/* ---------- identification game (?game=1) ---------- */
+function seeded(seed){let h=2166136261;for(const c of String(seed)){h^=c.charCodeAt(0);h=Math.imul(h,16777619);}return()=>{h^=h<<13;h^=h>>>17;h^=h<<5;return((h>>>0)%100000)/100000;};}
+function shuffle(a,rnd){a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(rnd()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;}
+let gameRound=0,gamePicks={},gameShown={};
+function buildTraits(round){
+  const P=G.P,rnd=seeded(ROOM+":"+round),pool=[];
+  const by=(f)=>{const m={};P.forEach(p=>{const k=single(p[f]);(m[k]=m[k]||[]).push(p)});return m;};
+  const LPm=by("LP"),SOm=by("soul"),EXm=by("expr");
+  Object.entries(LPm).forEach(([n,ps])=>{n=+n;const st=shuffle(N[n].strengths,rnd);
+    pool.push({t:`${st[0]}`,why:`חוזקה של שביל חיים ${n} (${N[n].title})`,ids:ps.map(p=>p.id),k:n,src:"lp"});
+    pool.push({t:`בתוך הקבוצה: ${fam(n,"give").split(".")[0]}`,why:`התפקיד של שביל חיים ${n}: ${fam(n,"role")}`,ids:ps.map(p=>p.id),k:n,src:"role"});
+    pool.push({t:`הצל: ${shuffle(N[n].shadow,rnd)[0]}`,why:`הצד המאתגר של שביל חיים ${n}`,ids:ps.map(p=>p.id),k:n,src:"shadow"});});
+  Object.entries(SOm).forEach(([n,ps])=>{n=+n;pool.push({t:`מבפנים כמה/ה ל${N[n].kw}`,why:`דחף הנשמה ${n}`,ids:ps.map(p=>p.id),k:n,src:"soul"});});
+  Object.entries(EXm).forEach(([n,ps])=>{n=+n;pool.push({t:`הכישרון בשם: ${N[n].gift}`,why:`מספר הביטוי ${n}`,ids:ps.map(p=>p.id),k:n,src:"expr"});});
+  // pick so that everyone appears, then fill, avoid repeating the same people+source combo
+  const pickd=[],used=new Set();const take=x=>{const key=x.src+x.k;if(used.has(key))return false;used.add(key);pickd.push(x);return true;};
+  const sh=shuffle(pool,rnd);
+  P.forEach(p=>{if(!pickd.some(x=>x.ids.includes(p.id))){const c=sh.find(x=>x.ids.includes(p.id)&&!used.has(x.src+x.k)&&x.src!=="shadow");if(c)take(c);}});
+  const target=Math.min(12,Math.max(6,P.length+3));
+  for(const x of sh){if(pickd.length>=target)break;take(x);}
+  return shuffle(pickd,rnd);
+}
+function renderGame(){
+  view="game";
+  const P=G.P;
+  if(P.length<2){app.innerHTML=`<div class="wrap"><div class="top"><h1>משחק הזיהוי</h1></div><div class="locked">המשחק נפתח כשיש לפחות שני משתתפים במעגל.</div></div>`;addNav("game");return;}
+  const T=buildTraits(gameRound);
+  const PNAME={LP:"שביל החיים",expr:"מספר הביטוי",soul:"דחף הנשמה",pers:"מספר האישיות"};
+  const near=(p,k)=>["LP","expr","soul","pers"].find(f=>single(p[f])===k);
+  let right=0,close=0,total=0,shown=0;
+  T.forEach((x,i)=>{if(gameShown[i]){shown++;const pk=gamePicks[i]||[];total+=x.ids.length;pk.forEach(id=>{if(x.ids.includes(id))right++;else if(near(P.find(p=>p.id===id),x.k))close++;});}});
+  const back=`${BASE}?r=${ROOM}${qs.has("local")?"&local=1":""}`;
+  app.innerHTML=`<div class="wrap" style="max-width:1000px">
+   <div class="top"><h1>משחק הזיהוי</h1><span class="muted">${esc(S.meta.name)}</span></div>
+   <p class="muted" style="margin:0">לכל תכונה: מי במעגל נושא/ת אותה? אפשר לבחור יותר משם אחד. לחשוב, להתייעץ, ואז לחשוף.</p>
+   <div class="score"><span>${shown?`זוהו נכון: <b>${right}</b> מתוך ${total}${close?` · קרובים: <b>${close}</b>`:""}`:`${T.length} תכונות · ${P.length} משתתפים`}</span>
+    <span style="display:flex;gap:6px;flex-wrap:wrap"><button class="btn ghost small" id="gAll">חשיפת הכול</button><button class="btn ghost small" id="gNew">סבב חדש</button></span></div>
+   ${T.map((x,i)=>{const pk=gamePicks[i]||[],sh=!!gameShown[i];
+     const byId=id=>P.find(p=>p.id===id);
+     const owners=x.ids.map(byId);
+     const extra=sh?pk.filter(id=>!x.ids.includes(id)).map(id=>{const p=byId(id),f=near(p,x.k);
+        return f?`<p class="why">${dotOf(p)} <b>קרוב:</b> התכונה מאפיינת בעיקר את ${owners.map(o=>esc(o.label)).join(" ו")}, אבל גם אצל ${esc(p.label)} היא קיימת, כ${PNAME[f]} (${x.k}).</p>`
+                :`<p class="why">${dotOf(p)} התכונה הזו מאפיינת יותר את ${owners.map(o=>dotOf(o)+" "+esc(o.label)).join(" ו")} מאשר את ${esc(p.label)}.</p>`;}).join(""):"";
+     return `<div class="game-row"><div class="tr"><span class="k">${i+1}</span><span>${esc(x.t)}</span><span class="pdots">${pk.map(id=>dotOf(byId(id))).join("")}</span></div>
+     <div class="pick">${P.map(p=>{const on=pk.includes(p.id),own=x.ids.includes(p.id);const cls=sh?(on&&own?"ok":on?(near(p,x.k)?"close":"bad"):own?"miss":""):"";
+       return `<button class="nm ${cls}" data-g="${i}" data-p="${p.id}" aria-pressed="${on}" ${sh?"disabled":""}>${dotOf(p)}${esc(p.label)}</button>`;}).join("")}
+       ${sh?"":`<button class="btn small rv" data-rv="${i}">חשיפה</button>`}</div>
+     ${sh?`<p class="why">${owners.map(o=>dotOf(o)+" "+esc(o.label)).join(", ")} · ${esc(x.why)}</p>${extra}`:""}</div>`;}).join("")}
+   <p class="muted" style="font-size:.88rem;margin-top:18px">המשחק רץ על המכשיר הזה בלבד. כל מכשיר שפותח אותו רואה את אותן תכונות באותו סדר, כך שאפשר לשחק גם על המסך הגדול וגם בטלפונים.</p></div>`;
+  app.querySelectorAll("button.nm").forEach(b=>b.onclick=()=>{const i=b.dataset.g,id=b.dataset.p,a=gamePicks[i]=gamePicks[i]||[];const j=a.indexOf(id);j<0?a.push(id):a.splice(j,1);const y=scrollY;renderGame();scrollTo(0,y);});
+  app.querySelectorAll("[data-rv]").forEach(b=>b.onclick=()=>{gameShown[b.dataset.rv]=1;const y=scrollY;renderGame();scrollTo(0,y);});
+  $("gAll").onclick=()=>{T.forEach((x,i)=>gameShown[i]=1);const y=scrollY;renderGame();scrollTo(0,y);};
+  $("gNew").onclick=()=>{gameRound++;gamePicks={};gameShown={};renderGame();scrollTo(0,0);};
+  addNav("game");
+}
+const gameURL=()=>BASE+"?r="+ROOM+"&game=1"+(qs.has("local")?"&local=1":"");
+
+
+/* ---------- personal tool link + sharing a full reading ---------- */
+const MAP_URL="https://boazbareket1.github.io/numerology-map/";
+function personalMapURL(id){
+  const m=S.members[id]||{};
+  const arr=[m.name||"","",m.cur||"",m.bdate||"","he","none","",0,"",""];
+  const b=btoa(unescape(encodeURIComponent(JSON.stringify(arr)))).replace(/\+/g,"-").replace(/\//g,"_").replace(/=+$/,"");
+  return MAP_URL+"?d="+b;
+}
+function htmlToText(html){
+  const d=document.createElement("div");
+  d.innerHTML=html.replace(/<span class="pv">/g,'<span class="pv"> · ').replace(/<\/(h2|h3|p|div|li)>/g,"</$1>\n").replace(/<br\s*\/?>/g,"\n");
+  d.querySelectorAll("button,.rnav,.sharebar,.eyebrow").forEach(n=>n.remove());
+  d.querySelectorAll("h2").forEach(n=>n.textContent="■ "+n.textContent);
+  d.querySelectorAll(".pn").forEach(n=>n.textContent="✦ "+n.textContent);
+  return d.textContent.replace(/[ \t]+\n/g,"\n").replace(/\n{3,}/g,"\n\n").trim();
+}
+function shareBlock(p){
+  return `<div class="sharebar"><button type="button" class="btn small" data-sharedlg="${p.id}">שיתוף / שליחה / PDF</button><a class="btn ghost small" style="text-decoration:none" href="${esc(personalMapURL(p.id))}" target="_blank" rel="noopener">למפה האישית המורחבת ↗</a><button type="button" class="btn ghost small" data-edit="${p.id}">✎ עריכת שם ותאריך</button></div>`;
+}
+function readingText(p){
+  return `המפה של ${p.name} · המארג הקבוצתי (${S.meta.name})\n\n`+htmlToText(personReading(p))+`\n\nלמפה האישית המורחבת: ${personalMapURL(p.id)}\nלמעגל: ${joinURL()}`;
+}
+function sstat(el,t){const s=el.closest(".sharebar")?.querySelector("[data-sst]");if(s){s.textContent=t;setTimeout(()=>s.textContent="",4000);}}
+/* share center: choose what to share and how */
+function stripTxt(html){return htmlToText(html);}
+const ROLES_HTML=()=>`<h3>התפקידים בקבוצה</h3>${G.P.map(p=>`<p><b>${esc(p.label)} · ${fam(p.LP,"role")}:</b> ${fam(p.LP,"give")}</p>`).join("")}`;
+function familyHTML(){
+  if(G.n<2)return `<p>התמונה הקבוצתית נפתחת כשיש לפחות שני משתתפים.</p>`;
+  return `<h2>${esc(S.meta.name)}: התמונה הקבוצתית</h2><p class="muted">${G.P.map(p=>`${esc(p.label)} (${p.LP})`).join(" · ")}</p>`+
+    ["mission","miss","links"].map(k=>groupReading(k).replace(/<div class="ask">[\s\S]*?<\/div>/g,"")).join("")+ROLES_HTML();
+}
+function scopeHTML(scope,pid){
+  const p=G.P.find(x=>x.id===pid);
+  if(scope==="me"&&p)return personReading(p)+`<p class="muted">למפה האישית המורחבת: ${esc(personalMapURL(p.id))}</p>`;
+  if(scope==="family")return familyHTML();
+  return familyHTML()+G.P.map(x=>`<div class="pbreak"></div>${personReading(x)}`).join("");
+}
+function scopeTitle(scope,pid){const p=G.P.find(x=>x.id===pid);return scope==="me"&&p?`המפה של ${p.name}`:scope==="family"?`התמונה הקבוצתית של ${S.meta.name}`:`המארג המלא של ${S.meta.name}`;}
+function scopeText(scope,pid){
+  const t=stripTxt(scopeHTML(scope,pid).replace(/<div class="pbreak"><\/div>/g,"<p>────────────</p>"));
+  return `${scopeTitle(scope,pid)} · המארג הקבוצתי\n\n${t}\n\nלמעגל: ${joinURL()}`;
+}
+let shareState={scope:"me",pid:null};
+function openShare(pid){
+  const me=G.P.find(p=>p.id===myId());
+  shareState={pid:pid||(me&&me.id)||null,scope:pid||me?"me":"family"};
+  const P=G.P.find(p=>p.id===shareState.pid);
+  const d=$("shareDlg");
+  const opt=(v,t,sub)=>`<label class="sopt"><input type="radio" name="sscope" value="${v}" ${shareState.scope===v?"checked":""}><span><b>${t}</b><small>${sub}</small></span></label>`;
+  d.innerHTML=`<h2 style="font-size:1.4rem">מה לשתף?</h2>
+   <div class="sopts">${P?opt("me",P.id===myId()?"המפה האישית שלי":`המפה של ${esc(P.label)}`,"שלושת הפרמטרים, הצמתים, התפקיד בקבוצה והחוטים"):""}
+   ${opt("family","התמונה הקבוצתית","המספר של הקבוצה, מה חסר, החוטים והתפקידים")}
+   ${opt("all","המארג המלא","התמונה הקבוצתית, ואחריה המפה של כל אחד מהמשתתפים")}</div>
+   <h3 style="font-size:1.05rem;margin:16px 0 8px">איך?</h3>
+   <div class="row" style="margin-top:0"><button class="btn small" data-sc="share">שיתוף…</button><button class="btn ghost small" data-sc="wa">וואטסאפ</button><button class="btn ghost small" data-sc="mail">מייל</button><button class="btn ghost small" data-sc="pdf">PDF / הדפסה</button><button class="btn ghost small" data-sc="copy">העתקה</button></div>
+   <p class="status" id="shSt"></p><p class="muted" id="shNote" style="font-size:.85rem;margin:4px 0 0"></p>
+   <div class="row"><button class="btn ghost small" id="shClose">סגירה</button></div>`;
+  d.showModal?d.showModal():d.setAttribute("open","");
+  const note=()=>{const len=scopeText(shareState.scope,shareState.pid).length;$("shNote").textContent=len>3000?"הטקסט ארוך. לשליחה נוחה עדיף PDF, או העתקה והדבקה. בוואטסאפ ובמייל הוא יועתק, ותצטרכו להדביק.":"";};
+  d.querySelectorAll('[name="sscope"]').forEach(r=>r.onchange=()=>{shareState.scope=r.value;note();});note();
+  $("shClose").onclick=()=>d.close();
+  d.querySelectorAll("[data-sc]").forEach(b=>b.onclick=()=>doShare(b.dataset.sc));
+}
+async function doShare(how){
+  const {scope,pid}=shareState,title=scopeTitle(scope,pid),text=scopeText(scope,pid),st=$("shSt");
+  const copy=async()=>{try{await navigator.clipboard.writeText(text);return true}catch(e){return false}};
+  if(how==="pdf"){$("shareDlg").close();printHTML(scopeHTML(scope,pid),title);return;}
+  if(how==="share"&&navigator.share){try{await navigator.share({title,text});st.textContent="שותף ✓";return;}catch(e){if(e&&e.name==="AbortError")return;}}
+  if(how==="wa"){if(text.length>3000){const ok=await copy();st.textContent=ok?"הטקסט הועתק. בוואטסאפ: בחרו צ'אט והדביקו.":"";window.open("https://wa.me/?text="+encodeURIComponent(`${title}\n(הטקסט המלא הועתק, הדביקו כאן)\n${joinURL()}`),"_blank","noopener");}
+    else window.open("https://wa.me/?text="+encodeURIComponent(text),"_blank","noopener");return;}
+  if(how==="mail"){if(text.length>1800){const ok=await copy();st.textContent=ok?"הטקסט הועתק. בגוף המייל: הדביקו.":"";location.href="mailto:?subject="+encodeURIComponent(title)+"&body="+encodeURIComponent("(הדביקו כאן את הטקסט שהועתק)\n\n"+joinURL());}
+    else location.href="mailto:?subject="+encodeURIComponent(title)+"&body="+encodeURIComponent(text);return;}
+  if(await copy())st.textContent="הועתק ✓ אפשר להדביק בכל מקום.";else prompt("העתיקו:",text);
+}
+document.addEventListener("click",e=>{const b=e.target.closest("[data-edit]");if(!b)return;e.preventDefault();openAdd(b.dataset.edit);});
+document.addEventListener("click",e=>{const b=e.target.closest("[data-sharedlg]");if(!b)return;e.preventDefault();openShare(b.dataset.sharedlg||null);});
+function printHTML(html,title){
+  const w=document.createElement("div");w.id="printArea";
+  w.innerHTML=`<p class="muted">המארג הקבוצתי · ${esc(S.meta.name)}</p><h1 style="font-size:1.6rem">${esc(title)}</h1>${html}`;
+  document.body.appendChild(w);document.body.classList.add("printing");
+  const done=()=>{document.body.classList.remove("printing");w.remove();removeEventListener("afterprint",done);};
+  addEventListener("afterprint",done);setTimeout(()=>window.print(),50);
+}
+
+/* ================= deeper life-path knowledge (stage 1 of the knowledge expansion) ================= */
+const LPX={
+1:{gift:"היכולת להתחיל משהו מאפס. כשכולם מהססים, את/ה כבר בתנועה, ואחרים מוצאים בזכותך אומץ ללכת אחרייך.",
+ challenge:"לסמוך על אחרים ולבקש עזרה. הבדידות של המוביל/ה מוכרת לך, והיא נובעת לעתים מהצורך לעשות הכול לבד.",
+ family:"במשפחה את/ה זה/זו שמניע/ה דברים ומקבל/ת החלטות. הקרובים אלייך צריכים לפעמים שתעצור/י ותשאל/י מה הם רוצים, לפני שאת/ה כבר יוצא/ת לדרך.",
+ work:"מקום שבו את/ה קובע/ת את הכיוון: יזמות, ניהול, פרויקט משלך. כשמכתיבים לך כל צעד, האור שלך נכבה.",
+ sign:"כשאת/ה מתחיל/ה משהו חדש ומרגיש/ה חי/ה, בלי לחכות לאישור מאף אחד.",
+ practice:"השבוע: בקש/י עזרה במשהו קטן שהיית עושה לבד, ושים/י לב מה זה פותח."},
+2:{gift:"קשב עמוק לאנשים. את/ה שומע/ת את מה שלא נאמר, ויודע/ת לחבר בין אנשים ועמדות שנראו רחוקים.",
+ challenge:"לא להיעלם בתוך הקשר. הרגישות שלך היא מתנה, אבל לעתים את/ה מוותר/ת על עצמך כדי לשמור על השקט.",
+ family:"את/ה הדבק השקט של הבית: מרגיש/ה מי עצוב, מרכך/ת ריבים ושומר/ת על הקשר. חשוב שגם את/ה תקבל/י את אותה תשומת לב.",
+ work:"עבודה בשותפות, בצוות, בליווי, בטיפול או בגישור. את/ה פורח/ת לצד אנשים שמעריכים את העבודה השקטה שלך.",
+ sign:"כשאת/ה אומר/ת \"לא\" בעדינות, והקשר נשאר שלם.",
+ practice:"השבוע: בכל שיחה חשובה, אמור/אמרי משפט אחד שמתחיל ב\"אני צריך/ה\"."},
+3:{gift:"להפוך חוויה לביטוי: מילים, צלילים, צבע והומור. את/ה מאיר/ה חדר, ונותן/ת לאנשים רשות לשמוח.",
+ challenge:"התמדה ועומק. הרבה רעיונות נפתחים ולא נסגרים, ולפעמים השמחה משמשת מחסה מפני רגשות קשים.",
+ family:"את/ה מביא/ה לבית צחוק, חגיגה וסיפורים. כשקשה, המשפחה צריכה גם את הצד השקט שלך, לא רק את מצב הרוח הטוב.",
+ work:"כל עבודה שיש בה ביטוי: אמנות, מוזיקה, כתיבה, הוראה ובמה. כדאי לבחור ערוץ אחד עיקרי ולבנות בו לאורך זמן.",
+ sign:"כשאת/ה מסיים/ת יצירה, לא רק מתחיל/ה אותה.",
+ practice:"השבוע: בחר/י רעיון אחד שפתחת, והבא/י אותו לגמר, גם אם הוא לא מושלם."},
+4:{gift:"להפוך חלום למבנה. את/ה בונה דברים שמחזיקים מעמד, ואנשים יודעים שעל המילה שלך אפשר לסמוך.",
+ challenge:"גמישות. כשהתוכנית משתנה, קשה לך לשחרר, ולפעמים העבודה הופכת למקום מסתור מהרגש.",
+ family:"את/ה העוגן: מארגן/ת, דואג/ת ליציבות ושומר/ת על הסדר. הקרובים אלייך צריכים גם את הצד הספונטני והמשחקי שלך.",
+ work:"עבודה שבה רואים תוצאה מוחשית: בנייה, תכנון, מערכות, מלאכה. התמדה היא הכוח שלך.",
+ sign:"כשאת/ה נותן/ת לעצמך לנוח, בלי תחושת אשמה.",
+ practice:"השבוע: עשה/עשי דבר אחד לא מתוכנן, ובדוק/בדקי מה הוא מעורר בך."},
+5:{gift:"חופש וסקרנות. את/ה מביא/ה רוח חדשה לכל מקום, ומלמד/ת אחרים שאפשר לשנות.",
+ challenge:"לעומק ולא רק לרוחב. הרצון לחוויה חדשה יכול להפוך לבריחה ממחויבות או מרגשות.",
+ family:"את/ה מוציא/ה את המשפחה מהשגרה: טיולים, רעיונות והפתעות. הבית צריך לדעת שגם כשאת/ה בתנועה, את/ה חוזר/ת.",
+ work:"עבודה מגוונת עם אנשים, תנועה ושינוי: הדרכה, מכירות, תקשורת, תיירות. שגרה קבועה מכבה אותך.",
+ sign:"כשאת/ה בוחר/ת להישאר, והבחירה מרגישה כמו חופש ולא כמו כלא.",
+ practice:"השבוע: התמד/י במשהו אחד שבע ימים ברצף, ושים/י לב למה שמתגלה רק בעומק."},
+6:{gift:"אהבה שמטפלת. את/ה יוצר/ת בית, יופי ושייכות, ואנשים מרגישים לידך בטוחים.",
+ challenge:"לתת בלי לשלוט, ולטפל גם בעצמך. הדאגה לאחרים יכולה להפוך לעומס, לאשמה או לביקורת.",
+ family:"את/ה הלב של הבית: זוכר/ת ימי הולדת, דואג/ת שלכולם טוב, מחזיק/ה את המסורת. כדאי לבקש מהמשפחה לטפל גם בך.",
+ work:"טיפול, חינוך, ייעוץ, רפואה, עיצוב ואמנות. כל מקום שבו האכפתיות שלך הופכת למקצוע.",
+ sign:"כשאת/ה מקבל/ת עזרה בלי להרגיש שאת/ה חייב/ת משהו בחזרה.",
+ practice:"השבוע: קבע/י שעה אחת רק לעצמך, ושמור/שמרי עליה כמו על פגישה עם מישהו שאת/ה אוהב/ת."},
+7:{gift:"ראייה לעומק. את/ה לא מסתפק/ת בתשובות קלות, ומגיע/ה לחכמה אמיתית דרך מחשבה, שקט ואינטואיציה.",
+ challenge:"לפתוח את הלב, לא רק את המחשבה. הצורך במרחב יכול להפוך לבדידות או לחשדנות.",
+ family:"את/ה החוקר/ת של המשפחה: שואל/ת את השאלות האמיתיות ורואה מה מתחת לפני השטח. הקרובים צריכים להרגיש שהם מוזמנים לעולם הפנימי שלך.",
+ work:"מחקר, למידה, טכנולוגיה, כתיבה, הוראה רוחנית ומוזיקה מעמיקה. עבודה שמאפשרת ריכוז ושקט.",
+ sign:"כשאת/ה משתף/ת מה את/ה מרגיש/ה, עוד לפני שהבנת הכול.",
+ practice:"השבוע: שתף/שתפי אדם קרוב במחשבה שעוד לא אמרת בקול."},
+8:{gift:"כוח לממש. את/ה רואה את התמונה הגדולה, מנהל/ת משאבים ומביא/ה תוצאות לעולם.",
+ challenge:"לאזן בין חומר לרוח, ולזכור שהערך שלך לא נמדד בהישגים. כוח אמיתי כולל גם רכות.",
+ family:"את/ה מי שדואג/ת לביטחון ולבסיס של המשפחה ולוקח/ת אחריות על ההחלטות הגדולות. הבית צריך ממך גם נוכחות, לא רק דאגה.",
+ work:"ניהול, עסקים, כספים, הפקה וכל תפקיד שבו מובילים מערכות. כשהעבודה נשענת על יושר, השפע יציב.",
+ sign:"כשאת/ה מצליח/ה, וגם נשאר/ת רך/ה וקרוב/ה.",
+ practice:"השבוע: עזור/עזרי למישהו להצליח, בלי לקחת על זה קרדיט."},
+9:{gift:"לב רחב וראייה גדולה. את/ה רואה את האנושי בכל אדם, ונותן/ת השראה לחמלה ולנתינה.",
+ challenge:"לשחרר ולסיים. קשה לך להיפרד מאנשים, מעבר ומציפיות, והנתינה עלולה להפוך להקרבה.",
+ family:"את/ה מזכיר/ה למשפחה את מה שחשוב באמת, ומחזיק/ה את הסיפור הגדול שלה. חשוב שתהיה/תהיי גם מקבל/ת ולא רק נותן/ת.",
+ work:"עבודה עם שליחות: חינוך, טיפול, אמנות, קהילה וארגונים חברתיים. כסף זורם כשהעבודה משרתת מטרה.",
+ sign:"כשאת/ה סוגר/ת פרק בשלום, בלי מרירות.",
+ practice:"השבוע: כתוב/כתבי מכתב, גם אם לא תשלח/י אותו, למשהו או למישהו שהגיע הזמן לשחרר."},
+11:{gift:"השראה. את/ה קולט/ת אמת שאחרים עוד לא רואים, ומעורר/ת אנשים בעצם הנוכחות שלך.",
+ challenge:"לקרקע את הרגישות. העוצמה הפנימית גבוהה, ובלי קרקוע היא הופכת לחרדה או לספק עצמי.",
+ family:"את/ה האנטנה של המשפחה: מרגיש/ה לפני כולם מה קורה. המשפחה צריכה ללמוד לסמוך על התחושות שלך, ואת/ה צריך/ה לבטא אותן בפשטות.",
+ work:"הוראה, טיפול, אמנות ומוזיקה, הנחיה רוחנית. כל מקום שבו המסר שלך יכול לגעת באנשים.",
+ sign:"כשאת/ה פועל/ת לפי תחושת בטן, והיא מתבררת כנכונה.",
+ practice:"השבוע: הוסף/הוסיפי שגרת קרקוע יומית: הליכה, נשימה או עבודה בידיים."},
+22:{gift:"להגשים חזון גדול. את/ה מחבר/ת בין רעיון רחב לבין ביצוע מעשי, ובונה דברים שמשרתים רבים.",
+ challenge:"הלחץ של הפוטנציאל. הפחד לא לעמוד בציפיות שלך עלול לשתק, וקשה לך לחלק את העומס.",
+ family:"את/ה בונה את התשתית של המשפחה לאורך שנים. חשוב לזכור שהבית הוא לא עוד פרויקט, אלא מקום לנוח בו.",
+ work:"יזמות רחבת היקף, אדריכלות, ניהול ארגונים והקמת מיזמים. הכוח שלך בהתמדה לאורך זמן.",
+ sign:"כשאת/ה מסתפק/ת בצעד אחד קדימה, ולא דורש/ת מעצמך את כל הדרך בבת אחת.",
+ practice:"השבוע: פרק/פרקי חלום גדול אחד לשלושה צעדים קטנים, ועשה/עשי את הראשון."},
+33:{gift:"אהבה מרפאת. את/ה מלמד/ת דרך דוגמה אישית, ומעניק/ה לאחרים תחושה שרואים ומקבלים אותם.",
+ challenge:"לא לשאת את כל העולם על הכתפיים. ההקרבה העצמית מתישה, ומגיע לך לקבל.",
+ family:"את/ה המחבק/ת והמרפא/ה של המשפחה. כדאי ללמד את הקרובים לתמוך גם בך.",
+ work:"טיפול, ריפוי, חינוך והנחיה. השליחות שלך מתבטאת דרך אהבה ושירות.",
+ sign:"כשאת/ה נותן/ת מתוך שפע, ולא מתוך חובה.",
+ practice:"השבוע: בכל ערב, רשום/רשמי דבר אחד שקיבלת מאחרים."}
+};
+const TONE={0:"עוצמה וטוהר",1:"עצמאות ויוזמה",2:"רגישות ושותפות",3:"ביטוי ושמחה",4:"יציבות וסדר",5:"חופש ותנועה",6:"אהבה ואחריות",7:"עומק וחכמה",8:"כוח ומימוש",9:"חמלה וראייה רחבה"};
+function lpShade(p){
+  const c=p.B.c,v=p.LP;
+  if(c<=9||c===v)return "";
+  const ds=String(c).split("").map(Number);
+  if(MASTER.includes(v))return `שביל החיים שלך הוא מספר מאסטר ${v}, שהגיע מהסכום ${c}. ${ds.length===2?`ה־${ds[0]} (${TONE[ds[0]]}) וה־${ds[1]} (${TONE[ds[1]]}) הם הדרך שבה העוצמה של ה־${v} עוברת אצלך.`:""}`;
+  if(ds[1]===0)return `שביל החיים שלך הגיע מ־${c}. ה־0 מעצים את ה־${ds[0]}, ולכן האנרגיה של ${TONE[ds[0]]} חזקה אצלך במיוחד, כמעט בלי תערובת.`;
+  return `שביל החיים שלך הוא ${v}, שהגיע מהסכום ${c}. כלומר, הדרך שלך עוברת דרך שילוב של ${TONE[ds[0]]} (${ds[0]}) ושל ${TONE[ds[1]]} (${ds[1]}). ${ds[0]===ds[1]?`הספרה ${ds[0]} כפולה, ולכן האיכות הזו בולטת במיוחד אצלך.`:`שני אנשים עם אותו שביל חיים יכולים לחיות אותו אחרת, וזה הגוון שלך.`}`;
+}
+function lpDeep(p){
+  const v=p.LP,X=LPX[v]||LPX[single(v)];if(!X)return "";
+  const shade=lpShade(p),debt=p.B.debt&&DEBT[p.B.debt];
+  return `<details class="deep"><summary>להעמקה: עוד על שביל החיים שלך</summary>
+   ${shade?`<div class="dx"><b>הגוון שלך</b><p>${shade}</p></div>`:""}
+   <div class="dx"><b>המתנה העמוקה</b><p>${X.gift}</p></div>
+   <div class="dx"><b>האתגר המרכזי</b><p>${X.challenge}</p></div>
+   <div class="dx"><b>בבית ובמשפחה</b><p>${X.family}</p></div>
+   <div class="dx"><b>בעבודה ובעשייה</b><p>${X.work}</p></div>
+   ${debt?`<div class="dx"><b>חוב קרמתי בשביל החיים</b><p>${debt}</p></div>`:""}
+   <div class="dx"><b>סימן שאת/ה בדרך</b><p>${X.sign}</p></div>
+   <div class="dx"><b>תרגול קטן</b><p>${X.practice}</p></div>
+  </details>`;
+}
+
+/* ================= glossary ================= */
+const GLOSS=[
+ ["shvil","שביל החיים","המספר החשוב ביותר במפה. מחברים את כל ספרות תאריך הלידה ומצמצמים לספרה אחת (או למספר מאסטר). הוא מתאר את הכיוון הכללי של החיים ואת השיעור המרכזי שבאת ללמוד."],
+ ["bitui","מספר הביטוי","נקרא גם מספר הגורל. סכום הערכים של כל האותיות בשם הלידה המלא. מתאר את הכישרונות והכלים שאיתם נולדת."],
+ ["neshama","דחף הנשמה","סכום הערכים של התנועות בשם (בעברית: א, ה, ו, י). מתאר מה את/ה צריך/ה וכמה/ה אליו בפנים, גם כשאף אחד לא רואה."],
+ ["ishiut","מספר האישיות","סכום הערכים של העיצורים בשם. מתאר את הרושם הראשון שאנשים מקבלים ממך, הצד שאת/ה מראה לעולם."],
+ ["yom","מספר יום הלידה","היום בחודש שבו נולדת, מצומצם לספרה אחת. מתאר כישרון מיוחד שעומד לרשותך."],
+ ["gematria","גימטריה עברית (מספר קטן)","השיטה שבה הכלי מחשב את השם: כל אות מקבלת ערך מ־1 עד 9. א=1 עד ט=9, י=1 עד צ=9, ק=1 עד ת=4."],
+ ["tzimtzum","צמצום","חיבור ספרות של מספר עד שמתקבלת ספרה אחת. למשל 28 → 2+8 = 10 → 1."],
+ ["murkav","מספר מורכב","הסכום לפני הצמצום, למשל 21 בשביל חיים 3. הספרות שלו מוסיפות גוון אישי למספר הסופי."],
+ ["master","מספר מאסטר","11, 22 ו־33 לא מצמצמים. הם מסמנים פוטנציאל גבוה ורגישות מוגברת, שדורשים קרקוע."],
+ ["karmati","שיעור קרמתי","מספר מ־1 עד 9 שאינו מופיע באף אות בשם. מתאר תחום שבו הכלים פחות מולדים, וצריך ללמוד אותו."],
+ ["hov","חוב קרמתי","המספרים 13, 14, 16 או 19 כשהם מופיעים בדרך החישוב. במסורת הנומרולוגית הם מסמנים שיעור שנשאר פתוח."],
+ ["shana","שנה אישית","מחושבת מיום וחודש הלידה ומהשנה הנוכחית. כל שנה היא שלב במחזור של תשע שנים, מהתחלה (1) ועד סיום (9)."],
+ ["mishpacha","המספר של הקבוצה","מחברים את שבילי החיים של כל המשתתפים ומצמצמים. מתאר את הכיוון המשותף ואת השליחות של הקבוצה."],
+ ["shvatim","שלושת השבטים","המספרים מתחלקים לשלוש קבוצות: עצמאות ומחשבה (1, 5, 7), חומר ועשייה (2, 4, 8), רגש ויצירה (3, 6, 9). מאותו שבט מבינים זה את זה בקלות. בכלי, הטבעת סביב כל נקודה מסמנת את השבט."],
+ ["tafkid","התפקיד בקבוצה","התפקיד הטבעי שנגזר משביל החיים: מה כל אחד נותן לקבוצה, ומה הקבוצה מלמדת אותו."],
+ ["notenmekabel","חוט נותן־מקבל","כשלמשתתף חסר מספר מסוים (גם בשם וגם במספרי הליבה), ואצל משתתף אחר זה שביל החיים או מספר הביטוי. השני יכול להביא לראשון את מה שחסר לו."],
+ ["teomim","תאומי נשמה","משתתפים עם אותו דחף נשמה. ברמה העמוקה הם צריכים את אותו דבר, ולכן קל להם להבין זה את זה."],
+ ["mar-a","חוט מראה","כשדחף הנשמה של אחד הוא מספר האישיות של אחר: מה שהאחד צריך בפנים, השני מראה כלפי חוץ."],
+ ["otzar","שומר/ת אוצר","מספר שרק משתתף אחד בקבוצה נושא. הוא/היא שומר/ת על האיכות הזו בשביל כולם."],
+ ["chaser","מה חסר בקבוצה","מספר שלא מופיע אצל אף אחד מהמשתתפים בארבעת מספרי הליבה. תחום שהקבוצה צריכה לפתח במודע."]
+];
+function glossaryHTML(focus){
+  return `<div class="eyebrow">מילון מושגים</div><h2>מה זה אומר?</h2><p class="muted">ההסברים לכל המונחים שמופיעים בכלי. זהו כלי להתבוננות ולשיחה, לא אבחון.</p>
+  <dl class="gloss">${GLOSS.map(([id,t,d])=>`<dt id="g-${id}" class="${id===focus?"hl":""}">${t}</dt><dd>${d}</dd>`).join("")}</dl>`;
+}
+function openGlossary(focus){openReader(glossaryHTML(focus));if(focus){const el=document.getElementById("g-"+focus);if(el)el.scrollIntoView({block:"center"});}}
+document.addEventListener("click",e=>{const b=e.target.closest("[data-term]");if(!b)return;e.preventDefault();e.stopPropagation();openGlossary(b.dataset.term);},true);
+
+/* ================= feedback: "fits / doesn't fit" on each paragraph ================= */
+const voterId=()=>myId()||(()=>{let v=ls.get("grp-voter");if(!v){v="v"+newId();ls.set("grp-voter",v);}return v;})();
+const fbDocId=(sub,key)=>(voterId()+"_"+sub+"_"+key).replace(/[.$#\[\]\/]/g,"-");
+function fbBtns(sub,key,text){
+  if(!sub)return "";
+  const d=(S.fb||{})[fbDocId(sub,key)],v=d&&d.v;
+  return `<span class="fbk" data-fbs="${sub}" data-fbk="${key}" data-fbt="${esc(String(text||"").replace(/<[^>]+>/g,"").slice(0,140))}">
+   <button type="button" data-fbv="1" aria-pressed="${v===1}" title="הטקסט הזה קולע">👍 קולע</button><button type="button" data-fbv="-1" aria-pressed="${v===-1}" title="הטקסט הזה לא קולע">👎 לא קולע</button>
+   ${v===-1?`<input type="text" class="fbnote" maxlength="200" placeholder="מה לא קלע? (לא חובה)" value="${esc(d.note||"")}">`:""}</span>`;
+}
+document.addEventListener("click",async e=>{
+  const b=e.target.closest("[data-fbv]");if(!b)return;
+  const w=b.closest(".fbk"),sub=w.dataset.fbs,key=w.dataset.fbk,id=fbDocId(sub,key),v=+b.dataset.fbv;
+  const cur=(S.fb||{})[id];
+  const doc=cur&&cur.v===v?null:{voter:voterId(),sub,key,v,s:w.dataset.fbt,t:Date.now(),note:cur&&cur.note||""};
+  S.fb=S.fb||{};if(doc)S.fb[id]=doc;else delete S.fb[id];
+  try{doc?await store.put(`rooms/${ROOM}/fb/${id}`,doc):await store.del(`rooms/${ROOM}/fb/${id}`);}catch(err){}
+  w.outerHTML=fbBtns(sub,key,w.dataset.fbt);
+});
+document.addEventListener("change",async e=>{
+  const i=e.target.closest(".fbnote");if(!i)return;const w=i.closest(".fbk"),id=fbDocId(w.dataset.fbs,w.dataset.fbk);
+  const d=(S.fb||{})[id];if(!d)return;d.note=i.value.trim().slice(0,200);
+  try{await store.patch(`rooms/${ROOM}/fb/${id}`,{note:d.note});}catch(err){}
+});
+function feedbackHTML(){
+  const all=Object.values(S.fb||{});
+  if(!all.length)return `<div class="eyebrow">משוב</div><h2>עוד אין משוב</h2><p>ליד כל פסקה בניתוח יש "קולע / לא קולע". כשהמשתתפים יסמנו, הסיכום יופיע כאן.</p>`;
+  const by={};all.forEach(d=>{const k=d.key;(by[k]=by[k]||{key:k,s:d.s,up:0,down:0,notes:[]});d.v===1?by[k].up++:by[k].down++;if(d.note)by[k].notes.push(d.note);});
+  const rows=Object.values(by).sort((a,b)=>b.down-a.down||b.up-a.up);
+  return `<div class="eyebrow">משוב</div><h2>מה קולע ומה לא</h2><p class="muted">${all.length} סימונים. הטקסטים שסומנו כ"לא קולע" מופיעים ראשונים.</p>
+   ${rows.map(r=>`<div class="fbrow"><b>👍 ${r.up} · 👎 ${r.down}</b> <span class="muted">${esc(r.key)}</span><p>${esc(r.s||"")}…</p>${r.notes.map(n=>`<p class="fbn">„${esc(n)}"</p>`).join("")}</div>`).join("")}
+   <div class="row"><button class="btn small" type="button" id="fbCopy">העתקת הסיכום לשליחה ל־Claude</button><span class="status" id="fbSt"></span></div>`;
+}
+function openFeedback(){
+  openReader(feedbackHTML());
+  const b=$("fbCopy");if(b)b.onclick=async()=>{
+    const all=Object.values(S.fb||{});const by={};all.forEach(d=>{(by[d.key]=by[d.key]||{s:d.s,up:0,down:0,notes:[]});d.v===1?by[d.key].up++:by[d.key].down++;if(d.note)by[d.key].notes.push(d.note);});
+    const t="משוב על הניתוחים במארג הקבוצתי ("+S.meta.name+"):\n\n"+Object.entries(by).sort((a,b)=>b[1].down-a[1].down).map(([k,r])=>`[${k}] 👍${r.up} 👎${r.down}\n${r.s}…${r.notes.length?"\nהערות: "+r.notes.join(" | "):""}`).join("\n\n");
+    try{await navigator.clipboard.writeText(t);$("fbSt").textContent="הועתק ✓";}catch(e){prompt("העתיקו:",t);}
+  };
+}
+document.addEventListener("click",e=>{if(e.target.closest("[data-fbopen]")){e.preventDefault();openFeedback();}});
+
+/* ================= life cycles (pinnacles & challenges), ported from מפת המספרים ================= */
+function lifeCycles(p){
+  const B=p.B,m1=single(B.m),d1=single(B.d),y1=single(dsum(B.y));
+  const p1=rv(m1+d1),p2=rv(d1+y1),p3=rv(single(p1)+single(p2)),p4=rv(m1+y1);
+  const c1=Math.abs(m1-d1),c2=Math.abs(d1-y1),c3=Math.abs(c1-c2),c4=Math.abs(m1-y1);
+  const e1=36-single(B.LP);
+  const per=[[0,e1,p1,c1],[e1+1,e1+9,p2,c2],[e1+10,e1+18,p3,c3],[e1+19,null,p4,c4]];
+  const age=ageAt(B,{y:TODAY.getFullYear(),m:TODAY.getMonth()+1,d:TODAY.getDate()});
+  const cur=per.findIndex(x=>age>=x[0]&&(x[1]===null||age<=x[1]));
+  return {per,cur,age};
+}
+function cyclesHTML(p){
+  const {per,cur,age}=lifeCycles(p);
+  const rows=per.map((x,i)=>`<div class="cyc${i===cur?" now":""}"><div class="cyc-h"><b>תקופה ${i+1}</b> · גילאים ${x[1]===null?`${x[0]} ומעלה`:`${x[0]}–${x[1]}`}${i===cur?' <span class="now-pill">עכשיו</span>':""}</div>
+    <p><b>פסגה ${x[2]}:</b> ${get(x[2],"pinnacle")}</p><p><b>אתגר ${x[3]}:</b> ${x[3]===0?CH0:get(x[3],"challenge")}</p></div>`).join("");
+  const c=per[cur];
+  return `<details class="deep cycles"><summary>מחזורי החיים שלך: איפה את/ה עכשיו</summary>
+   <p class="pd" style="margin-top:8px">החיים מתחלקים לארבע תקופות. לכל תקופה <b>פסגה</b>, הנושא וההזדמנות שלה, ו<b>אתגר</b>, המכשול שהיא מבקשת ללמוד לעבור. היום, בגיל ${age}, את/ה בתקופה ${cur+1}${c?`: פסגה ${c[2]} (${get(c[2],"kw")}) ואתגר ${c[3]}`:""}.</p>${rows}</details>`;
+}
+function lessonsHTML(p){
+  if(!p.lessons.length)return "";
+  return `<details class="deep"><summary>השיעורים הקרמתיים שלך (${p.lessons.join(", ")})</summary>
+   <p class="pd" style="margin-top:8px">מספרים שלא מופיעים באף אות בשם שלך. אלה תחומים שבהם הכלים פחות מולדים, והחיים מזמנים ללמוד אותם שוב ושוב.</p>
+   ${p.lessons.map(n=>`<div class="dx"><b>${n} · ${N[n].kw}</b><p>${N[n].lesson}</p></div>`).join("")}</details>`;
+}
+function familyYearsHTML(){
+  if(G.n<2)return "";
+  const ys=[];for(let k=-2;k<=4;k++){const y=TY+k;const fy=single(G.P.reduce((a,p)=>a+single(single(p.B.d)+single(p.B.m)+single(dsum(y))),0));ys.push([y,fy]);}
+  return `<h3 style="margin-top:18px;font-size:1.15rem">המחזור המשפחתי</h3><p class="muted" style="margin:2px 0 8px">השנה המשפחתית לאורך השנים: לאן המשפחה נעה.</p>
+   <div class="fyears">${ys.map(([y,f])=>`<div class="fy${y===TY?" now":""}"><small>${y}</small><span class="num">${f}</span><small>${YKW[f]}</small></div>`).join("")}</div>`;
+}
+
+/* ================= start ================= */
+if(LOCAL&&!qs.has("local"))$("demoNote").hidden=false;
+if(!ROOM)renderHome();else{renderLoading();store.listen(`rooms/${ROOM}`,onData);}
+</script>
+</body>
+</html>
