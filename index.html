@@ -313,7 +313,7 @@ dl.gloss dt.hl,dl.gloss dt.hl+dd{background:var(--gold-soft);border-radius:6px}
 <dialog id="shareDlg" aria-label="שיתוף"></dialog>
 <dialog id="addDlg" aria-labelledby="addTitle">
   <h2 id="addTitle" style="font-size:1.4rem">הוספת משתתף/ת</h2>
-  <p class="muted" style="margin:6px 0 0">למי שלא מצטרף/ת מהטלפון בעצמו/ה.</p>
+  <p class="muted" style="margin:6px 0 0">למשתתף/ת שאין לו/ה טלפון, או חבר/ה שמגיע/ה איתך.</p>
   <div id="addForm"></div>
 </dialog>
 
@@ -889,7 +889,7 @@ function openAdd(editId){
   const m=editId?S.members[editId]:null;
   if(!m&&G.n>=MAXP){alert(`המעגל מלא: אפשר עד ${MAXP} משתתפים.`);return;}
   $("addTitle").textContent=m?"עריכת פרטים":"הוספת משתתף/ת";
-  $("addDlg").querySelector("p.muted").textContent=m?"תיקון השם או תאריך הלידה. הניתוח יתעדכן מיד אצל כולם.":"למי שלא מצטרף/ת מהטלפון בעצמו/ה.";
+  $("addDlg").querySelector("p.muted").textContent=m?"תיקון השם או תאריך הלידה. הניתוח יתעדכן מיד אצל כולם.":"למשתתף/ת שאין לו/ה טלפון, או חבר/ה שמגיע/ה איתך.";
   $("addForm").innerHTML=`<label class="f">שם מלא מהלידה, בעברית<small>כולל שם המשפחה מהלידה</small><input type="text" id="aName" autocomplete="off"></label>
   <div style="display:flex;flex-direction:column;gap:5px;font-weight:600;font-size:.95rem;margin-top:14px">תאריך לידה${dateSel("aDate")}</div>
   <label class="f">השם של היום <small>לא חובה</small><input type="text" id="aCur" autocomplete="off"></label>
@@ -1028,9 +1028,10 @@ function renderPhone(){
   app.innerHTML=`<div class="wrap">
    <div class="top"><h1>שלום ${esc(me.first)}</h1><span class="muted">${esc(S.meta.name)}</span></div>
    <div id="pbody">${myMap(me)}</div>
-   <p style="margin-top:28px;text-align:center"><button class="link" id="pOut">זה לא אני</button></p>
+   <p style="margin-top:28px;text-align:center">${G.n<MAXP?`<button class="link" id="pAdd">+ הוספת משתתף/ת נוסף/ת</button> · `:""}<button class="link" id="pOut">זה לא אני</button></p>
   </div>`;
   addNav("me");
+  if($("pAdd"))$("pAdd").onclick=()=>openAdd();
   $("pOut").onclick=()=>{ls.del("grp-me:"+ROOM);go("join");};
   window.scrollTo({top:scrollY});
 }
@@ -1054,8 +1055,10 @@ function renderFamily(){
     <div id="leadList" style="margin-top:0">${P.map((p,i)=>cardHTML(p,i,null,0)).join("")||'<div class="locked">עוד אין משתתפים במעגל.</div>'}</div>
     ${G.n>1?`<div class="lead-actions" style="margin-top:16px"><button data-g="mission">המספר שלנו</button><button data-g="miss">מה חסר</button><button data-g="links">כל החיווטים</button></div>`:""}`}
    <p style="margin-top:24px;text-align:center"><button class="btn small" type="button" data-sharedlg="">שיתוף / שליחה / PDF</button></p>
+   <p style="margin-top:10px;text-align:center">${G.n<MAXP?`<button class="link" id="fAdd">+ הוספת משתתף/ת</button>`:`<span class="muted">המעגל מלא (${MAXP} משתתפים)</span>`}</p>
   </div>`;
   addNav("fam");
+  if($("fAdd"))$("fAdd").onclick=()=>openAdd();
   app.querySelectorAll("[data-ft]").forEach(b=>b.onclick=()=>{famTab=b.dataset.ft;renderFamily();window.scrollTo({top:0});});
   app.querySelectorAll(".lc").forEach(b=>b.onclick=()=>{const i=+b.dataset.i;openReader(personReading(P[i]),P,i);});
   app.querySelectorAll("[data-g]").forEach(b=>b.onclick=()=>openReader(groupReading(b.dataset.g)));
