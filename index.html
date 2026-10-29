@@ -1328,7 +1328,14 @@ function scopeHTML(scope,pid){
   const p=G.P.find(x=>x.id===pid);
   if(scope==="me"&&p)return personReading(p)+`<p class="muted">למפה האישית המורחבת: ${esc(personalMapURL(p.id))}</p>`;
   if(scope==="family")return familyHTML();
-  return familyHTML()+G.P.map(x=>`<div class="pbreak"></div>${personReading(x)}`).join("");
+  return rosterHTML()+familyHTML()+G.P.map(x=>`<div class="pbreak"></div>${personReading(x)}`).join("");
+}
+/* participants list for the full summary: name, birth date and core numbers, so it can be pasted to Claude */
+function rosterHTML(){
+  if(!G.n)return "";
+  const d=p=>`${p.B.d}.${p.B.m}.${p.B.y}`;
+  return `<h2>המשתתפים</h2><p class="muted">שם מלא מהלידה · תאריך לידה · שביל החיים / ביטוי / דחף הנשמה / אישיות</p>`+
+    G.P.map((p,i)=>`<p>${i+1}. ${esc(p.name)}${p.cur&&S.members[p.id]&&S.members[p.id].cur?` (היום: ${esc(S.members[p.id].cur)})`:""} · ${d(p)} · ${p.LP} / ${p.expr} / ${p.soul} / ${p.pers}</p>`).join("");
 }
 function scopeTitle(scope,pid){const p=G.P.find(x=>x.id===pid);return scope==="me"&&p?`המפה של ${p.name}`:scope==="family"?`התמונה הקבוצתית של ${S.meta.name}`:`המארג המלא של ${S.meta.name}`;}
 function scopeText(scope,pid){
@@ -1345,7 +1352,7 @@ function openShare(pid){
   d.innerHTML=`<h2 style="font-size:1.4rem">מה לשתף?</h2>
    <div class="sopts">${P?opt("me",P.id===myId()?"המפה האישית שלי":`המפה של ${esc(P.label)}`,"שלושת הפרמטרים, הצמתים, התפקיד בקבוצה והחוטים"):""}
    ${opt("family","התמונה הקבוצתית","המספר של הקבוצה, מה חסר, החוטים והתפקידים")}
-   ${opt("all","המארג המלא","התמונה הקבוצתית, ואחריה המפה של כל אחד מהמשתתפים")}</div>
+   ${opt("all","המארג המלא","רשימת המשתתפים עם תאריכי לידה, התמונה הקבוצתית, והמפה של כל אחד. מתאים להדבקה בשיחה עם Claude")}</div>
    <h3 style="font-size:1.05rem;margin:16px 0 8px">איך?</h3>
    <div class="row" style="margin-top:0"><button class="btn small" data-sc="share">שיתוף…</button><button class="btn ghost small" data-sc="wa">וואטסאפ</button><button class="btn ghost small" data-sc="mail">מייל</button><button class="btn ghost small" data-sc="pdf">PDF / הדפסה</button><button class="btn ghost small" data-sc="copy">העתקה</button></div>
    <p class="status" id="shSt"></p><p class="muted" id="shNote" style="font-size:.85rem;margin:4px 0 0"></p>
