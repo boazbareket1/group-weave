@@ -1366,6 +1366,7 @@ function scopeHTML(scope,pid){
   const p=G.P.find(x=>x.id===pid);
   if(scope==="me"&&p)return personReading(p)+`<p class="muted">למפה האישית המורחבת: ${esc(personalMapURL(p.id))}</p>`;
   if(scope==="family")return familyHTML();
+  if(scope==="host")return rosterHTML()+familyHTML()+G.P.map(x=>`<div class="pbreak"></div>${personReading(x)}`).join("")+`<div class="pbreak"></div>`+feedbackHTML().replace(/<div class="row">[\s\S]*?<\/div>/,"");
   return rosterHTML()+familyHTML()+G.P.map(x=>`<div class="pbreak"></div>${personReading(x)}`).join("");
 }
 /* participants list for the full summary: name, birth date and core numbers, so it can be pasted to Claude */
@@ -1375,7 +1376,7 @@ function rosterHTML(){
   return `<h2>המשתתפים</h2><p class="muted">שם מלא מהלידה · תאריך לידה · שביל החיים / ביטוי / דחף הנשמה / אישיות</p>`+
     G.P.map((p,i)=>`<p>${i+1}. ${esc(p.name)}${p.cur&&S.members[p.id]&&S.members[p.id].cur?` (היום: ${esc(S.members[p.id].cur)})`:""} · ${d(p)} · ${p.LP} / ${p.expr} / ${p.soul} / ${p.pers}</p>`).join("");
 }
-function scopeTitle(scope,pid){const p=G.P.find(x=>x.id===pid);return scope==="me"&&p?`המפה של ${p.name}`:scope==="family"?`התמונה הקבוצתית של ${S.meta.name}`:`המארג המלא של ${S.meta.name}`;}
+function scopeTitle(scope,pid){const p=G.P.find(x=>x.id===pid);return scope==="me"&&p?`המפה של ${p.name}`:scope==="family"?`התמונה הקבוצתית של ${S.meta.name}`:scope==="host"?`למנחה: המארג המלא עם המשוב · ${S.meta.name}`:`המארג המלא של ${S.meta.name}`;}
 function scopeText(scope,pid){
   const t=stripTxt(scopeHTML(scope,pid).replace(/<div class="pbreak"><\/div>/g,"<p>────────────</p>"));
   return `${scopeTitle(scope,pid)} · המארג הקבוצתי\n\n${t}\n\nלמעגל: ${joinURL()}`;
@@ -1391,6 +1392,7 @@ function openShare(pid){
    <div class="sopts">${P?opt("me",P.id===myId()?"המפה האישית שלי":`המפה של ${esc(P.label)}`,"שלושת הפרמטרים, הצמתים, התפקיד בקבוצה והחוטים"):""}
    ${opt("family","התמונה הקבוצתית","המספר של הקבוצה, מה חסר, החוטים והתפקידים")}
    ${opt("all","המארג המלא","רשימת המשתתפים עם תאריכי לידה, התמונה הקבוצתית, והמפה של כל אחד. מתאים להדבקה בשיחה עם Claude")}</div>
+   ${FACIL()?opt("host","למנחה: המארג המלא עם המשוב","רשימת המשתתפים עם תאריכי לידה, כל המפות, ובסוף סיכום הסימונים קולע / לא קולע. לא נשלח למשתתפים. מתאים להדבקה בשיחה עם Claude"):""}
    <h3 style="font-size:1.05rem;margin:16px 0 8px">איך?</h3>
    <div class="row" style="margin-top:0"><button class="btn small" data-sc="share">שיתוף…</button><button class="btn ghost small" data-sc="wa">וואטסאפ</button><button class="btn ghost small" data-sc="mail">מייל</button><button class="btn ghost small" data-sc="pdf">PDF / הדפסה</button><button class="btn ghost small" data-sc="copy">העתקה</button></div>
    <p class="status" id="shSt"></p><p class="muted" id="shNote" style="font-size:.85rem;margin:4px 0 0"></p>
@@ -1591,7 +1593,7 @@ function feedbackHTML(){
   const by={};all.forEach(d=>{const k=d.key;(by[k]=by[k]||{key:k,s:d.s,up:0,down:0,notes:[]});d.v===1?by[k].up++:by[k].down++;if(d.note)by[k].notes.push(d.note);});
   const rows=Object.values(by).sort((a,b)=>b.down-a.down||b.up-a.up);
   return `<div class="eyebrow">משוב</div><h2>מה קולע ומה לא</h2><p class="muted">${all.length} סימונים. הטקסטים שסומנו כ"לא קולע" מופיעים ראשונים.</p>
-   ${rows.map(r=>`<div class="fbrow"><b>👍 ${r.up} · 👎 ${r.down}</b> <span class="muted">${esc(r.key)}</span><p>${esc(r.s||"")}…</p>${r.notes.map(n=>`<p class="fbn">„${esc(n)}"</p>`).join("")}</div>`).join("")}
+   ${rows.map(r=>`<div class="fbrow"><b>👍 ${r.up} · 👎 ${r.down}</b> <span class="muted">[${esc(r.key)}]</span><p>${esc(r.s||"")}…</p>${r.notes.map(n=>`<p class="fbn">„${esc(n)}"</p>`).join("")}</div>`).join("")}
    <div class="row"><button class="btn small" type="button" id="fbCopy">העתקת הסיכום לשליחה ל־Claude</button><span class="status" id="fbSt"></span></div>`;
 }
 function openFeedback(){
