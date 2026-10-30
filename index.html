@@ -796,6 +796,10 @@ function onData(st,ok){
 let VIEW=qs.get("v")||(qs.has("game")?"game":qs.has("lead")?"circle":qs.has("board")?"stages":"");
 const FACIL=()=>isHost()||qs.has("board");
 const isMember=()=>{const me=myId();return !!(me&&S.members[me]);};
+/* joining is closed once the facilitator has moved past the join stage (or closed it by hand); the facilitator can always add */
+const isClosed=()=>!!(S.meta&&S.meta.closed);
+const canAdd=()=>FACIL()||!isClosed();
+const CLOSED_MSG="המעגל סגור להצטרפות. המפגש כבר התחיל, ומי שלא היה בו יכול להצטרף למעגל אחר. אם נותקת באמצע, פנה/י למנחה.";
 function defaultView(){return isHost()?"stages":isMember()?"me":"join";}
 function go(v){
   VIEW=v;closeReader();
@@ -880,6 +884,7 @@ async function createRoom(){
 /* ---------- join (phone) ---------- */
 function renderJoin(){
   view="join";
+  if(isClosed()&&!FACIL()){app.innerHTML=`<div class="wrap"><div class="top"><h1>${esc(S.meta.name)}</h1></div><div class="card" style="text-align:center"><h2 style="font-size:1.4rem">המעגל סגור להצטרפות</h2><p class="muted">${CLOSED_MSG}</p></div></div>`;addNav("join");return;}
   if(G.n>=MAXP){app.innerHTML=`<div class="wrap"><div class="top"><h1>${esc(S.meta.name)}</h1></div><div class="card" style="text-align:center"><h2 style="font-size:1.4rem">המעגל מלא</h2><p class="muted">במעגל כבר ${MAXP} משתתפים, וזה המקסימום. אם כבר הצטרפת ממכשיר אחר, פנה/י למנחה.</p></div></div>`;return;}
   app.innerHTML=`<div class="wrap">
   <div class="top"><h1>${esc(S.meta.name)}</h1><span class="muted" id="joinCount"></span></div>
@@ -897,7 +902,7 @@ function renderJoin(){
   </div>`;
   $("jBtn").onclick=join;updateJoin();addNav("join");
 }
-function updateJoin(){if(G.n>=MAXP)return renderJoin();const c=$("joinCount");if(c)c.textContent=G.n?`${G.n} מתוך ${MAXP} כבר במעגל`:"";}
+function updateJoin(){if((isClosed()&&!FACIL())===!!$("jBtn"))return renderJoin();if(G.n>=MAXP)return renderJoin();const c=$("joinCount");if(c)c.textContent=G.n?`${G.n} מתוך ${MAXP} כבר במעגל`:"";}
 function validPerson(name,bd,errEl){
   if(!name||!he(name)){errEl.textContent="חסר שם מלא בעברית.";return false;}
   if(!bd){errEl.textContent="חסר תאריך לידה.";return false;}
@@ -908,6 +913,7 @@ async function join(){
   const name=$("jName").value.trim(),bd=dateVal("jDate"),cur=$("jCur").value.trim();
   if(!validPerson(name,bd,$("jErr")))return;
   if(G.n>=MAXP){$("jErr").textContent=`המעגל מלא (${MAXP} משתתפים).`;return;}
+  if(isClosed()&&!FACIL()){$("jErr").textContent=CLOSED_MSG;return;}
   $("jBtn").disabled=true;
   try{const id=await store.post(`rooms/${ROOM}/members`,{name:name.slice(0,70),bdate:bd,cur:cur.slice(0,70),t:Date.now(),self:true});
     ls.set("grp-me:"+ROOM,id);view="";S.members[id]={name,bdate:bd,cur,t:Date.now()};G=analyzeFamily(S.members);go("me");}
@@ -918,6 +924,7 @@ async function join(){
 function openAdd(editId){
   const m=editId?S.members[editId]:null;
   if(!m&&G.n>=MAXP){alert(`המעגל מלא: אפשר עד ${MAXP} משתתפים.`);return;}
+  if(!m&&!canAdd()){alert(CLOSED_MSG);return;}
   $("addTitle").textContent=m?"עריכת פרטים":"הוספת משתתף/ת";
   $("addDlg").querySelector("p.muted").textContent=m?"תיקון השם או תאריך הלידה. הניתוח יתעדכן מיד אצל כולם.":"למשתתף/ת שאין לו/ה טלפון, או חבר/ה שמגיע/ה איתך.";
   $("addForm").innerHTML=`<label class="f">שם מלא מהלידה, בעברית<small>כולל שם המשפחה מהלידה</small><input type="text" id="aName" autocomplete="off"></label>
@@ -979,7 +986,7 @@ function renderBoard(){
        <div class="sky">${skySVG(skyOpts)}</div>${tribeLegend()}</aside>
      <section class="stage" id="stage">${needTwo?`<div class="eyebrow">${STAGES[st].t}</div><h2>מחכים לעוד משתתפים</h2><p class="lead">התמונה הקבוצתית נפתחת כשיש לפחות שני משתתפים במעגל.</p>`:stageHTML(st)}
        <div class="nav"><button class="btn ghost small" id="prevBtn" ${st===0?"disabled":""}>→ הקודם</button>
-       ${FACIL()?`<label class="toggle"><input type="checkbox" id="openTg" ${S.meta.open?"checked":""}> כל השלבים פתוחים בטלפונים</label>`:"<span></span>"}
+       ${FACIL()?`<span style="display:grid;gap:4px"><label class="toggle"><input type="checkbox" id="openTg" ${S.meta.open?"checked":""}> כל השלבים פתוחים בטלפונים</label><label class="toggle"><input type="checkbox" id="closeTg" ${isClosed()?"checked":""}> המעגל סגור להצטרפות</label></span>`:"<span></span>"}
        <button class="btn small" id="nextBtn" ${st>=maxSt?"disabled":""}>${st===0?"מתחילים ←":"הבא ←"}</button></div>
      </section>
    </div></div>`;
@@ -987,6 +994,7 @@ function renderBoard(){
   $("prevBtn").onclick=()=>goStage(st-1);$("nextBtn").onclick=()=>goStage(st+1);
   if($("addBtn"))$("addBtn").onclick=()=>openAdd();
   if($("openTg"))$("openTg").onchange=e=>store.patch(`rooms/${ROOM}/meta`,{open:e.target.checked});
+  if($("closeTg"))$("closeTg").onchange=e=>store.patch(`rooms/${ROOM}/meta`,{closed:e.target.checked});
   app.querySelectorAll("[data-del]").forEach(b=>b.onclick=()=>{const p=G.P.find(p=>p.id===b.dataset.del);if(p&&confirmDel(p))store.del(`rooms/${ROOM}/members/${p.id}`);});
   const ms=$("mysteryBtn");if(ms)ms.onclick=()=>{if(!mysteryShown&&mysteryIdx>=0){mysteryShown=true;}else{mysteryIdx=(mysteryIdx+1)%G.n;mysteryShown=false;}renderBoard();};
   const wa=$("waBtn");if(wa)wa.href="https://wa.me/?text="+encodeURIComponent(`מצטרפים למעגל "${S.meta.name}" במארג הקבוצתי: ממלאים שם ותאריך לידה ומקבלים מפה אישית\n${joinURL()}`);
@@ -996,7 +1004,7 @@ function renderBoard(){
 function confirmDel(p){return window.confirm?confirm(`להסיר את ${p.name} מהמעגל?`):true;}
 function goStage(i){
   i=Math.max(0,Math.min(STAGES.length-1,i));boardStage=i;mysteryIdx=-1;mysteryShown=false;
-  if(FACIL()&&i>curStage())store.patch(`rooms/${ROOM}/meta`,{stage:i});
+  if(FACIL()&&i>curStage())store.patch(`rooms/${ROOM}/meta`,Object.assign({stage:i},i>0&&!isClosed()&&S.meta.closed===undefined?{closed:true}:{}));
   renderBoard();window.scrollTo({top:0,behavior:"smooth"});
 }
 function personCard(p,body){return `<div class="pc"><div class="who">${dotOf(p)}<b>${esc(p.label)}</b></div>${body}</div>`;}
@@ -1006,7 +1014,7 @@ function stageHTML(st){
     h+=`<p class="lead">כל אחד סורק את הקוד בטלפון, ממלא שם ותאריך לידה, ונקודת אור נדלקת במעגל. מי שאין לו טלפון: "הוספת משתתף/ת" למעלה. עד ${MAXP} משתתפים.</p>
     <div class="row" style="margin-top:0"><a class="btn ghost small" id="waBtn" target="_blank" rel="noopener" style="text-decoration:none">שליחת הקישור בוואטסאפ</a><button class="btn ghost small" id="copyBtn">העתקת הקישור</button></div>
     <h3 style="margin-top:22px;font-size:1.15rem">במעגל עכשיו: ${G.n} מתוך ${MAXP}</h3><div class="members">${P.map(p=>`<span class="mem">${dotOf(p)}${esc(p.name)}<button data-edit="${p.id}" aria-label="עריכת ${esc(p.name)}" title="עריכה">✎</button><button data-del="${p.id}" aria-label="הסרת ${esc(p.name)}">×</button></span>`).join("")||'<span class="muted">עוד אין משתתפים</span>'}</div>
-    <p class="muted" style="margin-top:16px;font-size:.92rem">מי שמצטרף/ת באיחור נכנס/ת אוטומטית לתמונה הקבוצתית. כדי להציג את הלוח ממחשב או מקרן אחרים: <span style="direction:ltr;display:inline-block;word-break:break-all">${esc(boardURL())}</span></p>`;
+    <p class="muted" style="margin-top:16px;font-size:.92rem">כשעוברים לשלב 1 המעגל נסגר אוטומטית להצטרפות, כדי שמי שלא היה במפגש לא ייכנס אחר כך. אפשר לפתוח ולסגור בסימון למטה. מי שמצטרף/ת באיחור נכנס/ת אוטומטית לתמונה הקבוצתית. כדי להציג את הלוח ממחשב או מקרן אחרים: <span style="direction:ltr;display:inline-block;word-break:break-all">${esc(boardURL())}</span></p>`;
     return h;
   }
   if(k==="who"){
@@ -1058,7 +1066,7 @@ function renderPhone(){
   app.innerHTML=`<div class="wrap">
    <div class="top"><h1>שלום ${esc(me.first)}</h1><span class="muted">${esc(S.meta.name)}</span></div>
    <div id="pbody">${myMap(me)}</div>
-   <p style="margin-top:28px;text-align:center">${G.n<MAXP?`<button class="link" id="pAdd">+ הוספת משתתף/ת נוסף/ת</button> · `:""}<button class="link" id="pOut">זה לא אני</button></p>
+   <p style="margin-top:28px;text-align:center">${G.n<MAXP&&canAdd()?`<button class="link" id="pAdd">+ הוספת משתתף/ת נוסף/ת</button> · `:""}<button class="link" id="pOut">זה לא אני</button></p>
   </div>`;
   addNav("me");
   if($("pAdd"))$("pAdd").onclick=()=>openAdd();
@@ -1085,7 +1093,7 @@ function renderFamily(){
     <div id="leadList" style="margin-top:0">${P.map((p,i)=>cardHTML(p,i,null,0)).join("")||'<div class="locked">עוד אין משתתפים במעגל.</div>'}</div>
     ${G.n>1?`<div class="lead-actions" style="margin-top:16px"><button data-g="mission">המספר שלנו</button><button data-g="miss">מה חסר</button><button data-g="links">כל החיווטים</button></div>`:""}`}
    <p style="margin-top:24px;text-align:center"><button class="btn small" type="button" data-sharedlg="">שיתוף / שליחה / PDF</button></p>
-   <p style="margin-top:10px;text-align:center">${G.n<MAXP?`<button class="link" id="fAdd">+ הוספת משתתף/ת</button>`:`<span class="muted">המעגל מלא (${MAXP} משתתפים)</span>`}</p>
+   <p style="margin-top:10px;text-align:center">${G.n>=MAXP?`<span class="muted">המעגל מלא (${MAXP} משתתפים)</span>`:canAdd()?`<button class="link" id="fAdd">+ הוספת משתתף/ת</button>`:`<span class="muted">המעגל סגור להצטרפות</span>`}</p>
   </div>`;
   addNav("fam");
   if($("fAdd"))$("fAdd").onclick=()=>openAdd();
@@ -1543,6 +1551,7 @@ function glossaryHTML(focus){
 function openQR(){
   openReader(`<div class="eyebrow">הצטרפות למעגל</div><h2>${esc(S.meta?S.meta.name:"")}</h2>
    <div class="qr" style="width:min(340px,100%);margin:14px auto">${qrSVG(joinURL())}</div>
+   ${isClosed()?`<p class="ask" style="margin:10px auto;max-width:46ch"><b>שימו לב</b>המעגל סגור להצטרפות. ${FACIL()?'כדי לצרף מישהו שהתנתק או איחר: בלוח השלבים, בטלו את הסימון "המעגל סגור להצטרפות", ואחרי שנכנס סמנו שוב.':'מי שלא היה במפגש לא יוכל להצטרף.'}</p>`:""}
    <p style="text-align:center;margin:8px 0 0">סורקים את הקוד, או נכנסים לקישור ומקלידים</p>
    <p style="text-align:center;margin:4px 0 0"><span class="code" style="font-size:2.4rem">${ROOM}</span></p>
    <p class="muted" style="text-align:center;direction:ltr;word-break:break-all;font-size:.9rem">${esc(BASE)}</p>
