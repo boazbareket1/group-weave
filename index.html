@@ -153,6 +153,22 @@ details.more summary{cursor:pointer;color:var(--teal);font-weight:700}
 .st .grp{margin:6px 0 0}
 .st .me{margin-top:10px;background:var(--gold-soft);border-radius:10px;padding:10px 12px}
 .st .me b{color:var(--gold)}
+/* thoughts wall */
+.wall-compose{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:14px 16px;display:grid;gap:8px}
+.wall-compose textarea{width:100%;min-height:84px;border:1px solid var(--line);background:var(--panel2);color:var(--fg);border-radius:10px;padding:10px 12px;font-size:1rem;resize:vertical}
+.post{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:12px 16px;margin-top:10px}
+.post .ph{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.post .ph b{font-family:var(--f-display);font-size:1.08rem}
+.post .ph small{color:var(--muted);font-size:.8rem}
+.post .ph .pdel{margin-inline-start:auto;border:0;background:none;color:var(--muted);font-size:1.1rem;padding:2px 6px;border-radius:50%}
+.post .ptxt{margin:6px 0 0;white-space:pre-wrap;overflow-wrap:anywhere}
+.post .pacts{display:flex;gap:10px;margin-top:6px}
+.post .pacts button{background:none;border:0;color:var(--teal);font-weight:600;padding:2px 0;font-size:.9rem}
+.post .reply{margin:8px 0 0 0;padding:8px 12px;border-inline-start:3px solid var(--line);background:var(--panel2);border-radius:8px}
+.post .reply b{font-size:.95rem}.post .reply p{margin:2px 0 0;white-space:pre-wrap}
+.wall-empty{color:var(--muted);text-align:center;padding:24px 14px;border:1px dashed var(--line);border-radius:14px;margin-top:12px}
+.gnav .nbadge{position:absolute;top:2px;inset-inline-end:6px;background:var(--rose);color:#fff;border-radius:999px;font-size:.66rem;font-weight:700;min-width:16px;height:16px;line-height:16px;text-align:center;padding:0 4px}
+.gnav button{position:relative}
 .locked{color:var(--muted);text-align:center;padding:14px;border:1px dashed var(--line);border-radius:14px;margin-top:12px}
 .now-pill{display:inline-block;font-size:.72rem;font-weight:700;background:var(--gold);color:#fffdf8;border-radius:999px;padding:1px 9px;margin-inline-start:8px;vertical-align:middle}
 dialog{border:1px solid var(--line);border-radius:18px;background:var(--panel);color:var(--fg);padding:20px;width:min(440px,calc(100vw - 32px))}
@@ -773,7 +789,7 @@ function familyRel(p,G){
 /* ================= state & routing ================= */
 let S={meta:null,members:{},notes:{}};let G={P:[]};let online=true;let view="";let phoneTab="me";let boardStage=null;let mysteryIdx=-1,mysteryShown=false;
 function onData(st,ok){
-  online=ok;S={meta:st.meta||null,members:st.members||{},notes:st.notes||{},fb:st.fb||{}};
+  online=ok;S={meta:st.meta||null,members:st.members||{},notes:st.notes||{},fb:st.fb||{},wall:st.wall||{}};
   G=analyzeFamily(S.members);
   route(true);
 }
@@ -794,6 +810,7 @@ function route(fromData){
   let v=VIEW||defaultView();
   if(v==="me"&&!isMember())v="join";
   if(v==="game")return renderGame();
+  if(v==="wall")return renderWall();
   if(v==="circle")return renderLead();
   if(v==="stages")return renderBoard();
   if(v==="fam")return renderFamily();
@@ -801,8 +818,8 @@ function route(fromData){
   if(view!=="join")renderJoin();else updateJoin();
 }
 function navHTML(cur){
-  const items=[isMember()?["me","המפה שלי","◉"]:["join","הצטרפות","+"],["fam","הקבוצה","☷"],["circle","המעגל","◎"],["stages","שלבים","☰"],["game","משחק","✦"],["qr","QR","▦"],["gloss","מילון","?"]];
-  return `<nav class="gnav" aria-label="ניווט בכלי">${items.map(([k,t,i])=>`<button type="button" data-go="${k}" ${k===cur?'aria-current="page"':""}><span class="gi" aria-hidden="true">${i}</span><span>${t}</span></button>`).join("")}</nav>`;
+  const items=[isMember()?["me","המפה שלי","◉"]:["join","הצטרפות","+"],["fam","הקבוצה","☷"],["circle","המעגל","◎"],["stages","שלבים","☰"],["game","משחק","✦"],["wall","לוח","✎"],["qr","QR","▦"],["gloss","מילון","?"]];
+  return `<nav class="gnav" aria-label="ניווט בכלי">${items.map(([k,t,i])=>`<button type="button" data-go="${k}" ${k===cur?'aria-current="page"':""}><span class="gi" aria-hidden="true">${i}</span><span>${t}</span>${k==="wall"&&wallUnread()?`<span class="nbadge">${wallUnread()}</span>`:""}</button>`).join("")}</nav>`;
 }
 function addNav(cur){const w=app.querySelector(".wrap");if(w)w.insertAdjacentHTML("afterbegin",navHTML(cur));}
 function renderLoading(){view="loading";app.innerHTML=`<div class="wrap"><p class="muted" style="text-align:center;margin-top:30vh">מתחברים למעגל…</p></div>`;}
@@ -1608,6 +1625,56 @@ function familyYearsHTML(){
   const ys=[];for(let k=-2;k<=4;k++){const y=TY+k;const fy=single(G.P.reduce((a,p)=>a+single(single(p.B.d)+single(p.B.m)+single(dsum(y))),0));ys.push([y,fy]);}
   return `<h3 style="margin-top:18px;font-size:1.15rem">המחזור המשפחתי</h3><p class="muted" style="margin:2px 0 8px">השנה המשפחתית לאורך השנים: לאן המשפחה נעה.</p>
    <div class="fyears">${ys.map(([y,f])=>`<div class="fy${y===TY?" now":""}"><small>${y}</small><span class="num">${f}</span><small>${YKW[f]}</small></div>`).join("")}</div>`;
+}
+
+/* ================= thoughts wall: the circle keeps talking after the meeting ================= */
+const wallPosts=()=>Object.entries(S.wall||{}).map(([id,p])=>({id,...p})).filter(p=>p&&p.text);
+function wallUnread(){if(!ROOM)return 0;const seen=+(ls.get("grp-wall-seen:"+ROOM)||0);const me=wallWho().by;return wallPosts().filter(p=>p.t>seen&&p.by!==me).length;}
+function wallWho(){
+  const me=G.P.find(p=>p.id===myId());
+  if(me)return {name:me.label,by:me.id};
+  const by=voterId();
+  const saved=ls.get("grp-wall-name:"+ROOM);
+  return {name:saved||(isHost()?"המנחה":""),by};
+}
+const fmtWhen=t=>{const d=new Date(t),n=new Date();const same=d.toDateString()===n.toDateString();return (same?"היום":d.toLocaleDateString("he-IL",{day:"numeric",month:"numeric"}))+" "+d.toLocaleTimeString("he-IL",{hour:"2-digit",minute:"2-digit"});};
+let wallReplyTo=null;
+function renderWall(){
+  view="wall";
+  const who=wallWho();
+  const posts=wallPosts().sort((a,b)=>b.t-a.t);
+  const roots=posts.filter(p=>!p.parent),replies=p=>posts.filter(r=>r.parent===p.id).sort((a,b)=>a.t-b.t);
+  const canDel=p=>p.by===who.by||isHost();
+  const keep=$("wallText")?$("wallText").value:"",keepR=$("replyText")?$("replyText").value:"";
+  const postHTML=p=>`<article class="post" id="post-${p.id}"><div class="ph"><b>${esc(p.who||"")}</b><small>${fmtWhen(p.t)}</small>${canDel(p)?`<button class="pdel" data-pdel="${p.id}" aria-label="מחיקה">×</button>`:""}</div>
+     <p class="ptxt">${esc(p.text)}</p>
+     ${replies(p).map(r=>`<div class="reply" id="post-${r.id}"><b>${esc(r.who||"")}</b> <small class="muted" style="font-size:.78rem">${fmtWhen(r.t)}</small>${canDel(r)?` <button class="pdel" data-pdel="${r.id}" aria-label="מחיקה" style="float:left;border:0;background:none;color:var(--muted);font-size:1rem;padding:0 6px">×</button>`:""}<p>${esc(r.text)}</p></div>`).join("")}
+     <div class="pacts"><button type="button" data-reply="${p.id}">${wallReplyTo===p.id?"ביטול התגובה":"תגובה"}</button></div>
+     ${wallReplyTo===p.id?`<div class="wall-compose" style="margin-top:8px"><textarea id="replyText" placeholder="תגובה ל${esc(p.who||"")}…" maxlength="600"></textarea><div class="row" style="margin-top:0"><button class="btn small" id="replyBtn">שליחה</button></div></div>`:""}</article>`;
+  app.innerHTML=`<div class="wrap">
+   <div class="top"><h1>לוח המעגל</h1><span class="muted">${esc(S.meta.name)} · ${roots.length} ${roots.length===1?"מחשבה":"מחשבות"}</span></div>
+   <p class="muted" style="margin:0 0 12px">מקום להמשיך את השיחה: מחשבות, תודות, שאלות ומה שעלה אחרי המפגש. כל מי שבמעגל רואה ויכול להגיב, גם אחרי שנפרדנו.</p>
+   <div class="wall-compose">
+     ${who.name?`<div class="muted" style="font-size:.9rem">כותב/ת בתור <b>${esc(who.name)}</b></div>`:`<label class="f" style="margin-top:0">איך לקרוא לך בלוח?<input type="text" id="wallName" maxlength="40" autocomplete="off"></label>`}
+     <textarea id="wallText" placeholder="מה עולה בי אחרי המפגש…" maxlength="1000"></textarea>
+     <div class="row" style="margin-top:0;justify-content:space-between"><button class="btn small" id="wallBtn">פרסום בלוח</button><span class="status" id="wallSt"></span></div>
+   </div>
+   ${roots.length?roots.map(postHTML).join(""):`<div class="wall-empty">הלוח עוד ריק. המחשבה הראשונה יכולה להיות שלך.</div>`}
+  </div>`;
+  if(keep&&$("wallText"))$("wallText").value=keep;if(keepR&&$("replyText"))$("replyText").value=keepR;
+  addNav("wall");
+  ls.set("grp-wall-seen:"+ROOM,String(Date.now()));
+  const send=async(text,parent,ta,btn)=>{
+    text=text.trim();if(!text)return;
+    let name=who.name;if(!name){name=($("wallName")?$("wallName").value.trim():"");if(!name){$("wallSt").textContent="חסר שם לכתיבה בלוח.";return;}ls.set("grp-wall-name:"+ROOM,name);}
+    btn.disabled=true;ta.value="";wallReplyTo=null;
+    try{await store.post(`rooms/${ROOM}/wall`,{who:name.slice(0,40),by:who.by,text:text.slice(0,1000),t:Date.now(),...(parent?{parent}:{})});if(LOCAL)renderWall();}
+    catch(e){ta.value=text;$("wallSt").textContent="הפרסום לא הצליח, נסו שוב.";btn.disabled=false;}
+  };
+  $("wallBtn").onclick=()=>send($("wallText").value,null,$("wallText"),$("wallBtn"));
+  const rb=$("replyBtn");if(rb)rb.onclick=()=>send($("replyText").value,wallReplyTo,$("replyText"),rb);
+  app.querySelectorAll("[data-reply]").forEach(b=>b.onclick=()=>{wallReplyTo=wallReplyTo===b.dataset.reply?null:b.dataset.reply;renderWall();const t=$("replyText");if(t)t.focus();});
+  app.querySelectorAll("[data-pdel]").forEach(b=>b.onclick=async()=>{if(!confirm("למחוק את ההודעה?"))return;const id=b.dataset.pdel;const kids=posts.filter(r=>r.parent===id);try{await store.del(`rooms/${ROOM}/wall/${id}`);for(const k of kids)await store.del(`rooms/${ROOM}/wall/${k.id}`);if(LOCAL)renderWall();}catch(e){}});
 }
 
 /* ================= start ================= */
