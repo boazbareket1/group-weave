@@ -786,7 +786,7 @@ function go(v){
   try{const u=new URL(location.href);["board","lead","game"].forEach(k=>u.searchParams.delete(k));u.searchParams.set("v",v);history.replaceState(null,"",u);}catch(e){}
   view="";route();window.scrollTo({top:0});
 }
-document.addEventListener("click",e=>{const b=e.target.closest("[data-go]");if(!b)return;e.preventDefault();if(b.dataset.go==="gloss"){openGlossary();return;}go(b.dataset.go);});
+document.addEventListener("click",e=>{const b=e.target.closest("[data-go]");if(!b)return;e.preventDefault();if(b.dataset.go==="gloss"){openGlossary();return;}if(b.dataset.go==="qr"){openQR();return;}go(b.dataset.go);});
 function route(fromData){
   if(!ROOM)return renderHome();
   if(!S.meta&&fromData&&online){return renderMissing();}
@@ -801,7 +801,7 @@ function route(fromData){
   if(view!=="join")renderJoin();else updateJoin();
 }
 function navHTML(cur){
-  const items=[isMember()?["me","המפה שלי","◉"]:["join","הצטרפות","+"],["fam","הקבוצה","☷"],["circle","המעגל","◎"],["stages","שלבים","☰"],["game","משחק","✦"],["gloss","מילון","?"]];
+  const items=[isMember()?["me","המפה שלי","◉"]:["join","הצטרפות","+"],["fam","הקבוצה","☷"],["circle","המעגל","◎"],["stages","שלבים","☰"],["game","משחק","✦"],["qr","QR","▦"],["gloss","מילון","?"]];
   return `<nav class="gnav" aria-label="ניווט בכלי">${items.map(([k,t,i])=>`<button type="button" data-go="${k}" ${k===cur?'aria-current="page"':""}><span class="gi" aria-hidden="true">${i}</span><span>${t}</span></button>`).join("")}</nav>`;
 }
 function addNav(cur){const w=app.querySelector(".wrap");if(w)w.insertAdjacentHTML("afterbegin",navHTML(cur));}
@@ -1522,6 +1522,15 @@ const GLOSS=[
 function glossaryHTML(focus){
   return `<div class="eyebrow">מילון מושגים</div><h2>מה זה אומר?</h2><p class="muted">ההסברים לכל המונחים שמופיעים בכלי. זהו כלי להתבוננות ולשיחה, לא אבחון.</p>
   <dl class="gloss">${GLOSS.map(([id,t,d])=>`<dt id="g-${id}" class="${id===focus?"hl":""}">${t}</dt><dd>${d}</dd>`).join("")}</dl>`;
+}
+function openQR(){
+  openReader(`<div class="eyebrow">הצטרפות למעגל</div><h2>${esc(S.meta?S.meta.name:"")}</h2>
+   <div class="qr" style="width:min(340px,100%);margin:14px auto">${qrSVG(joinURL())}</div>
+   <p style="text-align:center;margin:8px 0 0">סורקים את הקוד, או נכנסים לקישור ומקלידים</p>
+   <p style="text-align:center;margin:4px 0 0"><span class="code" style="font-size:2.4rem">${ROOM}</span></p>
+   <p class="muted" style="text-align:center;direction:ltr;word-break:break-all;font-size:.9rem">${esc(BASE)}</p>
+   <p style="text-align:center;margin-top:12px"><button class="btn ghost small" type="button" id="qrCopy">העתקת הקישור</button> <a class="btn ghost small" style="text-decoration:none" target="_blank" rel="noopener" href="https://wa.me/?text=${encodeURIComponent(`מצטרפים למעגל "${S.meta?S.meta.name:""}" במארג הקבוצתי:\n${joinURL()}`)}">שליחה בוואטסאפ</a></p>`);
+  const c=document.getElementById("qrCopy");if(c)c.onclick=async()=>{try{await navigator.clipboard.writeText(joinURL());c.textContent="הועתק ✓";}catch(e){prompt("העתיקו את הקישור:",joinURL());}};
 }
 function openGlossary(focus){openReader(glossaryHTML(focus));if(focus){const el=document.getElementById("g-"+focus);if(el)el.scrollIntoView({block:"center"});}}
 document.addEventListener("click",e=>{const b=e.target.closest("[data-term]");if(!b)return;e.preventDefault();e.stopPropagation();openGlossary(b.dataset.term);},true);
