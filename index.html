@@ -817,6 +817,7 @@ function renderHome(){
     <h1>המארג הקבוצתי</h1>
     <p>כל משתתף מצטרף מהטלפון, מגלה את המפה האישית שלו, ואז רואים יחד איך אנשים שרק נפגשו נארגים לקבוצה אחת.</p>
     <label class="f" style="max-width:340px;margin:0 auto 14px;text-align:right">איך נקרא למעגל?<input type="text" id="famName" placeholder="למשל: סדנת יום שישי" autocomplete="off"></label>
+    <label class="f" style="max-width:340px;margin:0 auto 14px;text-align:right">קוד מנחה<small>פתיחת מעגל חדש שמורה למנחה. להצטרפות למעגל קיים לא צריך קוד.</small><input type="text" id="hostCode" autocomplete="off" inputmode="text" dir="auto"></label>
     <button class="btn light" id="createBtn">פתיחת מעגל חדש ←</button>
     <p class="err" id="homeErr" style="margin-top:10px"></p>
     <ul>
@@ -831,13 +832,25 @@ function renderHome(){
   </div>
   <p class="muted" style="font-size:.85rem;margin-top:22px">החישוב מבוסס על גימטריה עברית בשיטת המספר הקטן ועל תאריך הלידה. זהו כלי להתבוננות ולשיחה, לא אבחון. הפרטים נשמרים רק בתוך המעגל, ומי שיש לו את הקישור יכול לראות אותם.</p>
   </div>`;
+  if(LOCAL||ls.get("grp-unlocked")===HOST_HASH)$("hostCode").closest("label").hidden=true;
   $("createBtn").onclick=createRoom;
   $("codeBtn").onclick=()=>{const c=$("codeIn").value.toUpperCase().replace(/[^A-Z0-9]/g,"");if(c)location.href=BASE+"?r="+c+(LOCAL?"&local=1":"");};
   $("codeIn").onkeydown=e=>{if(e.key==="Enter")$("codeBtn").click();};
 }
+/* host code: only the facilitator may open new circles. The code itself is not in the file, only its SHA-256.
+   To change it: compute the SHA-256 of the new code (e.g. printf 'code' | sha256sum) and replace HOST_HASH. */
+const HOST_HASH="c1f916534a33c70e6695a100531090ec79483c0900cf33ac087d01acb145bfc9";
+async function sha256(t){const b=await crypto.subtle.digest("SHA-256",new TextEncoder().encode(t));return [...new Uint8Array(b)].map(x=>x.toString(16).padStart(2,"0")).join("");}
+async function checkHostCode(code){
+  if(LOCAL)return true;
+  if(ls.get("grp-unlocked")===HOST_HASH)return true;
+  try{if(code&&await sha256(code.trim())===HOST_HASH){ls.set("grp-unlocked",HOST_HASH);return true;}}catch(e){}
+  return false;
+}
 async function createRoom(){
   const name=$("famName").value.trim()||"המעגל שלנו";
   $("createBtn").disabled=true;$("homeErr").textContent="";
+  if(!await checkHostCode($("hostCode").value)){$("homeErr").textContent="קוד המנחה לא נכון. פתיחת מעגל חדש שמורה למנחה.";$("createBtn").disabled=false;return;}
   const A="ABCDEFGHJKMNPQRSTUVWXYZ23456789";
   try{
     let code;for(let i=0;i<5;i++){code=Array.from({length:5},()=>A[Math.floor(Math.random()*A.length)]).join("");if(!(await store.get(`rooms/${code}/meta`)))break;}
