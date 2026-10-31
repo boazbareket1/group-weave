@@ -21,11 +21,11 @@
 :root{
   --bg:#f8f6f1; --panel:#ffffff; --panel2:#efede6; --line:#1f2d3a; --line2:#d3cfc5;
   --fg:#1f2d3a; --muted:#5b6670; --gold:#0f6b66; --gold-soft:rgba(15,107,102,.10);
-  --teal:#0f6b66; --rose:#a4513d; --ink:#1f2d3a;
-  --ochre:#5b7f3b; --plum:#6b4e8f;
+  --teal:#0f6b66; --rose:#4a5f72; --ink:#1f2d3a;
+  --ochre:#4a86a3; --plum:#6b4e8f;
   --acc:var(--ink); --acc-soft:rgba(31,45,58,.08);
   --night:#ffffff; --night2:#ffffff; --star:#111111;
-  --t0:#7fd1c7; --t1:#f0c46a; --t2:#f2a08f;
+  --t0:#7fd1c7; --t1:#8fbcd4; --t2:#f2a08f;
   --f-display:"Secular One","Heebo",sans-serif;
   --f-body:"Heebo","Arial Hebrew","Segoe UI",Arial,sans-serif;
   --f-num:"Secular One","Heebo",sans-serif;
@@ -317,7 +317,7 @@ dl.gloss dt.hl,dl.gloss dt.hl+dd{background:var(--gold-soft);border-radius:6px}
 @media print{body{background:#fff}.steps,.nav,.btn,.tabs{display:none!important}}
 /* ================= design 03 "עיתון מספרים": overrides ================= */
 body[data-view="me"],body[data-view="join"]{--acc:var(--teal);--acc-soft:rgba(15,107,102,.10)}
-body[data-view="fam"],body[data-view="circle"]{--acc:var(--ochre);--acc-soft:rgba(91,127,59,.12)}
+body[data-view="fam"],body[data-view="circle"]{--acc:var(--ochre);--acc-soft:rgba(74,134,163,.12)}
 body[data-view="wall"]{--acc:var(--plum);--acc-soft:rgba(107,78,143,.12)}
 body[data-view="stages"],body[data-view="game"]{--acc:var(--ink);--acc-soft:rgba(31,45,58,.08)}
 .post{border-inline-start:6px solid var(--plum)}
@@ -441,7 +441,7 @@ dl.gloss dt.hl,dl.gloss dt.hl+dd{background:var(--panel2)}
 .kard .ixl li{padding:10px 12px;border:1.5px solid var(--line2);border-radius:6px}
 .kard .ixl b{display:block;font-size:.95rem;margin-bottom:2px}
 .kard .ixl p{margin:0;font-size:.9rem;line-height:1.5;color:#333}
-.kard.cta{justify-content:center;align-items:center;text-align:center;border-color:var(--ochre);background:rgba(91,127,59,.08)}
+.kard.cta{justify-content:center;align-items:center;text-align:center;border-color:var(--ochre);background:rgba(74,134,163,.08)}
 .kard.cta .k,.kard.cta h2{color:var(--ochre)}.kard.cta .btn{background:var(--ochre)}
 .kard.cta h2{font-size:1.5rem}
 .deck-dots{display:flex;gap:7px;justify-content:center;margin:6px 0 14px}
@@ -747,8 +747,8 @@ const FAM={
 const fam=(n,f)=>(FAM[n]&&FAM[n][f])||(FAM[single(n)]&&FAM[single(n)][f])||"";
 const TRIBE=["העצמאות והמחשבה","החומר והעשייה","הרגש והיצירה"];
 const TRIBE_NUMS=["1, 5, 7","2, 4, 8","3, 6, 9"];
-const PCOL=["#ff8a7a","#ffc857","#7ee0c3","#7fb8ff","#c79bff","#ff9fd2","#a6e36b","#ffa94d","#5fd3e6","#e6d26b","#9aa7ff","#f07b9a","#5ec98f","#d9a3ff","#ffd1a1"];
-const TRIBEC=["#7fd1c7","#f0c46a","#f2a08f"];
+const PCOL=["#ff8a7a","#8fbcd4","#7ee0c3","#7fb8ff","#c79bff","#ff9fd2","#a6e36b","#ffa94d","#5fd3e6","#e6d26b","#9aa7ff","#f07b9a","#5ec98f","#d9a3ff","#ffd1a1"];
+const TRIBEC=["#7fd1c7","#8fbcd4","#f2a08f"];
 let colorMode="person";try{colorMode=localStorage.getItem("grp-colormode")||"person"}catch(e){}
 const fillOf=p=>colorMode==="tribe"?TRIBEC[p.tribe]:p.color;
 const TCOL=["var(--t0)","var(--t1)","var(--t2)"];
@@ -1099,11 +1099,11 @@ function skySVG(opts={}){
   const P=G.P,n=P.length,cx=200,cy=200,R=n<=1?0:(n<=4?118:148);
   const pos=new Map();P.forEach((p,i)=>{const a=-Math.PI/2+i*2*Math.PI/Math.max(n,1);pos.set(p,[cx+R*Math.cos(a),cy+R*Math.sin(a)]);});
   let lines="";
-  if(opts.threads){const col={give:"#f0c46a",soul:"#7fd1c7",mirror:"#c7b6f5"};
+  if(opts.threads){const col={give:"#8fbcd4",soul:"#7fd1c7",mirror:"#c7b6f5"};
     (opts.threads).filter(t=>t.a&&t.b).forEach(t=>{const [x1,y1]=pos.get(t.a),[x2,y2]=pos.get(t.b);lines+=`<path d="M${x1},${y1} Q${cx},${cy} ${x2},${y2}" fill="none" stroke="${col[t.type]}" stroke-width="2.4" opacity=".8" ${t.type==="mirror"?'stroke-dasharray="5 6"':""}/>`;});}
   if(opts.friction){opts.friction.forEach(f=>{const [x1,y1]=pos.get(f.a),[x2,y2]=pos.get(f.b);lines+=`<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke="#f2a08f" stroke-width="2.4" stroke-dasharray="3 7" stroke-linecap="round"/>`;});}
   const ring=n>1?`<circle cx="${cx}" cy="${cy}" r="${R}" fill="none" stroke="rgba(255,244,214,.18)" stroke-width="1.5"/>`:"";
-  const center=opts.center?`<text x="${cx}" y="${cy+14}" text-anchor="middle" font-size="52" font-family="Cormorant Garamond,Georgia,serif" font-weight="600" fill="#f0c46a">${opts.center}</text><text x="${cx}" y="${cy+40}" text-anchor="middle" font-size="13" opacity=".8">${opts.centerLabel||""}</text>`:"";
+  const center=opts.center?`<text x="${cx}" y="${cy+14}" text-anchor="middle" font-size="52" font-family="Cormorant Garamond,Georgia,serif" font-weight="600" fill="#8fbcd4">${opts.center}</text><text x="${cx}" y="${cy+40}" text-anchor="middle" font-size="13" opacity=".8">${opts.centerLabel||""}</text>`:"";
   const dots=P.map(p=>{const [x,y]=pos.get(p);const c=fillOf(p);const lab=esc(p.label.length>12?p.label.slice(0,11)+"…":p.label);
     const below=y>cy+20||n===1;const ty=below?y+34:y-22;
     const num=opts.num?`<text x="${x}" y="${y+6}" text-anchor="middle" font-size="17" font-weight="700" fill="#10202a">${opts.num(p)}</text>`:"";
@@ -1197,7 +1197,7 @@ function stageHTML(st){
     <div class="grid">${P.map(p=>personCard(p,`<p><span class="num">${p.LP}</span> <b>${fam(p.LP,"role")}</b></p><p>${fam(p.LP,"give")}</p><p class="muted"><b>לומד/ת בקבוצה:</b> ${fam(p.LP,"learn")}</p>`)).join("")}</div>`;
   }
   if(k==="threads"){
-    const lab={give:["נותן־מקבל","#f0c46a"],soul:["תאומי נשמה","#7fd1c7"],mirror:["מראה","#c7b6f5"]};
+    const lab={give:["נותן־מקבל","#8fbcd4"],soul:["תאומי נשמה","#7fd1c7"],mirror:["מראה","#c7b6f5"]};
     h+=`<p class="lead">חוטים שמחברים בין המשתתפים: מי משלים למי את מה שחסר, מי צריך מבפנים את אותו דבר, ומי משקף למי צד נסתר.</p>
     <div class="legend" style="justify-content:flex-start;padding:0 0 6px">${Object.values(lab).map(l=>`<span><i style="background:${l[1]}"></i>${l[0]}</span>`).join("")}</div>
     <div>${G.threads.some(t=>t.text)?G.threads.filter(t=>t.text).map(t=>`<div class="thread"><span class="tag" style="background:${lab[t.type][1]}">${lab[t.type][0]}</span><p style="margin:0">${esc(t.text)}</p></div>`).join(""):`<p>החוטים בקבוצה הזו עדינים: אין חפיפות בולטות, וכל אחד מביא צבע משלו. שווה לשאול מה מחבר ביניכם מעבר למספרים.</p>`}</div>`;
@@ -1406,7 +1406,7 @@ function layoutLead(){
   const pos=new Map();
   P.forEach((p,i)=>{const a=-Math.PI/2+i*2*Math.PI/Math.max(n,1);pos.set(p,{a,dx:cx+rDot*Math.cos(a),dy:cy+rDot*Math.sin(a),kx:cx+rx*Math.cos(a),ky:cy+ry*Math.sin(a)});});
   const L=leadLinks();
-  const col={give:"#f0c46a",soul:"#7fd1c7",mirror:"#c7b6f5",friction:"#f2a08f"};
+  const col={give:"#8fbcd4",soul:"#7fd1c7",mirror:"#c7b6f5",friction:"#f2a08f"};
   let lines="";
   L.forEach((t,i)=>{const A=pos.get(t.a),B=pos.get(t.b);if(!A||!B)return;const d=`M${A.dx},${A.dy} Q${cx},${cy} ${B.dx},${B.dy}`;
     lines+=`<path class="hit" data-li="${i}" d="${d}" fill="none" stroke="transparent" stroke-width="16" tabindex="0" role="button" aria-label="${LINKLAB[t.type]}: ${esc(t.a.label)} ו${esc(t.b.label)}"/><path class="vis" d="${d}" fill="none" stroke="${col[t.type]}" stroke-width="2.6" opacity=".85" ${t.type==="mirror"?'stroke-dasharray="6 6"':t.type==="friction"?'stroke-dasharray="3 7" stroke-linecap="round"':""} pointer-events="none"/>`;});
