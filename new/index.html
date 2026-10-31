@@ -25,7 +25,7 @@
   --ochre:#4a86a3; --plum:#6b4e8f;
   --acc:var(--ink); --acc-soft:rgba(31,45,58,.08);
   --night:#ffffff; --night2:#ffffff; --star:#111111;
-  --t0:#7fd1c7; --t1:#8fbcd4; --t2:#f2a08f;
+  --t0:#7fd1c7; --t1:#8fbcd4; --t2:#9bcf93;
   --f-display:"Secular One","Heebo",sans-serif;
   --f-body:"Heebo","Arial Hebrew","Segoe UI",Arial,sans-serif;
   --f-num:"Secular One","Heebo",sans-serif;
@@ -410,7 +410,7 @@ details.deep summary{color:var(--teal)}
   .gnav{background:var(--acc);border-top:0;box-shadow:none}
   .gnav button{border:0;color:rgba(255,255,255,.7);background:none}
   .gnav button[aria-current="page"]{background:none;color:#fff}
-  .gnav .nbadge{background:#f2a08f;color:#111}
+  .gnav .nbadge{background:#9bcf93;color:#111}
 }
 .game-row .tr{font-family:var(--f-body);font-weight:700}
 .game-row .tr .k{font-family:var(--f-mono);color:var(--teal);font-weight:600}
@@ -747,8 +747,8 @@ const FAM={
 const fam=(n,f)=>(FAM[n]&&FAM[n][f])||(FAM[single(n)]&&FAM[single(n)][f])||"";
 const TRIBE=["העצמאות והמחשבה","החומר והעשייה","הרגש והיצירה"];
 const TRIBE_NUMS=["1, 5, 7","2, 4, 8","3, 6, 9"];
-const PCOL=["#ff8a7a","#8fbcd4","#7ee0c3","#7fb8ff","#c79bff","#ff9fd2","#a6e36b","#ffa94d","#5fd3e6","#e6d26b","#9aa7ff","#f07b9a","#5ec98f","#d9a3ff","#ffd1a1"];
-const TRIBEC=["#7fd1c7","#8fbcd4","#f2a08f"];
+const PCOL=["#8fcf9a","#8fbcd4","#7ee0c3","#7fb8ff","#c79bff","#b7a6e3","#a6e36b","#6fa8dc","#5fd3e6","#9fd8b4","#9aa7ff","#8ab6a8","#5ec98f","#d9a3ff","#a3c4e8"];
+const TRIBEC=["#7fd1c7","#8fbcd4","#9bcf93"];
 let colorMode="person";try{colorMode=localStorage.getItem("grp-colormode")||"person"}catch(e){}
 const fillOf=p=>colorMode==="tribe"?TRIBEC[p.tribe]:p.color;
 const TCOL=["var(--t0)","var(--t1)","var(--t2)"];
