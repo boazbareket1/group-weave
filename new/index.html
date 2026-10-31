@@ -1172,7 +1172,7 @@ function renderBoard(){
 function confirmDel(p){return window.confirm?confirm(`להסיר את ${p.name} מהמעגל?`):true;}
 function goStage(i){
   i=Math.max(0,Math.min(STAGES.length-1,i));boardStage=i;mysteryIdx=-1;mysteryShown=false;
-  if(FACIL()&&i>curStage())store.patch(`rooms/${ROOM}/meta`,Object.assign({stage:i},i>0&&!isClosed()&&S.meta.closed===undefined?{closed:true}:{}));
+  if(FACIL()&&i>curStage())store.patch(`rooms/${ROOM}/meta`,Object.assign({stage:i},i>0&&G&&G.n>=2&&!isClosed()&&S.meta.closed===undefined?{closed:true}:{}));
   renderBoard();window.scrollTo({top:0,behavior:"smooth"});
 }
 function personCard(p,body){return `<div class="pc"><div class="who">${dotOf(p)}<b>${esc(p.label)}</b></div>${body}</div>`;}
@@ -1747,12 +1747,13 @@ function glossaryHTML(focus){
 function openQR(){
   openReader(`<div class="eyebrow">הצטרפות למעגל</div><h2>${esc(S.meta?S.meta.name:"")}</h2>
    <div class="qr" style="width:min(340px,100%);margin:14px auto">${qrSVG(joinURL())}</div>
-   ${isClosed()?`<p class="ask" style="margin:10px auto;max-width:46ch"><b>שימו לב</b>המעגל סגור להצטרפות. ${FACIL()?'כדי לצרף מישהו שהתנתק או איחר: בלוח השלבים, בטלו את הסימון "המעגל סגור להצטרפות", ואחרי שנכנס סמנו שוב.':'מי שלא היה במפגש לא יוכל להצטרף.'}</p>`:""}
+   ${isClosed()?`<p class="ask" style="margin:10px auto;max-width:46ch"><b>שימו לב</b>המעגל סגור להצטרפות. ${FACIL()?'מי שסורק עכשיו יראה "המעגל סגור". <button class="link" id="reopenBtn">לפתוח את המעגל להצטרפות</button>':'מי שלא היה במפגש לא יוכל להצטרף.'}</p>`:""}
    <p style="text-align:center;margin:8px 0 0">סורקים את הקוד, או נכנסים לקישור ומקלידים</p>
    <p style="text-align:center;margin:4px 0 0"><span class="code" style="font-size:2.4rem">${ROOM}</span></p>
    <p class="muted" style="text-align:center;direction:ltr;word-break:break-all;font-size:.9rem">${esc(BASE)}</p>
    <p style="text-align:center;margin-top:12px"><button class="btn ghost small" type="button" id="qrCopy">העתקת הקישור</button> <a class="btn ghost small" style="text-decoration:none" target="_blank" rel="noopener" href="https://wa.me/?text=${encodeURIComponent(`מצטרפים למעגל "${S.meta?S.meta.name:""}" במארג הקבוצתי:\n${joinURL()}`)}">שליחה בוואטסאפ</a></p>`);
   const c=document.getElementById("qrCopy");if(c)c.onclick=async()=>{try{await navigator.clipboard.writeText(joinURL());c.textContent="הועתק ✓";}catch(e){prompt("העתיקו את הקישור:",joinURL());}};
+  const ro=document.getElementById("reopenBtn");if(ro)ro.onclick=async()=>{ro.disabled=true;await store.patch(`rooms/${ROOM}/meta`,{closed:false});S.meta.closed=false;openQR();};
 }
 function openGlossary(focus){openReader(glossaryHTML(focus));if(focus){const el=document.getElementById("g-"+focus);if(el)el.scrollIntoView({block:"center"});}}
 document.addEventListener("click",e=>{const b=e.target.closest("[data-term]");if(!b)return;e.preventDefault();e.stopPropagation();openGlossary(b.dataset.term);},true);
