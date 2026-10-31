@@ -1453,7 +1453,7 @@ addEventListener("resize",()=>{if(view==="lead")layoutLead();});
 function closeCtx(){if(ctx){ctx.remove();ctx=null;}}
 document.addEventListener("click",e=>{
   const b=e.target.closest("[data-lcm]");
-  if(!b){if(ctx&&!e.target.closest(".ctxmenu"))closeCtx();return;}
+  if(!b){if(ctx&&!ctx.classList.contains("morectx")&&!e.target.closest(".ctxmenu"))closeCtx();return;}
   e.preventDefault();e.stopPropagation();closeCtx();
   const id=b.dataset.lcm,p=G.P.find(x=>x.id===id);if(!p)return;
   ctx=document.createElement("div");ctx.className="ctxmenu";ctx.setAttribute("role","menu");
