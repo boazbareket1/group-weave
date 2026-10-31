@@ -882,10 +882,15 @@ async function createRoom(){
 }
 
 /* ---------- join (phone) ---------- */
+function claimHTML(){
+  if(!G||!G.n)return "";
+  return `<div class="card" style="margin-top:14px"><h2 style="font-size:1.15rem">כבר במעגל? זה את/ה?</h2><p class="muted" style="margin:4px 0 10px">אם המנחה הוסיף/ה אותך, או שהחלפת מכשיר – בחר/י את השם שלך.</p><div style="display:flex;flex-wrap:wrap;gap:8px">${G.P.map(p=>`<button class="btn small" data-claim="${p.id}" style="background:#fff;color:var(--fg);border:1.5px solid var(--line2)">${esc(p.label)}</button>`).join("")}</div></div>`;
+}
+function bindClaim(){document.querySelectorAll("[data-claim]").forEach(b=>b.onclick=()=>{const id=b.dataset.claim;if(!S.members[id])return;if(!confirm(`להיכנס למעגל בתור ${S.members[id].name}?`))return;ls.set("grp-me:"+ROOM,id);view="";go("me");});}
 function renderJoin(){
   view="join";
-  if(isClosed()&&!FACIL()){app.innerHTML=`<div class="wrap"><div class="top"><h1>${esc(S.meta.name)}</h1></div><div class="card" style="text-align:center"><h2 style="font-size:1.4rem">המעגל סגור להצטרפות</h2><p class="muted">${CLOSED_MSG}</p></div></div>`;addNav("join");return;}
-  if(G.n>=MAXP){app.innerHTML=`<div class="wrap"><div class="top"><h1>${esc(S.meta.name)}</h1></div><div class="card" style="text-align:center"><h2 style="font-size:1.4rem">המעגל מלא</h2><p class="muted">במעגל כבר ${MAXP} משתתפים, וזה המקסימום. אם כבר הצטרפת ממכשיר אחר, פנה/י למנחה.</p></div></div>`;return;}
+  if(isClosed()&&!FACIL()){app.innerHTML=`<div class="wrap"><div class="top"><h1>${esc(S.meta.name)}</h1></div><div class="card" style="text-align:center"><h2 style="font-size:1.4rem">המעגל סגור להצטרפות</h2><p class="muted">${CLOSED_MSG}</p></div>${claimHTML()}</div>`;bindClaim();addNav("join");return;}
+  if(G.n>=MAXP){app.innerHTML=`<div class="wrap"><div class="top"><h1>${esc(S.meta.name)}</h1></div><div class="card" style="text-align:center"><h2 style="font-size:1.4rem">המעגל מלא</h2><p class="muted">במעגל כבר ${MAXP} משתתפים, וזה המקסימום. אם כבר הצטרפת ממכשיר אחר, בחר/י את שמך למטה.</p></div>${claimHTML()}</div>`;bindClaim();return;}
   app.innerHTML=`<div class="wrap">
   <div class="top"><h1>${esc(S.meta.name)}</h1><span class="muted" id="joinCount"></span></div>
   <div class="card">
@@ -899,8 +904,9 @@ function renderJoin(){
     <p class="err" id="jErr"></p>
   </div>
   <p class="muted" style="font-size:.85rem;margin-top:16px">הפרטים נשמרים רק בתוך המעגל הזה, ומי שיש לו את הקישור למעגל יכול לראות אותם. אפשר לבקש מהמנחה להסיר אותך מהמעגל בכל שלב.</p>
+  ${claimHTML()}
   </div>`;
-  $("jBtn").onclick=join;updateJoin();addNav("join");
+  $("jBtn").onclick=join;bindClaim();updateJoin();addNav("join");
 }
 function updateJoin(){if((isClosed()&&!FACIL())===!!$("jBtn"))return renderJoin();if(G.n>=MAXP)return renderJoin();const c=$("joinCount");if(c)c.textContent=G.n?`${G.n} מתוך ${MAXP} כבר במעגל`:"";}
 function validPerson(name,bd,errEl){
