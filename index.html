@@ -1564,7 +1564,9 @@ function openQR(){
    <p style="text-align:center;margin:8px 0 0">סורקים את הקוד, או נכנסים לקישור ומקלידים</p>
    <p style="text-align:center;margin:4px 0 0"><span class="code" style="font-size:2.4rem">${ROOM}</span></p>
    <p class="muted" style="text-align:center;direction:ltr;word-break:break-all;font-size:.9rem">${esc(BASE)}</p>
-   <p style="text-align:center;margin-top:12px"><button class="btn ghost small" type="button" id="qrCopy">העתקת הקישור</button> <a class="btn ghost small" style="text-decoration:none" target="_blank" rel="noopener" href="https://wa.me/?text=${encodeURIComponent(`מצטרפים למעגל "${S.meta?S.meta.name:""}" במארג הקבוצתי:\n${joinURL()}`)}">שליחה בוואטסאפ</a></p>`);
+   <p style="text-align:center;margin-top:12px"><button class="btn ghost small" type="button" id="qrCopy">העתקת הקישור</button> <a class="btn ghost small" style="text-decoration:none" target="_blank" rel="noopener" href="https://wa.me/?text=${encodeURIComponent(`מצטרפים למעגל "${S.meta?S.meta.name:""}" במארג הקבוצתי:\n${joinURL()}`)}">שליחה בוואטסאפ</a></p>
+   ${FACIL()?"":`<p class="muted" style="text-align:center;margin-top:14px;font-size:.85rem">מנחה במכשיר אחר? <button class="link" id="iAmHost">כניסת מנחה עם קוד</button></p>`}`);
+  const ih=document.getElementById("iAmHost");if(ih)ih.onclick=async()=>{const c=prompt("קוד המנחה:");if(c===null)return;if(await checkHostCode(c)){ls.set("grp-host:"+ROOM,"1");openQR();route();}else alert("הקוד לא נכון.");};
   const c=document.getElementById("qrCopy");if(c)c.onclick=async()=>{try{await navigator.clipboard.writeText(joinURL());c.textContent="הועתק ✓";}catch(e){prompt("העתיקו את הקישור:",joinURL());}};
   const ro=document.getElementById("reopenBtn");if(ro)ro.onclick=async()=>{ro.disabled=true;await store.patch(`rooms/${ROOM}/meta`,{closed:false});S.meta.closed=false;openQR();};
 }
