@@ -1371,7 +1371,8 @@ function linkReading(t){
   if(r.type==="mirror")return `<div class="eyebrow">${LINKLAB.mirror}</div><h2>${esc(r.a.label)} ו${esc(r.b.label)}</h2><p>${esc(r.text)}</p><h3>מה ${esc(r.a.label)} מקרין/ה</h3><p>${get(r.a.pers,"persona")}</p><h3>מה ${esc(r.b.label)} מרגיש/ה בפנים</h3><p>${get(r.b.soul,"soul")}</p>`;
   return `<p>${esc(r.text||"")}</p>`;
 }
-function groupReading(k){
+function groupReading(k){return groupReading0(k).replace(/<div class="ask">[\s\S]*?<\/div>/g,"");}
+function groupReading0(k){
   const P=G.P;
   if(G.n<2)return `<h2>מחכים לעוד משתתפים</h2><p>התמונה הקבוצתית נפתחת כשיש לפחות שני משתתפים.</p>`;
   if(k==="mission")return `<div class="eyebrow">המספר שלנו</div><h2>${G.LP} · ${get(G.LP,"title")}</h2><p class="muted">${P.map(p=>p.LP).join(" + ")} = ${G.sumLP}</p><p>${fam(G.LP,"mission")}</p>${G.dom.length?`<h3>האנרגיה הדומיננטית: ${G.dom.join(", ")}</h3><p>${G.dom.map(n=>fam(n,"dom")).join(" ")}</p>`:""}<h3>שלושת השבטים</h3>${[0,1,2].map(t=>`<p><b>${TRIBE[t]}:</b> ${G.tribes[t].map(p=>esc(p.label)).join(", ")||"אף אחד"}</p>`).join("")}<div class="ask"><b>שאלה למעגל</b>${ASK.num}</div>`;
