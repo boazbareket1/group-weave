@@ -362,8 +362,14 @@ label.f small{font-family:var(--f-mono);font-size:.78rem}
 .st h3{font-size:1.35rem}
 .ix b{font-size:1.1rem}
 .sec>h3{font-size:1.5rem}
-.night{background:#fff;color:var(--ink);border:2px solid var(--ink);border-radius:8px}
+.night{background:#fff;color:var(--ink);border:2px solid var(--teal);border-top-width:8px;border-radius:8px}
 .hero{padding:34px 22px 28px}
+.hero h1{color:var(--teal)}
+.hero .btn.light{background:var(--teal);color:#fff;border-color:var(--teal)}
+.hero .btn.light:hover{background:#0a4f4b}
+.hero .f input{border-color:var(--teal)}
+body[data-view="home"] .card{border-color:#8c7bb0;border-top:6px solid #8c7bb0}
+body[data-view="home"] .card .btn.small{background:#8c7bb0;color:#fff;border-color:#8c7bb0}
 .hero .q{color:var(--muted);font-family:var(--f-mono);font-size:.9rem;opacity:1}
 .hero p{opacity:1;color:#333}
 .hero ul{opacity:1}
@@ -986,7 +992,7 @@ function renderMissing(){view="missing";app.innerHTML=`<div class="wrap"><div cl
 
 /* ---------- home ---------- */
 function renderHome(){
-  view="home";
+  view="home";document.body.dataset.view="home";
   app.innerHTML=`<div class="wrap">
   <section class="night hero">
     <p class="q">מה המספרים מספרים על המעגל שהתכנס כאן?</p>
@@ -999,7 +1005,7 @@ function renderHome(){
     <ul>
       <li>עד 10 משתתפים. סורקים קוד, ממלאים שם ותאריך לידה. בלי הרשמה.</li>
       <li>כל אחד מקבל בטלפון את המפה האישית שלו.</li>
-      <li>אחר כך נחשפים בהדרגה: השליחות של הקבוצה, מה חסר, התפקידים והחוטים שמחברים ביניכם.</li>
+      <li>אחר כך נחשפים בהדרגה: השליחות של הקבוצה, האתגר שלנו, התפקידים והחוטים שמחברים ביניכם.</li>
     </ul>
   </section>
   <div class="card" style="margin-top:16px">
