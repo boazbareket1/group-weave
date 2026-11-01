@@ -1015,7 +1015,7 @@ function renderHome(){
     <h1>המארג הקבוצתי</h1>
     <p>כל משתתף מצטרף מהטלפון, מגלה את המפה האישית שלו, ואז רואים יחד איך אנשים שרק נפגשו נארגים לקבוצה אחת.</p>
     <label class="f" style="max-width:340px;margin:0 auto 14px;text-align:right">איך נקרא למעגל?<input type="text" id="famName" placeholder="למשל: סדנת יום שישי" autocomplete="off"></label>
-    <label class="f" style="max-width:340px;margin:0 auto 14px;text-align:right">קוד מנחה<small>פתיחת מעגל חדש שמורה למנחה. להצטרפות למעגל קיים לא צריך קוד.</small><input type="text" id="hostCode" autocomplete="off" inputmode="text" dir="auto"></label>
+    <label class="f" style="max-width:340px;margin:0 auto 14px;text-align:right">קוד מנחה או שובר<small>פתיחת מעגל חדש שמורה למנחה, או למי שרכש/ה שובר למעגל אחד. להצטרפות למעגל קיים לא צריך קוד. <a href="https://boazbareket1.github.io/tools-desk/maarag/open.html" style="color:var(--teal)">איך משיגים שובר?</a></small><input type="text" id="hostCode" autocomplete="off" inputmode="text" dir="auto"></label>
     <button class="btn light" id="createBtn">פתיחת מעגל חדש ←</button>
     <p class="err" id="homeErr" style="margin-top:10px"></p>
     <ul>
@@ -1048,11 +1048,24 @@ async function checkHostCode(code){
 async function createRoom(){
   const name=$("famName").value.trim()||"המעגל שלנו";
   $("createBtn").disabled=true;$("homeErr").textContent="";
-  if(!await checkHostCode($("hostCode").value)){$("homeErr").textContent="קוד המנחה לא נכון. פתיחת מעגל חדש שמורה למנחה.";$("createBtn").disabled=false;return;}
+  const raw=$("hostCode").value.trim();
+  let voucher=null;
+  if(!await checkHostCode(raw)){
+    // not the facilitator's code: maybe a one-circle voucher
+    const vc=raw.toUpperCase().replace(/[^A-Z0-9]/g,"");
+    if(vc.length>=8&&!LOCAL){
+      try{const v=await store.get(`vouchers/${vc}`);
+        if(!v){$("homeErr").textContent="הקוד לא נכון. פתיחת מעגל חדש שמורה למנחה או למי שיש לו שובר.";$("createBtn").disabled=false;return;}
+        if(v.used){$("homeErr").textContent="השובר הזה כבר מומש. כל שובר פותח מעגל אחד.";$("createBtn").disabled=false;return;}
+        voucher=vc;
+      }catch(e){$("homeErr").textContent="לא הצלחנו לבדוק את השובר. בדקו את החיבור ונסו שוב.";$("createBtn").disabled=false;return;}
+    }else{$("homeErr").textContent="הקוד לא נכון. פתיחת מעגל חדש שמורה למנחה או למי שיש לו שובר.";$("createBtn").disabled=false;return;}
+  }
   const A="ABCDEFGHJKMNPQRSTUVWXYZ23456789";
   try{
     let code;for(let i=0;i<5;i++){code=Array.from({length:5},()=>A[Math.floor(Math.random()*A.length)]).join("");if(!(await store.get(`rooms/${code}/meta`)))break;}
-    await store.put(`rooms/${code}/meta`,{name:name.slice(0,60),created:Date.now(),stage:0,open:false,type:"group"});
+    await store.put(`rooms/${code}/meta`,Object.assign({name:name.slice(0,60),created:Date.now(),stage:0,open:false,type:"group"},voucher?{voucher}:{}));
+    if(voucher)await store.patch(`vouchers/${voucher}`,{used:true,usedAt:Date.now(),room:code,tool:"group"});
     ls.set("grp-host:"+code,"1");
     location.href=BASE+"?r="+code+(LOCAL?"&local=1":"");
   }catch(e){$("homeErr").textContent="לא הצלחנו לפתוח מעגל. בדקו את החיבור לאינטרנט ונסו שוב.";$("createBtn").disabled=false;}
