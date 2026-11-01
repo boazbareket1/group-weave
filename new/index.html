@@ -953,7 +953,7 @@ function go(v){
   try{const u=new URL(location.href);["board","lead","game"].forEach(k=>u.searchParams.delete(k));u.searchParams.set("v",v);history.replaceState(null,"",u);}catch(e){}
   view="";route();window.scrollTo({top:0});
 }
-document.addEventListener("click",e=>{const b=e.target.closest("[data-go]");if(!b)return;e.preventDefault();if(b.dataset.go==="gloss"){openGlossary();return;}if(b.dataset.go==="qr"){openQR();return;}go(b.dataset.go);});
+document.addEventListener("click",e=>{const b=e.target.closest("[data-go]");if(!b)return;e.preventDefault();if(b.dataset.go==="hub"){location.href="https://boazbareket1.github.io/tools-desk/maarag/";return;}if(b.dataset.go==="gloss"){openGlossary();return;}if(b.dataset.go==="qr"){openQR();return;}go(b.dataset.go);});
 function route(fromData){
   if(!ROOM)return renderHome();
   if(!S.meta&&fromData&&online){return renderMissing();}
@@ -970,7 +970,7 @@ function route(fromData){
   if(view!=="join")renderJoin();else updateJoin();
 }
 function navHTML(cur){
-  const all=[isMember()?["me","המפה שלי","◉"]:["join","הצטרפות","+"],["fam","הקבוצה","☷"],["circle","המעגל","◎"],["wall","לוח","✎"],["stages","שלבים","☰"],["game","משחק","✦"],["qr","QR","▦"],["gloss","מילון","?"]];
+  const all=[isMember()?["me","המפה שלי","◉"]:["join","הצטרפות","+"],["fam","הקבוצה","☷"],["circle","המעגל","◎"],["wall","לוח","✎"],["stages","שלבים","☰"],["game","משחק","✦"],["qr","QR","▦"],["gloss","מילון","?"],["hub","המארג","⌂"]];
   const btn=([k,t,i])=>`<button type="button" data-go="${k}" ${k===cur?'aria-current="page"':""}><span class="gi" aria-hidden="true">${i}</span><span>${t}</span>${k==="wall"&&wallUnread()?`<span class="nbadge">${wallUnread()}</span>`:""}</button>`;
   // phones: four primary items + "עוד"; wide screens: everything
   const prim=all.slice(0,4),more=all.slice(4);const moreOn=more.some(x=>x[0]===cur);
@@ -981,7 +981,7 @@ document.addEventListener("click",e=>{
   if(!b){if(ctx&&ctx.classList.contains("morectx")&&!e.target.closest(".ctxmenu"))closeCtx();return;}
   e.preventDefault();if(ctx){closeCtx();return;}
   ctx=document.createElement("div");ctx.className="ctxmenu morectx";ctx.setAttribute("role","menu");
-  ctx.innerHTML=[["stages","שלבים"],["game","משחק הזיהוי"],["qr","QR להצטרפות"],["gloss","מילון מושגים"]].map(([k,t])=>`<button type="button" data-go="${k}">${t}</button>`).join("");
+  ctx.innerHTML=[["stages","שלבים"],["game","משחק הזיהוי"],["qr","QR להצטרפות"],["gloss","מילון מושגים"],["hub","⌂ המארג – כל הכלים"]].map(([k,t])=>`<button type="button" data-go="${k}">${t}</button>`).join("");
   document.body.appendChild(ctx);const r=b.getBoundingClientRect();
   ctx.style.left=Math.max(8,Math.min(innerWidth-ctx.offsetWidth-8,r.left))+"px";ctx.style.top=(r.top-ctx.offsetHeight-8)+"px";
   ctx.querySelectorAll("[data-go]").forEach(m=>m.addEventListener("click",closeCtx));
