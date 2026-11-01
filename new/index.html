@@ -462,6 +462,8 @@ dl.gloss dt.hl,dl.gloss dt.hl+dd{background:var(--panel2)}
 .kard details{margin-top:16px}
 .lc .lcmenu{position:absolute;top:6px;left:6px;border:0;background:none;color:var(--muted);font-family:var(--f-mono);font-size:1.1rem;line-height:1;padding:4px 8px;border-radius:4px;cursor:pointer}
 .lc .lcmenu:hover{background:var(--panel2);color:var(--ink)}
+.gloss .gi{display:contents}.gloss .gi[hidden]{display:none}
+.qm{display:inline-flex;align-items:center;justify-content:center;width:20px;height:20px;border-radius:50%;border:1.5px solid var(--acc,var(--ink));color:var(--acc,var(--ink));background:#fff;font-size:.78rem;font-weight:700;margin-inline-start:6px;vertical-align:middle;cursor:pointer;padding:0;line-height:1}
 .ctxmenu{position:fixed;z-index:60;background:#fff;border:2px solid var(--ink);border-radius:6px;padding:4px;display:grid;min-width:190px;box-shadow:0 12px 30px rgba(0,0,0,.18)}
 .ctxmenu button{border:0;background:none;text-align:right;padding:10px 12px;font-weight:700;border-radius:4px;color:var(--ink);font-size:1rem}
 .ctxmenu button:hover{background:var(--panel2)}
@@ -1363,8 +1365,8 @@ function personIx(p){
   const r=relation(p.LP,p.expr);
   ix.push(["שביל החיים מול מספר הביטוי: הדרך והכלים",r>=3?`הדרך שלך (${get(p.LP,"kw")}) והכלים שקיבלת בשם (${get(p.expr,"kw")}) מאותה משפחה. מה שבאת ללמוד ומה שקל לך הולכים יד ביד.`:r===2?`הכלים שבשם שלך (${get(p.expr,"kw")}) תומכים בדרך שלך (${get(p.LP,"kw")}), גם אם בדרך עקיפה.`:`יש מתח בין הדרך שלך (${get(p.LP,"kw")}) לבין הכלים שבשם (${get(p.expr,"kw")}). לפעמים מה שקל לך הוא לא מה שהדרך מבקשת, ושם בדיוק הצמיחה.`]);
   ix.push(["דחף הנשמה מול מספר האישיות: מה בפנים ומה רואים מבחוץ",grp(p.soul)===grp(p.pers)?`דחף הנשמה (${p.soul}) מתאר מה את/ה צריך/ה בפנים: ${get(p.soul,"kw")}. מספר האישיות (${p.pers}) מתאר את הרושם הראשון שאנשים מקבלים ממך: ${get(p.pers,"kw")}. השניים מאותה משפחת מספרים, ולכן אנשים פוגשים אותך די כמו שאת/ה באמת.`:`דחף הנשמה (${p.soul}) מתאר מה את/ה צריך/ה בפנים: ${get(p.soul,"kw")}. מספר האישיות (${p.pers}) מתאר את הרושם הראשון שאנשים מקבלים ממך: ${get(p.pers,"kw")}. ייתכן שאנשים מכירים רק חלק ממך, וכדאי לשתף גם את מה שבפנים.`]);
-  ix.push(["המתנה של יום הלידה",`נולדת ב־${p.B.d} לחודש, וזה מעניק לך ${get(p.bday,"gift")}.`]);
-  ix.push([`השנה שלך: ${p.py}, ${YKW[p.py]}`,N[p.py].year]);
+  ix.push(["המתנה של יום הלידה"+qm("yom"),`נולדת ב־${p.B.d} לחודש, וזה מעניק לך ${get(p.bday,"gift")}.`]);
+  ix.push([`השנה שלך: ${p.py}, ${YKW[p.py]}`+qm("shana"),N[p.py].year]);
   return ix;
 }
 const PARAMS={
@@ -1383,7 +1385,7 @@ function myMap(p){
   const lp=p.LP;
   const ix=personIx(p);
   const firstSent=t=>{const m=String(t).replace(/<[^>]+>/g,"").match(/^(.+?[.!?])(\s|$)/);return m?m[1]:t;};
-  const P4=[["LP","שביל החיים",get(p.LP,"title"),get(p.LP,"essence")],["expr","מספר הביטוי",get(p.expr,"kw").split(",")[0],get(p.expr,"expr")],["soul","דחף הנשמה",get(p.soul,"kw").split(",")[0],get(p.soul,"soul")],["pers","מספר האישיות",get(p.pers,"kw").split(",")[0],get(p.pers,"persona")]];
+  const P4=[["LP","שביל החיים"+qm("shvil"),get(p.LP,"title"),get(p.LP,"essence")],["expr","מספר הביטוי"+qm("bitui"),get(p.expr,"kw").split(",")[0],get(p.expr,"expr")],["soul","דחף הנשמה"+qm("neshama"),get(p.soul,"kw").split(",")[0],get(p.soul,"soul")],["pers","מספר האישיות"+qm("ishiut"),get(p.pers,"kw").split(",")[0],get(p.pers,"persona")]];
   const cards=P4.map(([key,name,title,body],i)=>`<section class="kard" data-ci="${i}">
     <p class="k">${String(i+1).padStart(2,"0")} / 0${P4.length+2} — ${name}</p>
     <span class="big">${p[key]}</span>
@@ -1414,12 +1416,12 @@ function meInFamily(p){
   if(G.n<2)return `<div class="locked">מחכים לעוד משתתפים. התמונה הקבוצתית תיפתח כשיצטרפו עוד אנשים.</div>`;
   const items=[];
   const th=myThreads(G,p);
-  items.push([2,"המספר שלנו",`השליחות של הקבוצה: ${fam(G.LP,"mission")}`,familyRel(p,G)]);
+  items.push([2,"המספר שלנו"+qm("mishpacha"),`השליחות של הקבוצה: ${fam(G.LP,"mission")}`,familyRel(p,G)]);
   const keeps=G.rare.filter(n=>G.carriers[n][0]===p),lacks=G.missing;
-  items.push([3,"האתגר שלנו",lacks.length?`בקבוצה חסרים המספרים ${lacks.join(", ")}.`:"בקבוצה נמצאים כל המספרים מ־1 עד 9.",
+  items.push([3,"האתגר שלנו"+qm("chaser"),lacks.length?`בקבוצה חסרים המספרים ${lacks.join(", ")}.`:"בקבוצה נמצאים כל המספרים מ־1 עד 9.",
     keeps.length?`את/ה שומר/ת בקבוצה את ה־${keeps.join(" וה־")}: ${keeps.map(n=>fam(n,"give")).join(" ")}`:(lacks.length?`גם את/ה יכול/ה להשלים את מה שחסר. מה מתוך "${N[lacks[0]].kw}" מתאים לך לקחת על עצמך במפגש?`:"את/ה חלק מארגז כלים מלא. מה הכלי שאת/ה הכי אוהב/ת להביא?")]);
-  items.push([4,"התפקיד שלי",`לכל אחד בקבוצה תפקיד טבעי לפי מספר הדרך שלו.`,`את/ה <b>${fam(p.LP,"role")}</b>. ${fam(p.LP,"give")} <br><b>מה הקבוצה יכולה ללמד אותך:</b> ${fam(p.LP,"learn")}`]);
-  items.push([5,"החוטים שלי",`בקבוצה ${G.threads.filter(t=>t.text).length} חוטים של השלמה, נשמה ומראה.`,th.length?th.map(t=>esc(t.text)).join("<br>"):"החוטים שלך עדינים: את/ה מביא/ה צבע משלך. עם מי במעגל הרגשת חיבור, ולמה?"]);
+  items.push([4,"התפקיד שלי"+qm("tafkid"),`לכל אחד בקבוצה תפקיד טבעי לפי מספר הדרך שלו.`,`את/ה <b>${fam(p.LP,"role")}</b>. ${fam(p.LP,"give")} <br><b>מה הקבוצה יכולה ללמד אותך:</b> ${fam(p.LP,"learn")}`]);
+  items.push([5,"החוטים שלי"+qm("notenmekabel"),`בקבוצה ${G.threads.filter(t=>t.text).length} חוטים של השלמה, נשמה ומראה.`,th.length?th.map(t=>esc(t.text)).join("<br>"):"החוטים שלך עדינים: את/ה מביא/ה צבע משלך. עם מי במעגל הרגשת חיבור, ולמה?"]);
   let h="";let shown=0;
   items.forEach(([s,t,g,m])=>{if(!open&&s>cs)return;shown++;h+=`<div class="st${s===cs?" now":""}" id="pst${s}"><h3>${t}${s===cs&&!open?'<span class="now-pill">עכשיו במעגל</span>':""}</h3><p class="grp">${g}</p><div class="me"><b>ואצלך:</b> ${m}</div></div>`;});
   if(open||cs>=CL){h+=`<div class="st${cs===CL?" now":""}" id="pst${CL}"><h3>מה אני לוקח/ת</h3><label class="f">מה אני לוקח/ת מהמפגש<input type="text" id="noteTake" maxlength="240" autocomplete="off"></label><label class="f">מה נתתי לקבוצה<input type="text" id="noteGive" maxlength="240" autocomplete="off"></label><div class="row"><button class="btn small" id="noteBtn">שליחה למעגל</button><span class="status" id="noteSt"></span></div></div>`;shown++;}
@@ -1820,6 +1822,10 @@ const GLOSS=[
  ["master","מספר מאסטר","11, 22 ו־33 לא מצמצמים. הם מסמנים פוטנציאל גבוה ורגישות מוגברת, שדורשים קרקוע."],
  ["karmati","שיעור קרמתי","מספר מ־1 עד 9 שאינו מופיע באף אות בשם. מתאר תחום שבו הכלים פחות מולדים, וצריך ללמוד אותו."],
  ["hov","חוב קרמתי","המספרים 13, 14, 16 או 19 כשהם מופיעים בדרך החישוב. במסורת הנומרולוגית הם מסמנים שיעור שנשאר פתוח."],
+ ["pisga","פסגה (מחזורי החיים)","החיים מתחלקים לארבע תקופות, לפי תאריך הלידה. לכל תקופה מספר פסגה: הנושא וההזדמנות של אותן שנים – מה החיים מזמינים אותך ללמוד ולבנות."],
+ ["etgar","אתגר (מחזורי החיים)","לצד כל פסגה יש מספר אתגר: המכשול שהתקופה מבקשת ללמוד לעבור. אתגר 0 הוא מיוחד – בחירה חופשית, בלי מכשול מובנה."],
+ ["hed","הד (חיווט נוסף)","אותו מספר אצל שני משתתפים, אבל במקום אחר במפה: למשל שביל החיים של אחד הוא מספר הביטוי של אחרת. אותה איכות, בשכבה אחרת של הנפש."],
+ ["zorem","זורמים יחד (חיווט נוסף)","שני שבילי חיים שידועים כמשתלבים בקלות. חיבור נוח, שכדאי לשאול מה הוא יכול להוליד."],
  ["shana","שנה אישית","מחושבת מיום וחודש הלידה ומהשנה הנוכחית. כל שנה היא שלב במחזור של תשע שנים, מהתחלה (1) ועד סיום (9)."],
  ["mishpacha","המספר של הקבוצה","מחברים את שבילי החיים של כל המשתתפים ומצמצמים. מתאר את הכיוון המשותף ואת השליחות של הקבוצה."],
  ["shvatim","שלושת השבטים","המספרים מתחלקים לשלוש קבוצות: עצמאות ומחשבה (1, 5, 7), חומר ועשייה (2, 4, 8), רגש ויצירה (3, 6, 9). מאותו שבט מבינים זה את זה בקלות. בכלי, הטבעת סביב כל נקודה מסמנת את השבט."],
@@ -1830,9 +1836,19 @@ const GLOSS=[
  ["otzar","שומר/ת אוצר","מספר שרק משתתף אחד בקבוצה נושא. הוא/היא שומר/ת על האיכות הזו בשביל כולם."],
  ["chaser","מה חסר בקבוצה","מספר שלא מופיע אצל אף אחד מהמשתתפים בארבעת מספרי הליבה. תחום שהקבוצה צריכה לפתח במודע."]
 ];
+const qm=id=>`<button type="button" class="qm" data-term="${id}" aria-label="מה זה?" title="מה זה?">?</button>`;
 function glossaryHTML(focus){
   return `<div class="eyebrow">מילון מושגים</div><h2>מה זה אומר?</h2><p class="muted">ההסברים לכל המונחים שמופיעים בכלי. זהו כלי להתבוננות ולשיחה, לא אבחון.</p>
-  <dl class="gloss">${GLOSS.map(([id,t,d])=>`<dt id="g-${id}" class="${id===focus?"hl":""}">${t}</dt><dd>${d}</dd>`).join("")}</dl>`;
+  <input type="search" id="glossQ" placeholder="חיפוש מושג… (למשל: שנה, שביל, מראה)" autocomplete="off" style="width:100%;height:46px;border:2px solid var(--ink);border-radius:6px;padding:0 12px;font-size:1rem;font-family:var(--f-body);margin:6px 0 10px">
+  <p class="muted" id="glossNone" hidden>לא נמצא מושג כזה. אפשר לנסות מילה אחרת.</p>
+  <dl class="gloss" id="glossList">${GLOSS.map(([id,t,d])=>`<div class="gi"><dt id="g-${id}" class="${id===focus?"hl":""}">${t}</dt><dd>${d}</dd></div>`).join("")}</dl>`;
+}
+function bindGloss(){
+  const q=document.getElementById("glossQ");if(!q)return;
+  q.addEventListener("input",()=>{const v=q.value.trim().replace(/[\u0591-\u05C7]/g,"").toLowerCase();let n=0;
+    document.querySelectorAll("#glossList .gi").forEach(el=>{const hit=!v||el.textContent.toLowerCase().includes(v);el.hidden=!hit;if(hit)n++;});
+    document.getElementById("glossNone").hidden=n>0;});
+  setTimeout(()=>{try{if(!document.querySelector("#glossList .hl"))q.focus({preventScroll:true});}catch(e){}},50);
 }
 function openQR(){
   openReader(`<div class="eyebrow">הצטרפות למעגל</div><h2>${esc(S.meta?S.meta.name:"")}</h2>
@@ -1847,7 +1863,7 @@ function openQR(){
   const c=document.getElementById("qrCopy");if(c)c.onclick=async()=>{try{await navigator.clipboard.writeText(joinURL());c.textContent="הועתק ✓";}catch(e){prompt("העתיקו את הקישור:",joinURL());}};
   const ro=document.getElementById("reopenBtn");if(ro)ro.onclick=async()=>{ro.disabled=true;await store.patch(`rooms/${ROOM}/meta`,{closed:false});S.meta.closed=false;openQR();};
 }
-function openGlossary(focus){openReader(glossaryHTML(focus));if(focus){const el=document.getElementById("g-"+focus);if(el)el.scrollIntoView({block:"center"});}}
+function openGlossary(focus){openReader(glossaryHTML(focus));bindGloss();if(focus){const el=document.getElementById("g-"+focus);if(el)el.scrollIntoView({block:"center"});}}
 document.addEventListener("click",e=>{const b=e.target.closest("[data-term]");if(!b)return;e.preventDefault();e.stopPropagation();openGlossary(b.dataset.term);},true);
 
 /* ================= feedback: "fits / doesn't fit" on each paragraph ================= */
@@ -1909,8 +1925,8 @@ function cyclesHTML(p){
   const rows=per.map((x,i)=>`<div class="cyc${i===cur?" now":""}"><div class="cyc-h"><b>תקופה ${i+1}</b> · גילאים ${x[1]===null?`${x[0]} ומעלה`:`${x[0]}–${x[1]}`}${i===cur?' <span class="now-pill">עכשיו</span>':""}</div>
     <p><b>פסגה ${x[2]}:</b> ${get(x[2],"pinnacle")}</p><p><b>אתגר ${x[3]}:</b> ${x[3]===0?CH0:get(x[3],"challenge")}</p></div>`).join("");
   const c=per[cur];
-  return `<details class="deep cycles"><summary>מחזורי החיים שלך: איפה את/ה עכשיו</summary>
-   <p class="pd" style="margin-top:8px">החיים מתחלקים לארבע תקופות. לכל תקופה <b>פסגה</b>, הנושא וההזדמנות שלה, ו<b>אתגר</b>, המכשול שהיא מבקשת ללמוד לעבור. היום, בגיל ${age}, את/ה בתקופה ${cur+1}${c?`: פסגה ${c[2]} (${get(c[2],"kw")}) ואתגר ${c[3]}`:""}.</p>${rows}</details>`;
+  return `<details class="deep cycles"><summary>מחזורי החיים שלך: איפה את/ה עכשיו ${qm("pisga")}</summary>
+   <p class="pd" style="margin-top:8px">החיים מתחלקים לארבע תקופות. לכל תקופה <b>פסגה</b>${qm("pisga")}, הנושא וההזדמנות שלה, ו<b>אתגר</b>${qm("etgar")}, המכשול שהיא מבקשת ללמוד לעבור. היום, בגיל ${age}, את/ה בתקופה ${cur+1}${c?`: פסגה ${c[2]} (${get(c[2],"kw")}) ואתגר ${c[3]}`:""}.</p>${rows}</details>`;
 }
 function lessonsHTML(p){
   if(!p.lessons.length)return "";
