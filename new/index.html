@@ -1218,7 +1218,7 @@ function renderBoard(){
    </div></div>`;
   app.querySelectorAll("[data-st]").forEach(b=>b.onclick=()=>goStage(+b.dataset.st));
   $("prevBtn").onclick=()=>goStage(st-1);$("nextBtn").onclick=()=>goStage(st+1);
-  if($("addBtn"))$("addBtn").onclick=()=>openAdd();
+  if($("addBtn"))$("addBtn").onclick=()=>openAdd();const ab2=$("addBtn2");if(ab2)ab2.onclick=()=>openAdd();
   if($("openTg"))$("openTg").onchange=e=>store.patch(`rooms/${ROOM}/meta`,{open:e.target.checked});
   if($("closeTg"))$("closeTg").onchange=e=>store.patch(`rooms/${ROOM}/meta`,{closed:e.target.checked});
   app.querySelectorAll("[data-del]").forEach(b=>b.onclick=()=>{const p=G.P.find(p=>p.id===b.dataset.del);if(p&&confirmDel(p))store.del(`rooms/${ROOM}/members/${p.id}`);});
@@ -1237,10 +1237,11 @@ function personCard(p,body){return `<div class="pc"><div class="who">${dotOf(p)}
 function stageHTML(st){
   const k=STAGES[st].k,P=G.P;let h=`<div class="eyebrow">שלב ${st} מתוך ${STAGES.length-1}</div><h2>${STAGES[st].t}</h2>`;
   if(k==="join"){
-    h+=`<p class="lead">כל אחד סורק את הקוד בטלפון, ממלא שם ותאריך לידה, ונקודת אור נדלקת במעגל. מי שאין לו טלפון: "הוספת משתתף/ת" למעלה. עד ${MAXP} משתתפים.</p>
+    h+=`<p class="lead">כל אחד סורק את הקוד בטלפון וממלא שם ותאריך לידה. מי שאין לו טלפון – מוסיפים כאן. עד ${MAXP} משתתפים.</p>
     <div class="row" style="margin-top:0"><a class="btn ghost small" id="waBtn" target="_blank" rel="noopener" style="text-decoration:none">שליחת הקישור בוואטסאפ</a><button class="btn ghost small" id="copyBtn">העתקת הקישור</button></div>
     <h3 style="margin-top:22px;font-size:1.15rem">במעגל עכשיו: ${G.n} מתוך ${MAXP}</h3><div class="members">${P.map(p=>`<span class="mem">${dotOf(p)}${esc(p.name)}<button data-edit="${p.id}" aria-label="עריכת ${esc(p.name)}" title="עריכה">✎</button><button data-del="${p.id}" aria-label="הסרת ${esc(p.name)}">×</button></span>`).join("")||'<span class="muted">עוד אין משתתפים</span>'}</div>
-    <p class="muted" style="margin-top:16px;font-size:.92rem">כשעוברים לשלב 1 המעגל נסגר אוטומטית להצטרפות, כדי שמי שלא היה במפגש לא ייכנס אחר כך. אפשר לפתוח ולסגור בסימון למטה. מי שמצטרף/ת באיחור נכנס/ת אוטומטית לתמונה הקבוצתית. כדי להציג את הלוח ממחשב או מקרן אחרים: <span style="direction:ltr;display:inline-block;word-break:break-all">${esc(boardURL())}</span></p>`;
+    <p style="margin-top:10px"><button class="btn small" id="addBtn2">+ הוספת משתתף/ת</button></p>
+    <details class="more" style="margin-top:14px"><summary class="muted" style="font-size:.9rem">עוד אפשרויות</summary><p class="muted" style="font-size:.9rem;margin-top:6px">כשעוברים לשלב 1 המעגל נסגר אוטומטית להצטרפות, כדי שמי שלא היה במפגש לא ייכנס אחר כך. אפשר לפתוח ולסגור בסימון למטה. מי שמצטרף/ת באיחור נכנס/ת אוטומטית לתמונה הקבוצתית. כדי להציג את הלוח ממחשב או מקרן אחרים: <span style="direction:ltr;display:inline-block;word-break:break-all">${esc(boardURL())}</span></p></details>`;
     return h;
   }
   if(k==="who"){
