@@ -917,6 +917,22 @@ function analyzeFamily(members){
     if(a!==b&&single(a.pers)===single(b.soul)&&single(a.soul)!==single(b.soul)&&!seen.has("m"+key(a,b))){seen.add("m"+key(a,b));if(T.filter(t=>t.type==="mirror").length<2)T.push({type:"mirror",a,b,n:single(a.pers),text:`דחף הנשמה של ${b.label} הוא מספר האישיות של ${a.label} (${single(a.pers)}: ${N[single(a.pers)].kw}). מה ש${b.label} צריך/ה בפנים, ${a.label} מראה כלפי חוץ, ולכן כל אחד יכול לראות בשני צד של עצמו.`});}
   }));
   G.threads=T;
+  // extra threads (shown on demand): echoes, same tribe, flowing paths, same personal year
+  const X=[];const SLOT={LP:"שביל החיים",expr:"מספר הביטוי",soul:"דחף הנשמה",pers:"מספר האישיות"};
+  const has=(a,b)=>T.some(t=>t.a&&((t.a===a&&t.b===b)||(t.a===b&&t.b===a)));
+  P.forEach((a,i)=>P.slice(i+1).forEach(b=>{
+    if(has(a,b))return;
+    let done=false;
+    for(const ka of ["LP","expr","soul","pers"]){for(const kb of ["LP","expr","soul","pers"]){
+      if(done||ka===kb)continue;const n=single(a[ka]);if(n!==single(b[kb]))continue;
+      if((ka==="pers"&&kb==="soul")||(ka==="soul"&&kb==="pers"))continue;
+      X.push({type:"echo",a,b,n,text:`המספר ${n} (${N[n].kw}) חוזר אצל שניכם: אצל ${a.label} זה ${SLOT[ka]}, אצל ${b.label} זה ${SLOT[kb]}. אותה איכות, במקום אחר בנפש – ולכן קל לזהות אותה זה אצל זה.`});done=true;}}
+    if(done)return;
+    if(a.tribe===b.tribe){X.push({type:"tribe",a,b,n:a.tribe,text:`${a.label} ו${b.label} מאותו שבט – ${TRIBE[a.tribe]} (${TRIBE_NUMS[a.tribe]}). יש ביניהם שפה משותפת: אותו סוג של מנוע מניע אותם.`});return;}
+    if(relation(a.LP,b.LP)===2){X.push({type:"flow",a,b,n:single(a.LP),text:`שבילי החיים ${single(a.LP)} ו־${single(b.LP)} זורמים יחד: ${get(a.LP,"kw")} פוגש ${get(b.LP,"kw")} בלי מאמץ. חיבור נוח, ששווה לשאול מה הוא יכול להוליד.`});return;}
+    if(a.py===b.py){X.push({type:"year",a,b,n:a.py,text:`${a.label} ו${b.label} באותה שנה אישית – ${a.py}: ${YKW[a.py]}. שניהם עומדים השנה מול אותו סוג של משימה, וזה מקום טוב ללוות זה את זה.`});}
+  }));
+  X.forEach(t=>t.extra=true);G.extra=X;
   // frictions
   const F=[];
   P.forEach((a,i)=>P.slice(i+1).forEach(b=>{
@@ -1358,7 +1374,8 @@ function personReading(p){
   h+=`<h3>שאלה לדרך</h3><p>${get(p.LP,"growth")}</p>`;
   return h;
 }
-const LINKLAB={give:"נותן־מקבל",soul:"תאומי נשמה",mirror:"מראה",friction:"חיכוך וצמיחה"};
+const LINKLAB={give:"נותן־מקבל",soul:"תאומי נשמה",mirror:"מראה",friction:"חיכוך וצמיחה",echo:"הד",tribe:"אותו שבט",flow:"זורמים יחד",year:"אותה שנה"};
+let moreLinks=false;
 function linkReading(t){
   if(t.type==="friction"){const f=t;return `<div class="eyebrow">${LINKLAB.friction}</div><h2>${esc(f.a.label)} ו${esc(f.b.label)}</h2>
     <p>${f.lead?`שני אנשים עם כוח הובלה (${f.a.LP}). כל אחד רוצה לקבוע את הכיוון.`:`${get(f.a.LP,"kw")} מול ${get(f.b.LP,"kw")}: שתי דרכים שונות לראות את העולם.`}</p>
@@ -1369,6 +1386,7 @@ function linkReading(t){
   if(r.type==="soul")return `<div class="eyebrow">${LINKLAB.soul}</div><h2>${r.members.map(p=>esc(p.label)).join(" · ")}</h2><p>${esc(r.text)}</p><h3>מה הלב הזה צריך (${r.n})</h3><p>${N[r.n].soul.replace(/את\/ה/g,"אתם").replace(/כמה\/ה/g,"כמהים")}</p>`;
   if(r.type==="give")return `<div class="eyebrow">${LINKLAB.give}</div><h2>${esc(r.a.label)} ← ${esc(r.b.label)}</h2><p>${esc(r.text)}</p><h3>מה ${esc(r.a.label)} מביא/ה (${r.n})</h3><p>${fam(r.n,"give")}</p><h3>מה ${esc(r.b.label)} לומד/ת</h3><p>${N[r.n].lesson}</p>`;
   if(r.type==="mirror")return `<div class="eyebrow">${LINKLAB.mirror}</div><h2>${esc(r.a.label)} ו${esc(r.b.label)}</h2><p>${esc(r.text)}</p><h3>מה ${esc(r.a.label)} מקרין/ה</h3><p>${get(r.a.pers,"persona")}</p><h3>מה ${esc(r.b.label)} מרגיש/ה בפנים</h3><p>${get(r.b.soul,"soul")}</p>`;
+  if(r.extra)return `<div class="eyebrow">${LINKLAB[r.type]} · חיווט נוסף</div><h2>${esc(r.a.label)} ו${esc(r.b.label)}</h2><p>${esc(r.text)}</p>`;
   return `<p>${esc(r.text||"")}</p>`;
 }
 function groupReading(k){return groupReading0(k).replace(/<div class="ask">[\s\S]*?<\/div>/g,"");}
@@ -1377,7 +1395,7 @@ function groupReading0(k){
   if(G.n<2)return `<h2>מחכים לעוד משתתפים</h2><p>התמונה הקבוצתית נפתחת כשיש לפחות שני משתתפים.</p>`;
   if(k==="mission")return `<div class="eyebrow">המספר שלנו</div><h2>${G.LP} · ${get(G.LP,"title")}</h2><p class="muted">${P.map(p=>p.LP).join(" + ")} = ${G.sumLP}</p><p>${fam(G.LP,"mission")}</p>${G.dom.length?`<h3>האנרגיה הדומיננטית: ${G.dom.join(", ")}</h3><p>${G.dom.map(n=>fam(n,"dom")).join(" ")}</p>`:""}<h3>שלושת השבטים</h3>${[0,1,2].map(t=>`<p><b>${TRIBE[t]}:</b> ${G.tribes[t].map(p=>esc(p.label)).join(", ")||"אף אחד"}</p>`).join("")}<div class="ask"><b>שאלה למעגל</b>${ASK.num}</div>`;
   if(k==="miss")return `<div class="eyebrow">האתגר שלנו</div><h2>${G.missing.length?"האתגר: "+G.missing.join(", "):"כל המספרים נמצאים"}</h2>${G.missing.map(n=>`<h3>${n} · ${N[n].kw}</h3><p>${fam(n,"miss")}</p>`).join("")}${G.rare.length?`<h3>שומרי האוצרות</h3>${G.rare.map(n=>`<p><b>${esc(G.carriers[n][0].label)}</b> שומר/ת את ה־${n}: ${fam(n,"give")}</p>`).join("")}`:""}<div class="ask"><b>שאלה למעגל</b>${ASK.miss}</div>`;
-  if(k==="links")return `<div class="eyebrow">כל החיווטים</div><h2>החוטים במארג</h2>${G.threads.filter(t=>t.text).map(t=>`<h3>${LINKLAB[t.type]}</h3><p>${esc(t.text)}</p>`).join("")||"<p>החוטים בקבוצה הזו עדינים: אין חפיפות בולטות.</p>"}<div class="ask"><b>שאלה למעגל</b>${ASK.threads}</div>`;
+  if(k==="links")return `<div class="eyebrow">כל החיווטים</div><h2>החוטים במארג</h2>${G.threads.filter(t=>t.text).map(t=>`<h3>${LINKLAB[t.type]}</h3><p>${esc(t.text)}</p>`).join("")||"<p>החוטים בקבוצה הזו עדינים: אין חפיפות בולטות.</p>"}<div class="ask"><b>שאלה למעגל</b>${ASK.threads}</div>`+((G.extra||[]).length?`<h3 style="margin-top:22px;border-top:1px solid var(--line2);padding-top:12px">חיווטים נוספים</h3><p class="muted">קשרים עדינים יותר – לא תמיד מופיעים במעגל, אפשר להציג אותם בכפתור "עוד חיווטים".</p>${G.extra.map(t=>`<p><b>${LINKLAB[t.type]}:</b> ${esc(t.text)}</p>`).join("")}`:"");
   return "";
 }
 let reader=null;
@@ -1398,16 +1416,17 @@ function renderLead(){
   const keepOpen=reader?reader.innerHTML:null;
   app.innerHTML=`<div class="wrap" style="max-width:1600px">
    <div class="lead-top"><h1>${esc(S.meta.name)} <span class="muted" style="font-size:.6em">· תצוגת הנחיה</span></h1>
-    <div class="lead-actions"><button data-g="mission">המספר שלנו</button><button data-g="miss">האתגר שלנו</button><button data-g="links">כל החיווטים</button><button data-cm type="button">${colorMode==="person"?"צביעה לפי שבט":"צביעה לפי משתתף"}</button><button type="button" data-sharedlg="">שיתוף / PDF</button><button type="button" data-fbopen>משוב</button></div></div>
+    <div class="lead-actions"><button data-g="mission">המספר שלנו</button><button data-g="miss">האתגר שלנו</button><button data-g="links">כל החיווטים</button><button data-ml type="button">${moreLinks?"פחות חיווטים":"עוד חיווטים"}</button><button data-cm type="button">${colorMode==="person"?"צביעה לפי שבט":"צביעה לפי משתתף"}</button><button type="button" data-sharedlg="">שיתוף / PDF</button><button type="button" data-fbopen>משוב</button></div></div>
    <div id="leadStage"></div><div id="leadList"></div>
    <p class="muted" style="text-align:center;font-size:.88rem;margin-top:8px">לחיצה על כרטיס פותחת את הניתוח המלא להקראה. לחיצה על קו במרכז מקריאה את החיבור.</p></div>`;
   app.querySelectorAll("[data-g]").forEach(b=>b.onclick=()=>openReader(groupReading(b.dataset.g)));
+  const ml=app.querySelector("[data-ml]");if(ml)ml.onclick=()=>{moreLinks=!moreLinks;renderLead();};
   addNav("circle");
   layoutLead();
 }
 function leadLinks(){
   const L=(G.threads||[]).filter(t=>t.a&&t.b);
-  return L;
+  return moreLinks?L.concat(G.extra||[]):L;
 }
 function layoutLead(){
   const st=$("leadStage"),list=$("leadList");if(!st)return;
@@ -1422,10 +1441,10 @@ function layoutLead(){
   const pos=new Map();
   P.forEach((p,i)=>{const a=-Math.PI/2+i*2*Math.PI/Math.max(n,1);pos.set(p,{a,dx:cx+rDot*Math.cos(a),dy:cy+rDot*Math.sin(a),kx:cx+rx*Math.cos(a),ky:cy+ry*Math.sin(a)});});
   const L=leadLinks();
-  const col={give:"#8fbcd4",soul:"#7fd1c7",mirror:"#c7b6f5",friction:"#f2a08f"};
+  const col={give:"#8fbcd4",soul:"#7fd1c7",mirror:"#c7b6f5",friction:"#f2a08f",echo:"#b7a6e3",tribe:"#9bcf93",flow:"#6f9fc2",year:"#8c7bb0"};
   let lines="";
   L.forEach((t,i)=>{const A=pos.get(t.a),B=pos.get(t.b);if(!A||!B)return;const d=`M${A.dx},${A.dy} Q${cx},${cy} ${B.dx},${B.dy}`;
-    lines+=`<path class="hit" data-li="${i}" d="${d}" fill="none" stroke="transparent" stroke-width="16" tabindex="0" role="button" aria-label="${LINKLAB[t.type]}: ${esc(t.a.label)} ו${esc(t.b.label)}"/><path class="vis" d="${d}" fill="none" stroke="${col[t.type]}" stroke-width="2.6" opacity=".85" ${t.type==="mirror"?'stroke-dasharray="6 6"':t.type==="friction"?'stroke-dasharray="3 7" stroke-linecap="round"':""} pointer-events="none"/>`;});
+    lines+=`<path class="hit" data-li="${i}" d="${d}" fill="none" stroke="transparent" stroke-width="16" tabindex="0" role="button" aria-label="${LINKLAB[t.type]}: ${esc(t.a.label)} ו${esc(t.b.label)}"/><path class="vis" d="${d}" fill="none" stroke="${col[t.type]}" stroke-width="${t.extra?1.6:2.6}" opacity="${t.extra?.7:.85}" ${t.type==="mirror"?'stroke-dasharray="6 6"':t.type==="friction"?'stroke-dasharray="3 7" stroke-linecap="round"':""} pointer-events="none"/>`;});
   const conn=narrow?"":P.map(p=>{const q=pos.get(p);const ex=cx+(rx-cardW/2+8)*Math.cos(q.a),ey=cy+(ry-cardH/2+18)*Math.sin(q.a);return `<line x1="${q.dx}" y1="${q.dy}" x2="${ex}" y2="${ey}" stroke="var(--line)" stroke-width="1.5"/>`;}).join("");
   const dots=P.map(p=>{const q=pos.get(p),c=fillOf(p);return `<circle cx="${q.dx}" cy="${q.dy}" r="16" fill="${c}" opacity=".25"/><circle cx="${q.dx}" cy="${q.dy}" r="8" fill="${c}" filter="url(#glow2)"/>${colorMode==="person"?`<circle cx="${q.dx}" cy="${q.dy}" r="12" fill="none" stroke="${TRIBEC[p.tribe]}" stroke-width="2.5"/>`:""}${narrow?`<text x="${cx+(rDot-34)*Math.cos(q.a)}" y="${cy+(rDot-34)*Math.sin(q.a)+5}" text-anchor="middle" font-size="13" font-weight="600" fill="#eef2f0" font-family="Assistant,Arial">${esc(p.label)}</text>`:""}`;}).join("");
   st.innerHTML=`<svg class="bg" viewBox="0 0 ${W} ${H}" aria-hidden="false"><defs><radialGradient id="sky2" cx="50%" cy="35%" r="65%"><stop offset="0" stop-color="#16283a"/><stop offset="1" stop-color="#0f1c26"/></radialGradient><filter id="glow2" x="-80%" y="-80%" width="260%" height="260%"><feGaussianBlur stdDeviation="4" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter></defs>
