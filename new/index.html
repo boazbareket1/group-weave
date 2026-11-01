@@ -978,6 +978,7 @@ function route(fromData){
   if(v==="me"&&!isMember())v="join";
   document.body.dataset.view=v;
   if(v==="game")return renderGame();
+  if(v==="host")return renderHost();
   if(v==="wall")return renderWall();
   if(v==="circle")return renderLead();
   if(v==="stages")return renderBoard();
@@ -989,6 +990,7 @@ function navHTML(cur){
   const all=[isMember()?["me","המפה שלי","◉"]:["join","הצטרפות","+"],["fam","הקבוצה","☷"],["circle","המעגל","◎"],["wall","לוח","✎"],["stages","שלבים","☰"],["game","משחק","✦"],["qr","QR","▦"],["gloss","מילון","?"],["hub","המארג","⌂"]];
   const btn=([k,t,i])=>`<button type="button" data-go="${k}" ${k===cur?'aria-current="page"':""}><span class="gi" aria-hidden="true">${i}</span><span>${t}</span>${k==="wall"&&wallUnread()?`<span class="nbadge">${wallUnread()}</span>`:""}</button>`;
   // phones: four primary items + "עוד"; wide screens: everything
+  if(FACIL())all.splice(1,0,["host","מנחה","★"]);
   const prim=all.slice(0,4),more=all.slice(4);const moreOn=more.some(x=>x[0]===cur);
   return `<nav class="gnav" aria-label="ניווט בכלי">${prim.map(btn).join("")}<span class="gmore">${more.map(btn).join("")}</span><button type="button" class="gmore-btn" data-more ${moreOn?'aria-current="page"':""}><span class="gi" aria-hidden="true">⋯</span><span>עוד</span></button></nav>`;
 }
@@ -997,7 +999,7 @@ document.addEventListener("click",e=>{
   if(!b){if(ctx&&ctx.classList.contains("morectx")&&!e.target.closest(".ctxmenu"))closeCtx();return;}
   e.preventDefault();if(ctx){closeCtx();return;}
   ctx=document.createElement("div");ctx.className="ctxmenu morectx";ctx.setAttribute("role","menu");
-  ctx.innerHTML=[["stages","שלבים"],["game","משחק הזיהוי"],["qr","QR להצטרפות"],["gloss","מילון מושגים"],["hub","⌂ המארג – כל הכלים"]].map(([k,t])=>`<button type="button" data-go="${k}">${t}</button>`).join("");
+  ctx.innerHTML=(FACIL()?[["host","★ מסך המנחה"]]:[]).concat([["stages","שלבים"],["game","משחק הזיהוי"],["qr","QR להצטרפות"],["gloss","מילון מושגים"],["hub","⌂ המארג – כל הכלים"]]).map(([k,t])=>`<button type="button" data-go="${k}">${t}</button>`).join("");
   document.body.appendChild(ctx);const r=b.getBoundingClientRect();
   ctx.style.left=Math.max(8,Math.min(innerWidth-ctx.offsetWidth-8,r.left))+"px";ctx.style.top=(r.top-ctx.offsetHeight-8)+"px";
   ctx.querySelectorAll("[data-go]").forEach(m=>m.addEventListener("click",closeCtx));
@@ -1087,12 +1089,37 @@ function claimHTML(){
   return `<div class="card" style="margin-top:14px"><h2 style="font-size:1.15rem">כבר במעגל? זה את/ה?</h2><p class="muted" style="margin:4px 0 10px">אם המנחה הוסיף/ה אותך, או שהחלפת מכשיר – בחר/י את השם שלך.</p><div style="display:flex;flex-wrap:wrap;gap:8px">${G.P.map(p=>`<button class="btn small" data-claim="${p.id}" style="background:#fff;color:var(--fg);border:1.5px solid var(--line2)">${esc(p.label)}</button>`).join("")}</div></div>`;
 }
 function bindClaim(){document.querySelectorAll("[data-claim]").forEach(b=>b.onclick=()=>{const id=b.dataset.claim;if(!S.members[id])return;if(!confirm(`להיכנס למעגל בתור ${S.members[id].name}?`))return;ls.set("grp-me:"+ROOM,id);view="";go("me");});}
+function renderHost(){
+  view="host";
+  const P=G.P;
+  app.innerHTML=`<div class="wrap">
+   <div class="top"><h1>מסך המנחה</h1><span class="muted">${esc(S.meta.name)}</span></div>
+   <div class="card" style="border-color:var(--teal);border-top:6px solid var(--teal)">
+     <h2 style="font-size:1.2rem;margin:0 0 4px">${esc(S.meta.name)} <button class="link" id="fcRename" style="font-size:.9rem">שינוי שם</button></h2>
+     <p class="muted" style="margin:0 0 12px">קוד המעגל: <span class="code" style="font-size:1.2rem">${ROOM}</span> · ${isClosed()?"המעגל סגור להצטרפות":"המעגל פתוח להצטרפות"}</p>
+     <div style="display:grid;gap:8px">
+       <button class="btn" id="fcAdd">+ הוספת משתתף/ת</button>
+       <button class="btn ghost" id="fcQR">QR וקישור להזמנה</button>
+       <button class="btn ghost" id="fcBoard">לוח השלבים (מסך גדול)</button>
+       <button class="btn ghost" id="fcToggle">${isClosed()?"לפתוח את המעגל להצטרפות":"לסגור את המעגל להצטרפות"}</button>
+     </div>
+   </div>
+   <div class="card" style="margin-top:14px"><h2 style="font-size:1.15rem;margin:0 0 8px">במעגל עכשיו: ${G.n}</h2>
+     <div class="members">${P.map(p=>`<span class="mem">${dotOf(p)}${esc(p.name)}<button data-edit="${p.id}" aria-label="עריכת ${esc(p.name)}" title="עריכה">✎</button><button data-del="${p.id}" aria-label="הסרת ${esc(p.name)}">×</button></span>`).join("")||'<span class="muted">עוד אין משתתפים</span>'}</div>
+   </div>
+   <p class="muted" style="margin-top:16px;font-size:.9rem">${isMember()?"":"גם את/ה חלק מהמעגל? <button class=\"link\" data-go=\"join\">הצטרפות כמשתתף/ת</button> · "}<a href="${BASE}${LOCAL?"?local=1":""}" style="color:var(--teal)">לדף הפתיחה של הכלי</a></p>
+  </div>`;
+  bindFacil();
+  const t=$("fcToggle");if(t)t.onclick=async()=>{t.disabled=true;await store.patch(`rooms/${ROOM}/meta`,{closed:!isClosed()});S.meta.closed=!isClosed();renderHost();};
+  app.querySelectorAll("[data-del]").forEach(b=>b.onclick=()=>{const p=G.P.find(p=>p.id===b.dataset.del);if(p&&confirmDel(p))store.del(`rooms/${ROOM}/members/${p.id}`);});
+  addNav("host");
+}
 function facilCardHTML(){
   if(!FACIL())return "";
   return `<div class="card" style="margin-bottom:14px;border-color:var(--teal);border-top:6px solid var(--teal)"><p class="k" style="font-family:var(--f-mono);font-size:.9rem;color:var(--muted);margin:0">את/ה המנחה של המעגל הזה</p>
     <h2 style="font-size:1.25rem;margin:4px 0 6px">${esc(S.meta.name)} <button class="link" id="fcRename" style="font-size:.9rem">שינוי שם</button></h2>
     <p class="muted" style="margin:0 0 10px">קוד המעגל: <span class="code" style="font-size:1.2rem">${ROOM}</span> · שמרו את הקישור – ממנו חוזרים למעגל.</p>
-    <div style="display:flex;flex-wrap:wrap;gap:8px"><button class="btn small" id="fcAdd">+ הוספת משתתף/ת</button><button class="btn small ghost" id="fcQR">QR וקישור להזמנה</button><button class="btn small ghost" id="fcBoard">לוח השלבים</button></div>
+    <div style="display:flex;flex-wrap:wrap;gap:8px"><button class="btn small" id="fcAdd">+ הוספת משתתף/ת</button><button class="btn small ghost" id="fcQR">QR וקישור להזמנה</button><button class="btn small ghost" data-go="host">★ מסך המנחה</button></div>
     <p class="muted" style="margin:10px 0 0;font-size:.9rem">גם את/ה חלק מהמעגל? מלא/י את הפרטים שלך למטה, כמו כולם.</p></div>`;
 }
 function bindFacil(){
