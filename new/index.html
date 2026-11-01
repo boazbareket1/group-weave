@@ -1007,6 +1007,12 @@ function renderLoading(){view="loading";app.innerHTML=`<div class="wrap"><p clas
 function renderMissing(){view="missing";app.innerHTML=`<div class="wrap"><div class="card" style="margin-top:20vh;text-align:center"><h2>לא מצאנו את המעגל</h2><p class="muted">ייתכן שהקוד שגוי. אפשר לבקש קישור חדש ממי שפתח/ה את המעגל.</p><a class="btn" href="${BASE}${LOCAL?"?local=1":""}" style="text-decoration:none;display:inline-block">לדף הפתיחה</a></div></div>`;}
 
 /* ---------- home ---------- */
+function myCirclesHTML(){
+  let keys=[];try{keys=Object.keys(localStorage).filter(k=>k.startsWith("grp-host:"));}catch(e){}
+  if(!keys.length)return "";
+  const items=keys.map(k=>{const c=k.slice("grp-host:".length);return `<li><a href="${BASE}?r=${c}${LOCAL?"&local=1":""}" style="font-weight:700;color:var(--teal)">${esc(ls.get("grp-name:"+c)||"מעגל")}</a> <span class="muted" style="font-family:var(--f-mono);direction:ltr;display:inline-block">${c}</span></li>`;}).join("");
+  return `<div class="card" style="margin-top:16px;border-color:var(--teal);border-top:6px solid var(--teal)"><h2 style="font-size:1.2rem">המעגלים שפתחת במכשיר הזה</h2><ul style="margin:8px 0 0;padding-inline-start:18px;display:grid;gap:6px">${items}</ul></div>`;
+}
 function renderHome(){
   view="home";document.body.dataset.view="home";
   app.innerHTML=`<div class="wrap">
@@ -1024,6 +1030,7 @@ function renderHome(){
       <li>אחר כך נחשפים בהדרגה: השליחות של הקבוצה, האתגר שלנו, התפקידים והחוטים שמחברים ביניכם.</li>
     </ul>
   </section>
+  ${myCirclesHTML()}
   <div class="card" style="margin-top:16px">
     <h2 style="font-size:1.2rem">קיבלתם קוד מעגל?</h2>
     <div class="row" style="margin-top:10px"><input type="text" id="codeIn" placeholder="קוד המעגל" style="max-width:200px;direction:ltr;text-transform:uppercase;letter-spacing:.15em" autocomplete="off"><button class="btn small" id="codeBtn">כניסה</button></div>
@@ -1069,7 +1076,7 @@ async function createRoom(){
     let code;for(let i=0;i<5;i++){code=Array.from({length:5},()=>A[Math.floor(Math.random()*A.length)]).join("");if(!(await store.get(`rooms/${code}/meta`)))break;}
     await store.put(`rooms/${code}/meta`,Object.assign({name:name.slice(0,60),created:Date.now(),stage:0,open:false,type:"group"},voucher?{voucher}:{}));
     if(voucher&&voucher!=="launch")await store.patch(`vouchers/${voucher}`,{used:true,usedAt:Date.now(),room:code,tool:"group"});
-    ls.set("grp-host:"+code,"1");
+    ls.set("grp-host:"+code,"1");ls.set("grp-name:"+code,name.slice(0,60));
     location.href=BASE+"?r="+code+(LOCAL?"&local=1":"");
   }catch(e){$("homeErr").textContent="לא הצלחנו לפתוח מעגל. בדקו את החיבור לאינטרנט ונסו שוב.";$("createBtn").disabled=false;}
 }
@@ -1080,12 +1087,31 @@ function claimHTML(){
   return `<div class="card" style="margin-top:14px"><h2 style="font-size:1.15rem">כבר במעגל? זה את/ה?</h2><p class="muted" style="margin:4px 0 10px">אם המנחה הוסיף/ה אותך, או שהחלפת מכשיר – בחר/י את השם שלך.</p><div style="display:flex;flex-wrap:wrap;gap:8px">${G.P.map(p=>`<button class="btn small" data-claim="${p.id}" style="background:#fff;color:var(--fg);border:1.5px solid var(--line2)">${esc(p.label)}</button>`).join("")}</div></div>`;
 }
 function bindClaim(){document.querySelectorAll("[data-claim]").forEach(b=>b.onclick=()=>{const id=b.dataset.claim;if(!S.members[id])return;if(!confirm(`להיכנס למעגל בתור ${S.members[id].name}?`))return;ls.set("grp-me:"+ROOM,id);view="";go("me");});}
+function facilCardHTML(){
+  if(!FACIL())return "";
+  return `<div class="card" style="margin-bottom:14px;border-color:var(--teal);border-top:6px solid var(--teal)"><p class="k" style="font-family:var(--f-mono);font-size:.9rem;color:var(--muted);margin:0">את/ה המנחה של המעגל הזה</p>
+    <h2 style="font-size:1.25rem;margin:4px 0 6px">${esc(S.meta.name)} <button class="link" id="fcRename" style="font-size:.9rem">שינוי שם</button></h2>
+    <p class="muted" style="margin:0 0 10px">קוד המעגל: <span class="code" style="font-size:1.2rem">${ROOM}</span> · שמרו את הקישור – ממנו חוזרים למעגל.</p>
+    <div style="display:flex;flex-wrap:wrap;gap:8px"><button class="btn small" id="fcAdd">+ הוספת משתתף/ת</button><button class="btn small ghost" id="fcQR">QR וקישור להזמנה</button><button class="btn small ghost" id="fcBoard">לוח השלבים</button></div>
+    <p class="muted" style="margin:10px 0 0;font-size:.9rem">גם את/ה חלק מהמעגל? מלא/י את הפרטים שלך למטה, כמו כולם.</p></div>`;
+}
+function bindFacil(){
+  const a=$("fcAdd");if(a)a.onclick=()=>openAdd();
+  const q=$("fcQR");if(q)q.onclick=()=>openQR();
+  const b=$("fcBoard");if(b)b.onclick=()=>go("stages");
+  const r=$("fcRename");if(r)r.onclick=renameCircle;
+}
+async function renameCircle(){
+  const n=prompt("שם המעגל:",S.meta.name||"");if(n===null)return;const name=n.trim().slice(0,60);if(!name)return;
+  try{await store.patch(`rooms/${ROOM}/meta`,{name});S.meta.name=name;ls.set("grp-name:"+ROOM,name);route();}catch(e){alert("לא הצלחנו לשמור את השם.");}
+}
 function renderJoin(){
   view="join";
-  if(isClosed()&&!FACIL()){app.innerHTML=`<div class="wrap"><div class="top"><h1>${esc(S.meta.name)}</h1></div><div class="card" style="text-align:center"><h2 style="font-size:1.4rem">המעגל סגור להצטרפות</h2><p class="muted">${CLOSED_MSG}</p></div>${claimHTML()}</div>`;bindClaim();addNav("join");return;}
+  if(isClosed()&&!FACIL()){app.innerHTML=`<div class="wrap"><div class="top"><h1>${esc(S.meta.name)}</h1></div>${facilCardHTML()}<div class="card" style="text-align:center"><h2 style="font-size:1.4rem">המעגל סגור להצטרפות</h2><p class="muted">${CLOSED_MSG}</p></div>${claimHTML()}</div>`;bindClaim();bindFacil();addNav("join");return;}
   if(G.n>=MAXP){app.innerHTML=`<div class="wrap"><div class="top"><h1>${esc(S.meta.name)}</h1></div><div class="card" style="text-align:center"><h2 style="font-size:1.4rem">המעגל מלא</h2><p class="muted">במעגל כבר ${MAXP} משתתפים, וזה המקסימום. אם כבר הצטרפת ממכשיר אחר, בחר/י את שמך למטה.</p></div>${claimHTML()}</div>`;bindClaim();return;}
   app.innerHTML=`<div class="wrap">
   <div class="top"><h1>${esc(S.meta.name)}</h1><span class="muted" id="joinCount"></span></div>
+  ${facilCardHTML()}
   <div class="card">
     <h2 style="font-size:1.4rem">הצטרפות למעגל</h2>
     <p class="muted" style="margin:4px 0 0">השם המלא כפי שניתן בלידה, כולל שם המשפחה מהלידה.</p>
@@ -1100,7 +1126,7 @@ function renderJoin(){
   <p class="muted" style="font-size:.85rem;margin-top:16px">הפרטים נשמרים רק בתוך המעגל הזה, ומי שיש לו את הקישור למעגל יכול לראות אותם. אפשר לבקש מהמנחה להסיר אותך מהמעגל בכל שלב.</p>
   ${claimHTML()}
   </div>`;
-  $("jBtn").onclick=join;bindClaim();updateJoin();addNav("join");
+  $("jBtn").onclick=join;bindClaim();bindFacil();updateJoin();addNav("join");
 }
 function updateJoin(){if((isClosed()&&!FACIL())===!!$("jBtn"))return renderJoin();if(G.n>=MAXP)return renderJoin();const c=$("joinCount");if(c)c.textContent=G.n?`${G.n} מתוך ${MAXP} כבר במעגל`:"";}
 function validPerson(name,bd,errEl){
@@ -1179,7 +1205,7 @@ function renderBoard(){
   if(k==="who"&&mysteryShown&&G.P[mysteryIdx])skyOpts.hi=G.P[mysteryIdx].id;
   app.innerHTML=`<div class="wrap wide">
    <div class="top"><h1>${esc(S.meta.name)}</h1>
-     <span class="muted">קוד המעגל <span class="code">${ROOM}</span> · ${G.n<MAXP?`<button class="link" id="addBtn">+ הוספת משתתף/ת</button>`:`<span>המעגל מלא (${MAXP})</span>`} · <button class="link" type="button" data-sharedlg="">שיתוף / PDF</button> · <button class="link" type="button" data-fbopen>משוב על הניתוחים</button>${online?"":" · <span style='color:var(--rose)'>אין חיבור</span>"}</span></div>
+     <span class="muted">${FACIL()?`<button class="link" onclick="renameCircle()">שינוי שם</button> · `:""}קוד המעגל <span class="code">${ROOM}</span> · ${G.n<MAXP?`<button class="link" id="addBtn">+ הוספת משתתף/ת</button>`:`<span>המעגל מלא (${MAXP})</span>`} · <button class="link" type="button" data-sharedlg="">שיתוף / PDF</button> · <button class="link" type="button" data-fbopen>משוב על הניתוחים</button>${online?"":" · <span style='color:var(--rose)'>אין חיבור</span>"}</span></div>
    <nav class="steps" aria-label="שלבי המפגש">${STAGES.map((s,i)=>`<button data-st="${i}" class="${i===st?"on":i<=curStage()?"done":""}" ${i>maxSt?'disabled title="נפתח כשהמנחה מתקדם"':""}>${i}. ${s.short}</button>`).join("")}</nav>${FACIL()?"":`<p class="muted" style="margin:0 0 6px;font-size:.9rem">${S.meta.open?"כל השלבים פתוחים.":"השלבים נפתחים כשהמנחה מתקדם במפגש."}</p>`}
    <div class="board">
      <aside class="side night">${st===0?`<div class="join-box"><p style="margin:6px 0 10px;opacity:.9">סרקו כדי להצטרף</p><div class="qr">${qrSVG(joinURL())}</div><p style="margin:10px 0 0;opacity:.85">או היכנסו לקישור והקלידו את הקוד</p><div class="code">${ROOM}</div></div>`:""}
