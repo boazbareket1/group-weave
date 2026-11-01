@@ -1038,6 +1038,8 @@ function renderHome(){
 /* host code: only the facilitator may open new circles. The code itself is not in the file, only its SHA-256.
    To change it: compute the SHA-256 of the new code (e.g. printf 'code' | sha256sum) and replace HOST_HASH. */
 const HOST_HASH="c1f916534a33c70e6695a100531090ec79483c0900cf33ac087d01acb145bfc9";
+/* launch period: a public code that opens one circle per use (set to "" to close the launch) */
+const LAUNCH_CODE="8888";
 async function sha256(t){const b=await crypto.subtle.digest("SHA-256",new TextEncoder().encode(t));return [...new Uint8Array(b)].map(x=>x.toString(16).padStart(2,"0")).join("");}
 async function checkHostCode(code){
   if(LOCAL)return true;
@@ -1053,7 +1055,8 @@ async function createRoom(){
   if(!await checkHostCode(raw)){
     // not the facilitator's code: maybe a one-circle voucher
     const vc=raw.toUpperCase().replace(/[^A-Z0-9]/g,"");
-    if(vc.length>=8&&!LOCAL){
+    if(vc===LAUNCH_CODE){voucher="launch";}
+    else if(vc.length>=8&&!LOCAL){
       try{const v=await store.get(`vouchers/${vc}`);
         if(!v){$("homeErr").textContent="הקוד לא נכון. פתיחת מעגל חדש שמורה למנחה או למי שיש לו שובר.";$("createBtn").disabled=false;return;}
         if(v.used){$("homeErr").textContent="השובר הזה כבר מומש. כל שובר פותח מעגל אחד.";$("createBtn").disabled=false;return;}
@@ -1065,7 +1068,7 @@ async function createRoom(){
   try{
     let code;for(let i=0;i<5;i++){code=Array.from({length:5},()=>A[Math.floor(Math.random()*A.length)]).join("");if(!(await store.get(`rooms/${code}/meta`)))break;}
     await store.put(`rooms/${code}/meta`,Object.assign({name:name.slice(0,60),created:Date.now(),stage:0,open:false,type:"group"},voucher?{voucher}:{}));
-    if(voucher)await store.patch(`vouchers/${voucher}`,{used:true,usedAt:Date.now(),room:code,tool:"group"});
+    if(voucher&&voucher!=="launch")await store.patch(`vouchers/${voucher}`,{used:true,usedAt:Date.now(),room:code,tool:"group"});
     ls.set("grp-host:"+code,"1");
     location.href=BASE+"?r="+code+(LOCAL?"&local=1":"");
   }catch(e){$("homeErr").textContent="לא הצלחנו לפתוח מעגל. בדקו את החיבור לאינטרנט ונסו שוב.";$("createBtn").disabled=false;}
