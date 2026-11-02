@@ -1,4 +1,5 @@
 <!DOCTYPE html>
+<!-- קובץ מיוצר: לא לערוך כאן. המקור: group-weave/src/weave.src.html · בנייה: python3 src/build.py (ראו CLAUDE.md) -->
 <html lang="he" dir="rtl">
 <head>
 <meta charset="UTF-8">
@@ -51,7 +52,10 @@ button{cursor:pointer}
 .btn.small{padding:8px 16px;font-size:.95rem}
 .link{background:none;border:0;color:var(--teal);text-decoration:underline;padding:4px;font-weight:600}
 .card{background:var(--panel);border:1px solid var(--line);border-radius:18px;padding:20px}
-.eyebrow{font-size:.8rem;font-weight:700;letter-spacing:.05em;color:var(--teal)}
+.kicker{margin:6px 0 14px;color:var(--muted)}
+h2 .pre{color:var(--muted)}
+::selection{background:rgba(15,107,102,.2)}
+input,textarea{caret-color:var(--teal)}
 .err{color:var(--slate);font-weight:600;min-height:1.4em}
 .status{color:var(--teal);font-weight:600;min-height:1.4em}
 
@@ -62,7 +66,7 @@ button{cursor:pointer}
 .hero h1{font-size:clamp(2rem,7vw,2.8rem);margin:0 auto 10px;max-width:16ch}
 .hero p{margin:0 auto 18px;max-width:40ch;opacity:.88}
 .hero ul{list-style:none;padding:0;margin:22px auto 0;display:grid;gap:6px;max-width:36ch;text-align:right;font-size:.98rem;opacity:.92}
-.hero li::before{content:"✦ ";color:var(--t1)}
+.hero li::before{content:"";display:inline-block;width:14px;height:2px;border-radius:2px;background:var(--t1);vertical-align:middle;margin-inline-end:9px}
 .top{display:flex;justify-content:space-between;align-items:baseline;gap:12px;padding:22px 0 6px;flex-wrap:wrap}
 .top h1{font-size:clamp(1.6rem,5vw,2.3rem)}
 .code{font-family:var(--f-num);font-weight:600;letter-spacing:.18em;color:var(--teal);direction:ltr;display:inline-block}
@@ -91,7 +95,7 @@ input[type=text],select{color:var(--fg);background:var(--panel2);border:1px soli
 .steps button.done{color:var(--fg)}
 .stage h2{font-size:clamp(1.6rem,3.6vw,2.4rem);margin:4px 0 6px}
 .stage .lead{color:var(--muted);margin:0 0 16px;max-width:60ch;font-size:1.05rem}
-.ask{margin-top:20px;border-inline-start:4px solid var(--teal);background:var(--teal-soft);border-radius:10px;padding:12px 16px;font-size:1.05rem}
+.ask{margin-top:20px;border:1.5px dashed var(--teal);background:var(--teal-soft);border-radius:10px;padding:12px 16px;font-size:1.05rem}
 .ask b{display:block;font-size:.8rem;letter-spacing:.05em;color:var(--teal)}
 .nav{display:flex;justify-content:space-between;gap:10px;margin-top:22px}
 .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:12px}
@@ -160,7 +164,7 @@ details.more summary{cursor:pointer;color:var(--teal);font-weight:700}
 .post .ptxt{margin:6px 0 0;white-space:pre-wrap;overflow-wrap:anywhere}
 .post .pacts{display:flex;gap:10px;margin-top:6px}
 .post .pacts button{background:none;border:0;color:var(--teal);font-weight:600;padding:2px 0;font-size:.9rem}
-.post .reply{margin:8px 0 0 0;padding:8px 12px;border-inline-start:3px solid var(--line);background:var(--panel2);border-radius:8px}
+.post .reply{margin:8px 0 0 0;margin-inline-start:16px;padding:8px 12px;border:1px dashed var(--line2);background:var(--panel2);border-radius:8px}
 .post .reply b{font-size:.95rem}.post .reply p{margin:2px 0 0;white-space:pre-wrap}
 .wall-empty{color:var(--muted);text-align:center;padding:24px 14px;border:1px dashed var(--line);border-radius:14px;margin-top:12px}
 .gnav .nbadge{position:absolute;top:2px;inset-inline-end:6px;background:var(--slate);color:#fff;border-radius:999px;font-size:.66rem;font-weight:700;min-width:16px;height:16px;line-height:16px;text-align:center;padding:0 4px}
@@ -249,7 +253,7 @@ dialog::backdrop{background:rgba(10,20,24,.5)}
 .gnav button{display:inline-flex;align-items:center;gap:7px;border:1px solid var(--line);background:var(--panel);color:var(--fg);border-radius:999px;padding:8px 16px;font-weight:700;font-size:.95rem}
 .gnav button:hover{border-color:var(--teal)}
 .gnav button[aria-current="page"]{background:var(--teal);border-color:var(--teal);color:#fffdf8}
-.gnav .gi{font-size:1rem;line-height:1}
+.gnav .gi{font-size:1rem;line-height:1}.gnav .gi svg{display:block;width:22px;height:22px}
 @media (max-width:760px){
   body{padding-bottom:calc(84px + env(safe-area-inset-bottom,0))}
   .gnav{position:fixed;z-index:30;left:0;right:0;bottom:0;margin:0;padding:6px 6px calc(6px + env(safe-area-inset-bottom,0));gap:2px;flex-wrap:nowrap;justify-content:space-around;background:var(--panel);border-top:1px solid var(--line);box-shadow:0 -6px 18px rgba(0,0,0,.08)}
@@ -325,7 +329,7 @@ body[data-view="fam"],body[data-view="stages"]{--acc:var(--concrete);--acc-soft:
 body[data-view="circle"]{--acc:#6f9fc2;--acc-soft:rgba(111,159,194,.14)}
 body[data-view="wall"]{--acc:var(--plum);--acc-soft:rgba(107,78,143,.12)}
 body[data-view="stages"],body[data-view="game"]{--acc:var(--ink);--acc-soft:rgba(31,45,58,.08)}
-.post{border-inline-start:6px solid var(--plum)}
+.post{border-color:rgba(107,78,143,.45)}
 h1,h2,h3{font-weight:400;letter-spacing:0}
 body{font-size:17px}
 .btn{border-radius:6px;background:var(--acc);color:#fff;font-weight:700}
@@ -334,7 +338,7 @@ body{font-size:17px}
 .link{color:var(--teal)}
 .card,.pc,.ix,.st,.note,.game-row,.score,.post,.wall-compose,dialog{border:2px solid var(--line2);border-radius:8px;box-shadow:none;background:#fff}
 .card{border-color:var(--acc)}
-.eyebrow{font-family:var(--f-mono);letter-spacing:0;color:var(--muted);font-size:.92rem}
+.kicker{font-family:var(--f-mono);letter-spacing:0;color:var(--muted);font-size:.92rem}
 .code{font-family:var(--f-mono);font-weight:600;color:var(--teal)}
 .top{border-bottom:3px solid var(--acc);padding-bottom:10px}
 .top h1{font-size:clamp(1.7rem,5vw,2.3rem)}
@@ -343,7 +347,7 @@ body{font-size:17px}
 .chip{border:1.5px solid var(--line2);background:#fff;font-family:var(--f-mono);font-size:.85rem}
 .chip b{font-family:var(--f-num);color:var(--teal)}
 .tag{font-family:var(--f-mono);font-weight:600}
-.ask{border:2px solid var(--acc);border-inline-start-width:8px;background:#fff;border-radius:6px}
+.ask{border:2px dashed var(--acc);background:#fff;border-radius:6px}
 .ask b{font-family:var(--f-mono);color:var(--acc);letter-spacing:0}
 .steps button{border:2px solid var(--line2);color:var(--muted);border-radius:6px;font-weight:700}
 .steps button.done{border-color:var(--concrete);color:var(--concrete)}
@@ -402,7 +406,7 @@ details.deep summary{color:var(--teal)}
 .reader .x{background:#fff;border:2px solid var(--ink);border-radius:6px}
 .lead-actions button,.lead-actions a{border:2px solid var(--concrete);color:var(--concrete);border-radius:6px;font-weight:700}
 .lead-actions button:hover,.lead-actions a:hover{background:var(--concrete);color:#fff}
-.lc{border:2px solid var(--line2);border-inline-start:6px solid var(--lcacc,var(--line2));border-radius:6px;box-shadow:none;padding-left:30px;background:#fff}
+.lc{border:2px solid var(--lcacc,var(--line2));border-radius:6px;box-shadow:none;padding-left:30px;background:#fff}
 .lc:hover,.lc:focus-visible{border-color:var(--teal);box-shadow:none}
 .lc .nm{font-size:1.15rem}
 .lc .r .num{background:var(--teal);color:#fff;font-family:var(--f-mono);font-weight:600;font-size:.8rem}
@@ -1009,19 +1013,33 @@ function route(fromData){
   if(view!=="join")renderJoin();else updateJoin();
 }
 function navHTML(cur){
+const ICO=(()=>{const P={
+  me:'<circle cx="12" cy="8" r="3.6"/><path d="M5 20c.8-3.6 3.6-5.6 7-5.6s6.2 2 7 5.6"/>',
+  join:'<path d="M12 5v14M5 12h14"/>',
+  fam:'<circle cx="6" cy="16" r="2.6"/><circle cx="18" cy="16" r="2.6"/><circle cx="12" cy="6" r="2.6"/><path d="M8.3 14.6 10.6 8.3M15.7 14.6 13.4 8.3M8.6 16h6.8"/>',
+  circle:'<circle cx="12" cy="12" r="7.5"/><circle cx="12" cy="4.5" r="1.6" fill="currentColor"/><circle cx="19.1" cy="14.3" r="1.6" fill="currentColor"/><circle cx="4.9" cy="14.3" r="1.6" fill="currentColor"/>',
+  wall:'<rect x="4.5" y="4.5" width="15" height="15" rx="2"/><path d="M8 9.5h8M8 13h8M8 16.5h4.5"/>',
+  stages:'<path d="M4 19h5v-4.5h5V10h6"/><circle cx="20" cy="6" r="1.6" fill="currentColor"/>',
+  game:'<rect x="5" y="3.8" width="11" height="15" rx="2" transform="rotate(-8 10.5 11.3)"/><path d="M14.5 6.2l3.8.9a2 2 0 0 1 1.5 2.4l-2.4 10.1a2 2 0 0 1-2.4 1.5l-4.3-1"/>',
+  qr:'<rect x="4" y="4" width="6" height="6" rx="1"/><rect x="14" y="4" width="6" height="6" rx="1"/><rect x="4" y="14" width="6" height="6" rx="1"/><path d="M14 14h2.5v2.5M20 14v6h-6v-2.5"/>',
+  gloss:'<circle cx="12" cy="12" r="8"/><path d="M9.6 9.6a2.5 2.5 0 1 1 3.4 2.3c-.6.3-1 .8-1 1.5v.6"/><circle cx="12" cy="16.8" r=".9" fill="currentColor" stroke="none"/>',
+  hub:'<path d="M4.5 11 12 4.5 19.5 11M6.5 9.5V19.5h11V9.5"/><path d="M10.3 19.5v-5h3.4v5"/>',
+  host:'<path d="M12 4.2l2.3 4.8 5.2.7-3.8 3.6.9 5.2L12 16l-4.6 2.5.9-5.2-3.8-3.6 5.2-.7z"/>',
+  more:'<circle cx="6" cy="12" r="1.4" fill="currentColor"/><circle cx="12" cy="12" r="1.4" fill="currentColor"/><circle cx="18" cy="12" r="1.4" fill="currentColor"/>'};
+  return k=>`<svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${P[k]||""}</svg>`;})();
   const all=[isMember()?["me","המפה שלי","◉"]:["join","הצטרפות","+"],["fam","⟦הקבוצה¦המשפחה⟧","☷"],["circle","המעגל","◎"],["wall","לוח","✎"],["stages","שלבים","☰"],["game","משחק","✦"],["qr","QR","▦"],["gloss","מילון","?"],["hub","המארג","⌂"]];
-  const btn=([k,t,i])=>`<button type="button" data-go="${k}" ${k===cur?'aria-current="page"':""}><span class="gi" aria-hidden="true">${i}</span><span>${t}</span>${k==="wall"&&wallUnread()?`<span class="nbadge">${wallUnread()}</span>`:""}</button>`;
+  const btn=([k,t,i])=>`<button type="button" data-go="${k}" ${k===cur?'aria-current="page"':""}><span class="gi" aria-hidden="true">${ICO(k)}</span><span>${t}</span>${k==="wall"&&wallUnread()?`<span class="nbadge">${wallUnread()}</span>`:""}</button>`;
   // phones: four primary items + "עוד"; wide screens: everything
   if(FACIL())all.splice(1,0,["host","מנחה","★"]);
   const prim=all.slice(0,4),more=all.slice(4);const moreOn=more.some(x=>x[0]===cur);
-  return `<nav class="gnav" aria-label="ניווט בכלי">${prim.map(btn).join("")}<span class="gmore">${more.map(btn).join("")}</span><button type="button" class="gmore-btn" data-more ${moreOn?'aria-current="page"':""}><span class="gi" aria-hidden="true">⋯</span><span>עוד</span></button></nav>`;
+  return `<nav class="gnav" aria-label="ניווט בכלי">${prim.map(btn).join("")}<span class="gmore">${more.map(btn).join("")}</span><button type="button" class="gmore-btn" data-more ${moreOn?'aria-current="page"':""}><span class="gi" aria-hidden="true">${ICO("more")}</span><span>עוד</span></button></nav>`;
 }
 document.addEventListener("click",e=>{
   const b=e.target.closest("[data-more]");
   if(!b){if(ctx&&ctx.classList.contains("morectx")&&!e.target.closest(".ctxmenu"))closeCtx();return;}
   e.preventDefault();if(ctx){closeCtx();return;}
   ctx=document.createElement("div");ctx.className="ctxmenu morectx";ctx.setAttribute("role","menu");
-  ctx.innerHTML=(FACIL()?[["host","★ מסך המנחה"]]:[]).concat([["stages","שלבים"],["game","משחק הזיהוי"],["qr","QR להצטרפות"],["gloss","מילון מושגים"],["hub","⌂ המארג – כל הכלים"]]).map(([k,t])=>`<button type="button" data-go="${k}">${t}</button>`).join("");
+  ctx.innerHTML=(FACIL()?[["host","מסך המנחה"]]:[]).concat([["stages","שלבים"],["game","משחק הזיהוי"],["qr","QR להצטרפות"],["gloss","מילון מושגים"],["hub","המארג – כל הכלים"]]).map(([k,t])=>`<button type="button" data-go="${k}">${t}</button>`).join("");
   document.body.appendChild(ctx);const r=b.getBoundingClientRect();
   ctx.style.left=Math.max(8,Math.min(innerWidth-ctx.offsetWidth-8,r.left))+"px";ctx.style.top=(r.top-ctx.offsetHeight-8)+"px";
   ctx.querySelectorAll("[data-go]").forEach(m=>m.addEventListener("click",closeCtx));
@@ -1145,7 +1163,7 @@ function facilCardHTML(){
   return `<div class="card" style="margin-bottom:14px;border-color:var(--teal);border-top:6px solid var(--teal)"><p class="k" style="font-family:var(--f-mono);font-size:.9rem;color:var(--muted);margin:0">את/ה המנחה של המעגל הזה</p>
     <h2 style="font-size:1.25rem;margin:4px 0 6px">${esc(S.meta.name)} <button class="link" id="fcRename" style="font-size:.9rem">שינוי שם</button></h2>
     <p class="muted" style="margin:0 0 10px">קוד המעגל: <span class="code" style="font-size:1.2rem">${ROOM}</span> · שמרו את הקישור – ממנו חוזרים למעגל.</p>
-    <div style="display:flex;flex-wrap:wrap;gap:8px"><button class="btn small" id="fcAdd">+ הוספת ⟦משתתף/ת¦בן/בת משפחה⟧</button><button class="btn small ghost" id="fcQR">QR וקישור להזמנה</button><button class="btn small ghost" data-go="host">★ מסך המנחה</button></div>
+    <div style="display:flex;flex-wrap:wrap;gap:8px"><button class="btn small" id="fcAdd">+ הוספת ⟦משתתף/ת¦בן/בת משפחה⟧</button><button class="btn small ghost" id="fcQR">QR וקישור להזמנה</button><button class="btn small ghost" data-go="host">מסך המנחה</button></div>
     <p class="muted" style="margin:10px 0 0;font-size:.9rem">גם את/ה חלק מהמעגל? מלא/י את הפרטים שלך למטה, כמו כולם.</p></div>`;
 }
 function bindFacil(){
@@ -1273,7 +1291,7 @@ function renderBoard(){
    <div class="board">
      <aside class="side night">${st===0?`<div class="join-box"><p style="margin:6px 0 10px;opacity:.9">סרקו כדי להצטרף</p><div class="qr">${qrSVG(joinURL())}</div><p style="margin:10px 0 0;opacity:.85">או היכנסו לקישור והקלידו את הקוד</p><div class="code">${ROOM}</div></div>`:""}
        <div class="sky">${skySVG(skyOpts)}</div>${tribeLegend()}</aside>
-     <section class="stage" id="stage">${needTwo?`<div class="eyebrow">${STAGES[st].t}</div><h2>מחכים לעוד ⟦משתתפים¦בני משפחה⟧</h2><p class="lead">התמונה ⟦הקבוצתית¦המשפחתית⟧ נפתחת כשיש לפחות שני משתתפים במעגל.</p>`:stageHTML(st)}
+     <section class="stage" id="stage">${needTwo?`<h2>מחכים לעוד ⟦משתתפים¦בני משפחה⟧</h2><p class="kicker">${STAGES[st].t}</p><p class="lead">התמונה ⟦הקבוצתית¦המשפחתית⟧ נפתחת כשיש לפחות שני משתתפים במעגל.</p>`:stageHTML(st)}
        <div class="nav"><button class="btn ghost small" id="prevBtn" ${st===0?"disabled":""}>→ הקודם</button>
        ${FACIL()?`<span style="display:grid;gap:4px"><label class="toggle"><input type="checkbox" id="openTg" ${S.meta.open?"checked":""}> כל השלבים פתוחים בטלפונים</label><label class="toggle"><input type="checkbox" id="closeTg" ${isClosed()?"checked":""}> המעגל סגור להצטרפות</label></span>`:"<span></span>"}
        <button class="btn small" id="nextBtn" ${st>=maxSt?"disabled":""}>${st===0?"מתחילים ←":"הבא ←"}</button></div>
@@ -1298,7 +1316,7 @@ function goStage(i){
 }
 function personCard(p,body){return `<div class="pc"><div class="who">${dotOf(p)}<b>${esc(p.label)}</b></div>${body}</div>`;}
 function stageHTML(st){
-  const k=STAGES[st].k,P=G.P;let h=`<div class="eyebrow">שלב ${st} מתוך ${STAGES.length-1}</div><h2>${STAGES[st].t}</h2>`;
+  const k=STAGES[st].k,P=G.P;let h=`<h2>${STAGES[st].t}</h2><p class="kicker">שלב ${st} מתוך ${STAGES.length-1}</p>`;
   if(k==="join"){
     h+=`<p class="lead">כל אחד סורק את הקוד בטלפון וממלא שם ותאריך לידה. מי שאין לו טלפון – מוסיפים כאן.⟦ עד ${MAXP} משתתפים.¦⟧</p>
     <div class="row" style="margin-top:0"><a class="btn ghost small" id="waBtn" target="_blank" rel="noopener" style="text-decoration:none">שליחת הקישור בוואטסאפ</a><button class="btn ghost small" id="copyBtn">העתקת הקישור</button></div>
@@ -1512,7 +1530,7 @@ function meInFamily(p){
 const short=(n,k=2)=>get(n,"kw").split(",").slice(0,k).join(",").trim();
 function personReading(p){
   const ix=personIx(p),th=myThreads(G,p)⟦¦,fr=myFriction(G,p)⟧;
-  let h=`<div class="eyebrow">המפה של</div><h2>${esc(p.name)}</h2>
+  let h=`<h2><span class="pre">המפה של </span>${esc(p.name)}</h2>
   ${["LP","expr","soul"].map(k=>paramHTML(k,p)).join("")}
   <h3>${ix[0][0]}</h3><p>${ix[0][1]}</p>
   <h3>${ix[1][0]}</h3><p>${ix[1][1]}</p>`;
@@ -1529,29 +1547,29 @@ function personReading(p){
 const LINKLAB={give:"נותן־מקבל",soul:"תאומי נשמה",mirror:"מראה",friction:"חיכוך וצמיחה",echo:"הד",tribe:"אותו שבט",flow:"זורמים יחד",year:"אותה שנה"};
 let moreLinks=false;
 function linkReading(t){
-  if(t.type==="friction"){const f=t;return `<div class="eyebrow">${LINKLAB.friction}</div><h2>${esc(f.a.label)} ו${esc(f.b.label)}</h2>
+  if(t.type==="friction"){const f=t;return `<h2>${esc(f.a.label)} ו${esc(f.b.label)}</h2><p class="kicker">${LINKLAB.friction}</p>
     <p>${f.lead?`שני אנשים עם כוח הובלה (${f.a.LP}). כל אחד רוצה לקבוע את הכיוון.`:`${get(f.a.LP,"kw")} מול ${get(f.b.LP,"kw")}: שתי דרכים שונות לראות את העולם.`}</p>
     <h3>${esc(f.a.label)} יכול/ה ללמוד מ${esc(f.b.label)}</h3><p>${get(f.b.LP,"gift")}. ${fam(f.b.LP,"give")}</p>
     <h3>${esc(f.b.label)} יכול/ה ללמוד מ${esc(f.a.label)}</h3><p>${get(f.a.LP,"gift")}. ${fam(f.a.LP,"give")}</p>
     <div class="ask"><b>שאלה למעגל</b>${ASK.friction}</div>`;}
   const r=t.ref||t;
-  if(r.type==="soul")return `<div class="eyebrow">${LINKLAB.soul}</div><h2>${r.members.map(p=>esc(p.label)).join(" · ")}</h2><p>${esc(r.text)}</p><h3>מה הלב הזה צריך (${r.n})</h3><p>${N[r.n].soul.replace(/את\/ה/g,"אתם").replace(/כמה\/ה/g,"כמהים")}</p>`;
-  if(r.type==="give")return `<div class="eyebrow">${LINKLAB.give}</div><h2>${esc(r.a.label)} ← ${esc(r.b.label)}</h2><p>${esc(r.text)}</p><h3>מה ${esc(r.a.label)} מביא/ה (${r.n})</h3><p>${fam(r.n,"give")}</p><h3>מה ${esc(r.b.label)} לומד/ת</h3><p>${N[r.n].lesson}</p>`;
-  if(r.type==="mirror")return `<div class="eyebrow">${LINKLAB.mirror}</div><h2>${esc(r.a.label)} ו${esc(r.b.label)}</h2><p>${esc(r.text)}</p><h3>מה ${esc(r.a.label)} מקרין/ה</h3><p>${get(r.a.pers,"persona")}</p><h3>מה ${esc(r.b.label)} מרגיש/ה בפנים</h3><p>${get(r.b.soul,"soul")}</p>`;
-  if(r.extra)return `<div class="eyebrow">${LINKLAB[r.type]} · חיווט נוסף</div><h2>${esc(r.a.label)} ו${esc(r.b.label)}</h2><p>${esc(r.text)}</p>`;
+  if(r.type==="soul")return `<h2>${r.members.map(p=>esc(p.label)).join(" · ")}</h2><p class="kicker">${LINKLAB.soul}</p><p>${esc(r.text)}</p><h3>מה הלב הזה צריך (${r.n})</h3><p>${N[r.n].soul.replace(/את\/ה/g,"אתם").replace(/כמה\/ה/g,"כמהים")}</p>`;
+  if(r.type==="give")return `<h2>${esc(r.a.label)} ← ${esc(r.b.label)}</h2><p class="kicker">${LINKLAB.give}</p><p>${esc(r.text)}</p><h3>מה ${esc(r.a.label)} מביא/ה (${r.n})</h3><p>${fam(r.n,"give")}</p><h3>מה ${esc(r.b.label)} לומד/ת</h3><p>${N[r.n].lesson}</p>`;
+  if(r.type==="mirror")return `<h2>${esc(r.a.label)} ו${esc(r.b.label)}</h2><p class="kicker">${LINKLAB.mirror}</p><p>${esc(r.text)}</p><h3>מה ${esc(r.a.label)} מקרין/ה</h3><p>${get(r.a.pers,"persona")}</p><h3>מה ${esc(r.b.label)} מרגיש/ה בפנים</h3><p>${get(r.b.soul,"soul")}</p>`;
+  if(r.extra)return `<h2>${esc(r.a.label)} ו${esc(r.b.label)}</h2><p class="kicker">${LINKLAB[r.type]} · חיווט נוסף</p><p>${esc(r.text)}</p>`;
   return `<p>${esc(r.text||"")}</p>`;
 }
 function groupReading(k){return groupReading0(k).replace(/<div class="ask">[\s\S]*?<\/div>/g,"");}
 function groupReading0(k){
   const P=G.P;
   if(G.n<2)return `<h2>מחכים לעוד משתתפים</h2><p>התמונה הקבוצתית נפתחת כשיש לפחות שני משתתפים.</p>`;
-  if(k==="mission")return `<div class="eyebrow">המספר שלנו</div><h2>${G.LP} · ${get(G.LP,"title")}</h2><p class="muted">${P.map(p=>p.LP).join(" + ")} = ${G.sumLP}</p><p>${fam(G.LP,"mission")}</p>${G.dom.length?`<h3>האנרגיה הדומיננטית: ${G.dom.join(", ")}</h3><p>${G.dom.map(n=>fam(n,"dom")).join(" ")}</p>`:""}<h3>שלושת השבטים</h3>${[0,1,2].map(t=>`<p><b>${TRIBE[t]}:</b> ${G.tribes[t].map(p=>esc(p.label)).join(", ")||"אף אחד"}</p>`).join("")}<div class="ask"><b>שאלה למעגל</b>${ASK.num}</div>`;
-  if(k==="miss")return `<div class="eyebrow">האתגר שלנו</div><h2>${G.missing.length?"האתגר: "+G.missing.join(", "):"כל המספרים נמצאים"}</h2>${G.missing.map(n=>`<h3>${n} · ${N[n].kw}</h3><p>${fam(n,"miss")}</p>`).join("")}${G.rare.length?`<h3>שומרי האוצרות</h3>${G.rare.map(n=>`<p><b>${esc(G.carriers[n][0].label)}</b> שומר/ת את ה־${n}: ${fam(n,"give")}</p>`).join("")}`:""}<div class="ask"><b>שאלה למעגל</b>${ASK.miss}</div>`;
+  if(k==="mission")return `<h2>${G.LP} · ${get(G.LP,"title")}</h2><p class="kicker">המספר שלנו</p><p class="muted">${P.map(p=>p.LP).join(" + ")} = ${G.sumLP}</p><p>${fam(G.LP,"mission")}</p>${G.dom.length?`<h3>האנרגיה הדומיננטית: ${G.dom.join(", ")}</h3><p>${G.dom.map(n=>fam(n,"dom")).join(" ")}</p>`:""}<h3>שלושת השבטים</h3>${[0,1,2].map(t=>`<p><b>${TRIBE[t]}:</b> ${G.tribes[t].map(p=>esc(p.label)).join(", ")||"אף אחד"}</p>`).join("")}<div class="ask"><b>שאלה למעגל</b>${ASK.num}</div>`;
+  if(k==="miss")return `<h2>${G.missing.length?"האתגר: "+G.missing.join(", "):"כל המספרים נמצאים"}</h2><p class="kicker">האתגר שלנו</p>${G.missing.map(n=>`<h3>${n} · ${N[n].kw}</h3><p>${fam(n,"miss")}</p>`).join("")}${G.rare.length?`<h3>שומרי האוצרות</h3>${G.rare.map(n=>`<p><b>${esc(G.carriers[n][0].label)}</b> שומר/ת את ה־${n}: ${fam(n,"give")}</p>`).join("")}`:""}<div class="ask"><b>שאלה למעגל</b>${ASK.miss}</div>`;
 @@group
-  if(k==="links")return `<div class="eyebrow">כל החיווטים</div><h2>החוטים במארג</h2>${G.threads.filter(t=>t.text).map(t=>`<h3>${LINKLAB[t.type]}</h3><p>${esc(t.text)}</p>`).join("")||"<p>החוטים בקבוצה הזו עדינים: אין חפיפות בולטות.</p>"}<div class="ask"><b>שאלה למעגל</b>${ASK.threads}</div>`+((G.extra||[]).length?`<h3 style="margin-top:22px;border-top:1px solid var(--line2);padding-top:12px">חיווטים נוספים</h3><p class="muted">קשרים עדינים יותר – לא תמיד מופיעים במעגל, אפשר להציג אותם בכפתור "עוד חיווטים".</p>${G.extra.map(t=>`<p><b>${LINKLAB[t.type]}:</b> ${esc(t.text)}</p>`).join("")}`:"");
+  if(k==="links")return `<h2>החוטים במארג</h2>${G.threads.filter(t=>t.text).map(t=>`<h3>${LINKLAB[t.type]}</h3><p>${esc(t.text)}</p>`).join("")||"<p>החוטים בקבוצה הזו עדינים: אין חפיפות בולטות.</p>"}<div class="ask"><b>שאלה למעגל</b>${ASK.threads}</div>`+((G.extra||[]).length?`<h3 style="margin-top:22px;border-top:1px solid var(--line2);padding-top:12px">חיווטים נוספים</h3><p class="muted">קשרים עדינים יותר – לא תמיד מופיעים במעגל, אפשר להציג אותם בכפתור "עוד חיווטים".</p>${G.extra.map(t=>`<p><b>${LINKLAB[t.type]}:</b> ${esc(t.text)}</p>`).join("")}`:"");
 @@family
-  if(k==="year")return `<div class="eyebrow">השנה שלנו</div><h2>שנה ${G.year}: ${YKW[G.year]}</h2><p>${N[G.year].year}</p>${familyYearsHTML()}<h3>השנים האישיות</h3>${P.map(p=>`<p><b>${esc(p.label)}:</b> ${p.py}, ${YKW[p.py]}</p>`).join("")}<div class="ask"><b>שאלה למעגל</b>${ASK.year}</div>`;
-  if(k==="links")return `<div class="eyebrow">כל החיווטים</div><h2>החוטים במארג</h2>${G.threads.filter(t=>t.text).map(t=>`<h3>${LINKLAB[t.type]}</h3><p>${esc(t.text)}</p>`).join("")}${G.frictions.map(f=>`<h3>${LINKLAB.friction}</h3><p>${esc(f.a.label)} ו${esc(f.b.label)}: ${esc(f.a.label)} יכול/ה ללמוד ${get(f.b.LP,"gift")}, ו${esc(f.b.label)} יכול/ה ללמוד ${get(f.a.LP,"gift")}.</p>`).join("")}<div class="ask"><b>שאלה למעגל</b>${ASK.threads}</div>`+((G.extra||[]).length?`<h3 style="margin-top:22px;border-top:1px solid var(--line2);padding-top:12px">חיווטים נוספים</h3><p class="muted">קשרים עדינים יותר – לא תמיד מופיעים במעגל, אפשר להציג אותם בכפתור "עוד חיווטים".</p>${G.extra.map(t=>`<p><b>${LINKLAB[t.type]}:</b> ${esc(t.text)}</p>`).join("")}`:"");
+  if(k==="year")return `<h2>שנה ${G.year}: ${YKW[G.year]}</h2><p class="kicker">השנה שלנו</p><p>${N[G.year].year}</p>${familyYearsHTML()}<h3>השנים האישיות</h3>${P.map(p=>`<p><b>${esc(p.label)}:</b> ${p.py}, ${YKW[p.py]}</p>`).join("")}<div class="ask"><b>שאלה למעגל</b>${ASK.year}</div>`;
+  if(k==="links")return `<h2>החוטים במארג</h2>${G.threads.filter(t=>t.text).map(t=>`<h3>${LINKLAB[t.type]}</h3><p>${esc(t.text)}</p>`).join("")}${G.frictions.map(f=>`<h3>${LINKLAB.friction}</h3><p>${esc(f.a.label)} ו${esc(f.b.label)}: ${esc(f.a.label)} יכול/ה ללמוד ${get(f.b.LP,"gift")}, ו${esc(f.b.label)} יכול/ה ללמוד ${get(f.a.LP,"gift")}.</p>`).join("")}<div class="ask"><b>שאלה למעגל</b>${ASK.threads}</div>`+((G.extra||[]).length?`<h3 style="margin-top:22px;border-top:1px solid var(--line2);padding-top:12px">חיווטים נוספים</h3><p class="muted">קשרים עדינים יותר – לא תמיד מופיעים במעגל, אפשר להציג אותם בכפתור "עוד חיווטים".</p>${G.extra.map(t=>`<p><b>${LINKLAB[t.type]}:</b> ${esc(t.text)}</p>`).join("")}`:"");
 @@end
   return "";
 }
@@ -1719,7 +1737,7 @@ function personalMapURL(id){
 function htmlToText(html){
   const d=document.createElement("div");
   d.innerHTML=html.replace(/<span class="pv">/g,'<span class="pv"> · ').replace(/<\/(h2|h3|p|div|li)>/g,"</$1>\n").replace(/<br\s*\/?>/g,"\n");
-  d.querySelectorAll("button,.rnav,.sharebar,.eyebrow").forEach(n=>n.remove());
+  d.querySelectorAll("button,.rnav,.sharebar,.kicker").forEach(n=>n.remove());
   d.querySelectorAll("h2").forEach(n=>n.textContent="■ "+n.textContent);
   d.querySelectorAll(".pn").forEach(n=>n.textContent="✦ "+n.textContent);
   return d.textContent.replace(/[ \t]+\n/g,"\n").replace(/\n{3,}/g,"\n\n").trim();
@@ -1939,7 +1957,7 @@ const GLOSS=[
 ];
 const qm=id=>`<button type="button" class="qm" data-term="${id}" aria-label="מה זה?" title="מה זה?">?</button>`;
 function glossaryHTML(focus){
-  return `<div class="eyebrow">מילון מושגים</div><h2>מה זה אומר?</h2><p class="muted">ההסברים לכל המונחים שמופיעים בכלי. זהו כלי להתבוננות ולשיחה, לא אבחון.</p>
+  return `<h2>מה זה אומר?</h2><p class="muted">ההסברים לכל המונחים שמופיעים בכלי. זהו כלי להתבוננות ולשיחה, לא אבחון.</p>
   <input type="search" id="glossQ" placeholder="חיפוש מושג… (למשל: שנה, שביל, מראה)" autocomplete="off" style="width:100%;height:46px;border:2px solid var(--ink);border-radius:6px;padding:0 12px;font-size:1rem;font-family:var(--f-body);margin:6px 0 10px">
   <p class="muted" id="glossNone" hidden>לא נמצא מושג כזה. אפשר לנסות מילה אחרת.</p>
   <dl class="gloss" id="glossList">${GLOSS.map(([id,t,d])=>`<div class="gi"><dt id="g-${id}" class="${id===focus?"hl":""}">${t}</dt><dd>${d}</dd></div>`).join("")}</dl>`;
@@ -1952,7 +1970,7 @@ function bindGloss(){
   setTimeout(()=>{try{if(!document.querySelector("#glossList .hl"))q.focus({preventScroll:true});}catch(e){}},50);
 }
 function openQR(){
-  openReader(`<div class="eyebrow">הצטרפות למעגל</div><h2>${esc(S.meta?S.meta.name:"")}</h2>
+  openReader(`<h2>${esc(S.meta?S.meta.name:"")}</h2>
    <div class="qr" style="width:min(340px,100%);margin:14px auto">${qrSVG(joinURL())}</div>
    ${isClosed()?`<p class="ask" style="margin:10px auto;max-width:46ch"><b>שימו לב</b>המעגל סגור להצטרפות. ${FACIL()?'מי שסורק עכשיו יראה "המעגל סגור". <button class="link" id="reopenBtn">לפתוח את המעגל להצטרפות</button>':'מי שלא היה במפגש לא יוכל להצטרף.'}</p>`:""}
    <p style="text-align:center;margin:8px 0 0">סורקים את הקוד, או נכנסים לקישור ומקלידים</p>
@@ -1974,7 +1992,7 @@ function fbBtns(sub,key,text){
   if(!sub)return "";
   const d=(S.fb||{})[fbDocId(sub,key)],v=d&&d.v;
   return `<span class="fbk" data-fbs="${sub}" data-fbk="${key}" data-fbt="${esc(String(text||"").replace(/<[^>]+>/g,"").slice(0,140))}">
-   <button type="button" data-fbv="1" aria-pressed="${v===1}" title="הטקסט הזה קולע">👍 קולע</button><button type="button" data-fbv="-1" aria-pressed="${v===-1}" title="הטקסט הזה לא קולע">👎 לא קולע</button>
+   <button type="button" data-fbv="1" aria-pressed="${v===1}" title="הטקסט הזה קולע">קולע</button><button type="button" data-fbv="-1" aria-pressed="${v===-1}" title="הטקסט הזה לא קולע">לא קולע</button>
    ${v===-1?`<input type="text" class="fbnote" maxlength="200" placeholder="מה לא קלע? (לא חובה)" value="${esc(d.note||"")}">`:""}</span>`;
 }
 document.addEventListener("click",async e=>{
@@ -1993,11 +2011,11 @@ document.addEventListener("change",async e=>{
 });
 function feedbackHTML(){
   const all=Object.values(S.fb||{});
-  if(!all.length)return `<div class="eyebrow">משוב</div><h2>עוד אין משוב</h2><p>ליד כל פסקה בניתוח יש "קולע / לא קולע". ⟦כשהמשתתפים¦כשבני המשפחה⟧ יסמנו, הסיכום יופיע כאן.</p>`;
+  if(!all.length)return `<h2>עוד אין משוב</h2><p>ליד כל פסקה בניתוח יש "קולע / לא קולע". ⟦כשהמשתתפים¦כשבני המשפחה⟧ יסמנו, הסיכום יופיע כאן.</p>`;
   const by={};all.forEach(d=>{const k=d.key;(by[k]=by[k]||{key:k,s:d.s,up:0,down:0,notes:[]});d.v===1?by[k].up++:by[k].down++;if(d.note)by[k].notes.push(d.note);});
   const rows=Object.values(by).sort((a,b)=>b.down-a.down||b.up-a.up);
-  return `<div class="eyebrow">משוב</div><h2>מה קולע ומה לא</h2><p class="muted">${all.length} סימונים. הטקסטים שסומנו כ"לא קולע" מופיעים ראשונים.</p>
-   ${rows.map(r=>`<div class="fbrow"><b>👍 ${r.up} · 👎 ${r.down}</b> <span class="muted">[${esc(r.key)}]</span><p>${esc(r.s||"")}…</p>${r.notes.map(n=>`<p class="fbn">„${esc(n)}"</p>`).join("")}</div>`).join("")}
+  return `<h2>מה קולע ומה לא</h2><p class="muted">${all.length} סימונים. הטקסטים שסומנו כ"לא קולע" מופיעים ראשונים.</p>
+   ${rows.map(r=>`<div class="fbrow"><b>קולע ${r.up} · לא קולע ${r.down}</b> <span class="muted">[${esc(r.key)}]</span><p>${esc(r.s||"")}…</p>${r.notes.map(n=>`<p class="fbn">„${esc(n)}"</p>`).join("")}</div>`).join("")}
    <div class="row"><button class="btn small" type="button" id="fbCopy">העתקת הסיכום לשליחה ל־Claude</button><span class="status" id="fbSt"></span></div>`;
 }
 function openFeedback(){
