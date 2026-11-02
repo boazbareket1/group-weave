@@ -433,6 +433,11 @@ details.deep summary{color:var(--teal)}
 .sopt:has(input:checked){border-color:var(--ink);background:var(--panel2)}
 .fbk button{border:1.5px solid var(--line2);border-radius:4px;font-family:var(--f-mono);font-size:.72rem}
 .fbk button[aria-pressed="true"]{border-color:var(--teal);background:var(--teal-soft)}
+.fbalt{flex-basis:100%;display:block;margin:6px 0 2px;padding:10px 12px;border:1.5px dashed var(--teal);border-radius:6px;background:#fff}
+.fbalt b{display:block;font-family:var(--f-mono);font-weight:600;font-size:.85rem;color:var(--teal);margin-bottom:2px}
+.fbalt .fbat{display:block;font-size:1rem;line-height:1.6}
+.fbalt button{margin-top:8px}
+.fbk .fbnote{flex-basis:100%}
 dl.gloss dt{font-family:var(--f-body);font-weight:700}
 dl.gloss dt.hl,dl.gloss dt.hl+dd{background:var(--panel2)}
 .deck-hint{margin:0 0 12px;padding:10px 12px;background:var(--acc-soft);border-radius:6px;font-family:var(--f-mono);font-size:.95rem;color:var(--acc)}
@@ -680,6 +685,71 @@ persona:"אחרים רואים בך אדם חם, מכיל ומרגיע, שאפש
 expr:"הכישרון שלך הוא לרפא וללמד. נועדת להעלות את התודעה של הסובבים דרך אהבה.",
 pinnacle:"תקופה של שירות, ריפוי והוראה."}
 };
+/* ================= second angle ("זווית נוספת") per number =================
+   Shown when someone marks a text "לא קולע". Written in our own words, following the
+   Pythagorean core-number framework this tool uses (life path / expression / soul = vowels /
+   personality = consonants), as systematized in modern numerology (e.g. Hans Decoz).
+   Each angle stresses a different side than the main text: the everyday form, the pitfall, what helps. */
+const ALT={
+1:{essence:"אפשר לראות את 1 גם כשיעור בלעמוד לבד: לא תמיד יש מי שיגיד לך 'קדימה', והכוח שלך נבנה דווקא ברגעים שבהם החלטת בעצמך. כשזה לא מאוזן זה נראה כמו התגוננות או צורך להיות צודק/ת. מה שעוזר: להתחיל דברים, ולהזמין אחרים להמשיך איתך.",
+ expr:"ייתכן שהכישרון לא נראה לך כמו 'הובלה'. לעיתים קרובות הוא מופיע כיכולת לקבל החלטה כשכולם מהססים, או לעשות משהו בדרך שעוד לא נוסתה.",
+ soul:"אולי זה לא רצון להוביל אחרים, אלא צורך פנימי לא להיות תלוי/ה באף אחד ולהרגיש שהחיים שלך בידיים שלך.",
+ persona:"גם אם בפנים יש היסוס, מבחוץ משדרים ממך ישירות וביטחון. יש מי שחווים את זה כנחישות, ויש מי שחווים את זה כמרחק.",
+ year:"זווית אחרת: שנה 1 היא שנת זריעה. לא הכול חייב להתחיל בבת אחת, אבל מה שתחליט/י עכשיו ייתן את הטון לתשע השנים הבאות. כדאי לבחור דבר אחד חדש ולהתחייב אליו."},
+2:{essence:"אפשר לראות את 2 גם כשיעור בגבולות: היכולת להרגיש את כולם היא מתנה, אבל קל ללכת לאיבוד בתוכה. הכוח של 2 הוא השפעה שקטה מאחורי הקלעים, וההתפתחות היא לבחור מתי לומר 'אני' בקול.",
+ expr:"הכישרון יכול להופיע פחות כ'גישור' ויותר כדיוק: לשים לב לפרטים הקטנים שאחרים מפספסים, ולעבוד מצוין בצוות או בזוג.",
+ soul:"ייתכן שבפנים זה פחות צורך בזוגיות ויותר צורך בשקט ובהרמוניה סביבך. מריבות ורעש מתישים אותך יותר מאחרים.",
+ persona:"מבחוץ את/ה עשוי/ה להיראות צנוע/ה ונגיש/ה, ולכן לפעמים לא מעריכים מיד כמה עומק וחוזק יש מאחור.",
+ year:"זווית אחרת: שנה 2 היא שנה של סבלנות. דברים שהתחלת מבשילים לאט, ומה שמתקדם השנה נעשה דרך שיתופי פעולה. מי שממהר/ת לתוצאות עלול/ה להרגיש תקוע/ה."},
+3:{essence:"אפשר לראות את 3 גם כשיעור במיקוד: יש הרבה רעיונות וקלות בביטוי, והאתגר הוא להתמיד ולא לברוח מדברים כשהם נעשים קשים. כשהשמחה באה מבפנים ולא כמסכה, היא מדבקת באמת.",
+ expr:"הכישרון לא חייב להיות במה או אמנות. הוא יכול להופיע ככתיבה, כהוראה, כהומור ברגע הנכון, או כיכולת להסביר דברים מסובכים בפשטות.",
+ soul:"ייתכן שבפנים זה צורך להיות מובן/ת ולהשמיע את הקול שלך, יותר מאשר צורך להיות במרכז.",
+ persona:"מבחוץ את/ה נראה/ית קליל/ה וחברותי/ת. יש מי שלא שמים לב לרגישות ולמחשבה שנמצאות מתחת לחיוך.",
+ year:"זווית אחרת: שנה 3 מזמינה ביטוי. זמן טוב לכתוב, ליצור, לחגוג ולהיפגש. הסכנה היא פיזור, ולכן כדאי לבחור פרויקט יצירתי אחד ולהביא אותו לסיום."},
+4:{essence:"אפשר לראות את 4 גם כשיעור בגמישות: את/ה בונה בסבלנות, צעד אחרי צעד, וזו מתנה נדירה. אבל קשיחות או ביקורת עצמית יכולות להכביד. מה שעוזר: לשלב מנוחה ומשחק בתוך הסדר.",
+ expr:"הכישרון יכול להופיע כאמינות פשוטה: מי שאפשר להשאיר אצלו/ה משימה ולדעת שהיא תיעשה, ונכון.",
+ soul:"ייתכן שבפנים זה פחות צורך בסדר ויותר צורך בביטחון: לדעת שיש קרקע יציבה מתחת לרגליים, בבית, בעבודה ובקשרים.",
+ persona:"מבחוץ את/ה עשוי/ה להיראות רציני/ת או שמור/ה, אבל מי שמכיר/ה אותך יודע/ת שיש בך חום ונאמנות עמוקים.",
+ year:"זווית אחרת: שנה 4 היא שנה של יסודות. העבודה הקשה עכשיו פחות מרגשת, אבל היא שתחזיק את מה שיבוא. כדאי לסדר כסף, בריאות והרגלים."},
+5:{essence:"אפשר לראות את 5 גם כשיעור במחויבות: הסקרנות פותחת דלתות, אבל רק מה שבוחרים להישאר איתו מעמיק. כשאין חופש עולה חוסר מנוחה, וכשיש יותר מדי חופש עולה פיזור.",
+ expr:"הכישרון יכול להופיע כיכולת להסתגל מהר ולמכור רעיון. אנשים עם 5 טובים במצבים חדשים, בתקשורת ובשינוי.",
+ soul:"ייתכן שבפנים זה פחות צורך לטייל ויותר צורך לא להרגיש כלוא/ה: בשגרה, ברעיון אחד או בציפיות של אחרים.",
+ persona:"מבחוץ את/ה נראה/ית צעיר/ה ברוחך ומעניין/ת. יש מי שחווים את זה כחוסר יציבות לפני שמכירים אותך.",
+ year:"זווית אחרת: שנה 5 היא נקודת המפנה של המחזור. מה שהיה יציב מתחיל לזוז, ולכן כדאי לומר כן להזדמנויות, אבל לא לכל אחת."},
+6:{essence:"אפשר לראות את 6 גם כשיעור בלקבל: את/ה יודע/ת לדאוג, לתקן ולתת, ולפעמים לוקח/ת על עצמך יותר מדי. ההתפתחות היא לעזור בלי לשלוט, ולהרשות לאחרים לדאוג גם לך.",
+ expr:"הכישרון יכול להופיע כחוש צדק וכאחריות: מי שמרגיש/ה כשמשהו לא הוגן, ופועל/ת כדי לאזן. מתאים להוראה, לריפוי, לייעוץ ולעבודה עם קהילה.",
+ soul:"ייתכן שבפנים זה צורך שהבית והקשרים הקרובים יהיו הרמוניים. כשמשהו לא בסדר אצל מישהו קרוב, קשה לך להיות רגוע/ה.",
+ persona:"מבחוץ את/ה נראה/ית אדם שאפשר לסמוך עליו ולפנות אליו. לפעמים זה מושך אנשים שרק מבקשים, ולכן חשוב לשים גבולות.",
+ year:"זווית אחרת: שנה 6 שמה את המשפחה והאחריות במרכז. ייתכנו מחויבויות חדשות, ומה שמשתלם השנה הוא לתת מתוך בחירה ולא מתוך אשמה."},
+7:{essence:"אפשר לראות את 7 גם כשיעור באמון: את/ה שואל/ת, בודק/ת ולא מסתפק/ת בתשובות שטחיות. אבל יותר מדי ניתוח יכול להפוך לבדידות או לחשדנות. מה שעוזר: זמן שקט קבוע, ושיתוף של מה שקורה בפנים.",
+ expr:"הכישרון יכול להופיע כמומחיות: להעמיק בתחום אחד עד שמבינים אותו באמת. מחקר, כתיבה, טכנולוגיה, ריפוי או רוחניות.",
+ soul:"ייתכן שבפנים זה צורך בפרטיות ובזמן לבד, כדי לעבד ולהבין. זה לא ריחוק, אלא דרך לטעון את עצמך.",
+ persona:"מבחוץ את/ה עשוי/ה להיראות מסתורי/ת או מרוחק/ת. מי שמתקרב/ת מגלה הומור יבש ועומק רב.",
+ year:"זווית אחרת: שנה 7 היא שנה של עצירה ולמידה. ייתכן שפחות יקרה בחוץ, ויותר יתבהר בפנים. זמן טוב ללמוד, לנוח ולשאול מה באמת חשוב."},
+8:{essence:"אפשר לראות את 8 גם כשיעור באיזון בין חומר לרוח: יש בך יכולת לנהל, להחליט ולהצליח, והשאלה היא בשביל מה. כשההצלחה משרתת משהו גדול ממך, היא נעשית יציבה.",
+ expr:"הכישרון יכול להופיע כשיקול דעת טוב לגבי אנשים: לדעת למי לתת אחריות ואיך לארגן משאבים כדי שדברים יקרו.",
+ soul:"ייתכן שבפנים זה פחות צורך בכסף ויותר צורך להרגיש מסוגל/ת ומשפיע/ה, ולא להיות תלוי/ה בחסדי אחרים.",
+ persona:"מבחוץ את/ה משדר/ת סמכות וכוח, לפעמים גם כשאת/ה לא מתכוון/ת. אנשים מצפים ממך להוביל.",
+ year:"זווית אחרת: שנה 8 היא שנת קציר. מה שהשקעת בשנים הקודמות יכול להניב תוצאות, בכסף, בקריירה או במעמד. כדאי לפעול באומץ וביושר."},
+9:{essence:"אפשר לראות את 9 גם כשיעור בשחרור: את/ה רואה את התמונה הגדולה ומרגיש/ה את כאב העולם, ולפעמים זה בא על חשבון הקרובים או על חשבונך. ההתפתחות היא לתת בלי להיעלם, ולסיים פרקים בחסד.",
+ expr:"הכישרון יכול להופיע כיצירה או כשליחות: אמנות, הוראה, טיפול או פעילות שמשרתת קהל רחב.",
+ soul:"ייתכן שבפנים זה צורך שלחיים תהיה משמעות, ולהרגיש שמה שאת/ה עושה משפיע מעבר לעצמך.",
+ persona:"מבחוץ את/ה נראה/ית אצילי/ה, פתוח/ה ומקבל/ת. יש מי שמרגישים בזה גם מרחק מסוים.",
+ year:"זווית אחרת: שנה 9 סוגרת מחזור. זמן לסיים, לפנות מקום ולסלוח, כדי שההתחלה הבאה תהיה נקייה. מה שעוזב עכשיו מפנה מקום לחדש."},
+11:{essence:"אפשר לראות את 11 גם כשיעור ברגישות: הקליטה החדה של אנשים ורעיונות היא מתנה, אבל היא גם יכולה לייצר מתח ועצבנות. מה שעוזר: סביבה רגועה, קרקוע בגוף, ואמון בתחושות הבטן.",
+ expr:"הכישרון יכול להופיע כיכולת להשפיע דרך השראה, לא דרך כוח: מורה, מדריך/ה, אמן/ית או מי שאומר/ת את המשפט שכולם היו צריכים לשמוע.",
+ soul:"ייתכן שבפנים זה צורך במשמעות רוחנית ובחיבור, יותר מאשר בהישגים. גם ספק עצמי יכול להיות חלק מהדרך.",
+ persona:"מבחוץ את/ה עשוי/ה להיראות עדין/ה ומיוחד/ת, ולפעמים מושך/ת תשומת לב גם בלי לרצות בה."},
+22:{essence:"אפשר לראות את 22 גם כשיעור בצעדים קטנים: החזון גדול, והלחץ להגשים אותו יכול להביא לספק עצמי או לקיפאון. מה שעוזר: לפרק את החלום לשלבים מעשיים ולהתחיל.",
+ expr:"הכישרון יכול להופיע כשילוב נדיר של רעיון גדול ויכולת ביצוע: לנהל אנשים ומשאבים לקראת מטרה שתחזיק שנים.",
+ soul:"ייתכן שבפנים זה צורך לבנות משהו שיועיל לאחרים, ולא רק להצליח באופן אישי.",
+ persona:"מבחוץ את/ה נראה/ית מעשי/ת ובטוח/ה. רק מעטים רואים את הלחץ והאחריות שאת/ה סוחב/ת."},
+33:{essence:"אפשר לראות את 33 גם כשיעור בגבולות של נתינה: יש בך כוח לרפא, ללמד ולהכיל, אבל קל להישחק. המורה הגדול/ה מלמד/ת קודם כול בדוגמה אישית, כולל בדאגה לעצמו/ה.",
+ expr:"הכישרון יכול להופיע כיכולת להרים אחרים: להוראה, להורות, לטיפול ולכל מקום שבו נוכחות חמה משנה אנשים.",
+ soul:"ייתכן שבפנים זה צורך שכולם יהיו בסדר, עד כדי שכחה של הצרכים שלך. הלמידה היא שגם את/ה חלק מה'כולם'.",
+ persona:"מבחוץ את/ה משדר/ת חום ואכפתיות, ואנשים פונים אליך בקלות לעזרה ולעצה."}
+};
+
 const CH0="אתגר האפס: אין אתגר מוגדר אחד. כל האפשרויות פתוחות, והמשימה היא לבחור. זה יכול להעיד על חופש גדול או על קושי למצוא כיוון.";
 const DEBT={
 13:"חוב 13/4, חוב של עבודה. לפי המסורת הנומרולוגית הוא מצביע על נטייה לקיצורי דרך. בחיים האלה נדרשים התמדה, סדר ועבודה עקבית, וההצלחה מגיעה דווקא בזכות מאמץ שיטתי.",
@@ -1355,6 +1425,9 @@ function renderPhone(){
   view="phone";
   const me=G.P.find(p=>p.id===myId());if(!me){ls.del("grp-me:"+ROOM);return renderJoin();}
   const scrollY=window.scrollY;const keep=$("noteTake")?{t:$("noteTake").value,g:$("noteGive").value}:null;
+  /* keep what the reader had open when data refreshes (someone joined, a feedback mark was saved) */
+  const openCi=[...app.querySelectorAll(".kard[data-ci] details[open]")].map(d=>d.closest(".kard").dataset.ci);
+  const dk=app.querySelector(".deck"),deckX=dk?dk.scrollLeft:0;
   app.innerHTML=`<div class="wrap">
    <div class="top"><h1>שלום ${esc(me.first)}</h1><span class="muted">${esc(S.meta.name)}</span></div>
    <div id="pbody">${myMap(me)}</div>
@@ -1363,6 +1436,8 @@ function renderPhone(){
   addNav("me");bindDeck();
   if($("pAdd"))$("pAdd").onclick=()=>openAdd();
   $("pOut").onclick=()=>{ls.del("grp-me:"+ROOM);go("join");};
+  openCi.forEach(ci=>{const d=app.querySelector(`.kard[data-ci="${ci}"] details`);if(d)d.open=true;});
+  const dk2=app.querySelector(".deck");if(dk2&&deckX)dk2.scrollLeft=deckX;
   window.scrollTo({top:scrollY});
 }
 function bindNotes(me){
@@ -1905,11 +1980,18 @@ document.addEventListener("click",e=>{const b=e.target.closest("[data-term]");if
 /* ================= feedback: "fits / doesn't fit" on each paragraph ================= */
 const voterId=()=>myId()||(()=>{let v=ls.get("grp-voter");if(!v){v="v"+newId();ls.set("grp-voter",v);}return v;})();
 const fbDocId=(sub,key)=>(voterId()+"_"+sub+"_"+key).replace(/[.$#\[\]\/]/g,"-");
+function altFor(key){
+  let m=/^(LP|expr|soul|pers):(\d+)$/.exec(key);
+  if(m){const n=+m[2],f={LP:"essence",expr:"expr",soul:"soul",pers:"persona"}[m[1]];return (ALT[n]&&ALT[n][f])||(ALT[single(n)]&&ALT[single(n)][f])||"";}
+  m=/py(\d+)$/.exec(key);if(m){const n=single(+m[1]);return (ALT[n]&&ALT[n].year)||"";}
+  return "";
+}
 function fbBtns(sub,key,text){
   if(!sub)return "";
   const d=(S.fb||{})[fbDocId(sub,key)],v=d&&d.v;
   return `<span class="fbk" data-fbs="${sub}" data-fbk="${key}" data-fbt="${esc(String(text||"").replace(/<[^>]+>/g,"").slice(0,140))}">
    <button type="button" data-fbv="1" aria-pressed="${v===1}" title="הטקסט הזה קולע">קולע</button><button type="button" data-fbv="-1" aria-pressed="${v===-1}" title="הטקסט הזה לא קולע">לא קולע</button>
+   ${v===-1&&altFor(key)?`<span class="fbalt"><b>זווית נוספת</b><span class="fbat">${altFor(key)}</span><button type="button" data-fbalt aria-pressed="${!!d.alt}">${d.alt?"הזווית הזו קולעת ✓":"הזווית הזו קולעת יותר"}</button></span>`:""}
    ${v===-1?`<input type="text" class="fbnote" maxlength="200" placeholder="מה לא קלע? (לא חובה)" value="${esc(d.note||"")}">`:""}</span>`;
 }
 document.addEventListener("click",async e=>{
@@ -1921,6 +2003,12 @@ document.addEventListener("click",async e=>{
   try{doc?await store.put(`rooms/${ROOM}/fb/${id}`,doc):await store.del(`rooms/${ROOM}/fb/${id}`);}catch(err){}
   w.outerHTML=fbBtns(sub,key,w.dataset.fbt);
 });
+document.addEventListener("click",async e=>{
+  const b=e.target.closest("[data-fbalt]");if(!b)return;
+  const w=b.closest(".fbk"),id=fbDocId(w.dataset.fbs,w.dataset.fbk),d=(S.fb||{})[id];if(!d)return;
+  d.alt=d.alt?0:1;try{await store.patch(`rooms/${ROOM}/fb/${id}`,{alt:d.alt});}catch(err){}
+  w.outerHTML=fbBtns(w.dataset.fbs,w.dataset.fbk,w.dataset.fbt);
+});
 document.addEventListener("change",async e=>{
   const i=e.target.closest(".fbnote");if(!i)return;const w=i.closest(".fbk"),id=fbDocId(w.dataset.fbs,w.dataset.fbk);
   const d=(S.fb||{})[id];if(!d)return;d.note=i.value.trim().slice(0,200);
@@ -1929,10 +2017,10 @@ document.addEventListener("change",async e=>{
 function feedbackHTML(){
   const all=Object.values(S.fb||{});
   if(!all.length)return `<h2>עוד אין משוב</h2><p>ליד כל פסקה בניתוח יש "קולע / לא קולע". כשהמשתתפים יסמנו, הסיכום יופיע כאן.</p>`;
-  const by={};all.forEach(d=>{const k=d.key;(by[k]=by[k]||{key:k,s:d.s,up:0,down:0,notes:[]});d.v===1?by[k].up++:by[k].down++;if(d.note)by[k].notes.push(d.note);});
+  const by={};all.forEach(d=>{const k=d.key;(by[k]=by[k]||{key:k,s:d.s,up:0,down:0,alt:0,notes:[]});d.v===1?by[k].up++:by[k].down++;if(d.alt)by[k].alt++;if(d.note)by[k].notes.push(d.note);});
   const rows=Object.values(by).sort((a,b)=>b.down-a.down||b.up-a.up);
   return `<h2>מה קולע ומה לא</h2><p class="muted">${all.length} סימונים. הטקסטים שסומנו כ"לא קולע" מופיעים ראשונים.</p>
-   ${rows.map(r=>`<div class="fbrow"><b>קולע ${r.up} · לא קולע ${r.down}</b> <span class="muted">[${esc(r.key)}]</span><p>${esc(r.s||"")}…</p>${r.notes.map(n=>`<p class="fbn">„${esc(n)}"</p>`).join("")}</div>`).join("")}
+   ${rows.map(r=>`<div class="fbrow"><b>קולע ${r.up} · לא קולע ${r.down}${r.alt?` · הזווית הנוספת קלעה ${r.alt}`:""}</b> <span class="muted">[${esc(r.key)}]</span><p>${esc(r.s||"")}…</p>${r.notes.map(n=>`<p class="fbn">„${esc(n)}"</p>`).join("")}</div>`).join("")}
    <div class="row"><button class="btn small" type="button" id="fbCopy">העתקת הסיכום לשליחה ל־Claude</button><span class="status" id="fbSt"></span></div>`;
 }
 function openFeedback(){
