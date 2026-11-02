@@ -9,34 +9,29 @@
 <meta property="og:description" content="מפת מספרים למעגל של עד 10 משתתפים: מי אני, מה אני מביא/ה לקבוצה, ומה הקבוצה מביאה לי.">
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://boazbareket1.github.io/group-weave/">
-<meta property="og:image" content="https://boazbareket1.github.io/group-weave/og.jpg">
-<meta property="og:image:width" content="1200">
-<meta property="og:image:height" content="630">
+<meta property="og:image" content="https://boazbareket1.github.io/group-weave/og.jpg?v=5">
+<meta property="og:image:width" content="800">
+<meta property="og:image:height" content="800">
 <meta property="og:locale" content="he_IL">
 <meta name="twitter:card" content="summary_large_image">
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Assistant:wght@400;600;700&family=Cormorant+Garamond:wght@500;600&family=Frank+Ruhl+Libre:wght@500;700&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Heebo:wght@400;700;900&family=Secular+One&family=IBM+Plex+Mono:wght@400;600&display=swap">
 <style>
 /* group-weave: reduced copy of family-weave for an open workshop of up to 10 strangers. Board (projector) = header, stage stepper, circle of lights beside the stage content. Phone = my map / me in the group. */
 :root{
-  --bg:#f3efe6; --panel:#fffdf8; --panel2:#f7f2e8; --line:#e2d9c8;
-  --fg:#1d2a2c; --muted:#5e6b68; --gold:#9a6b14; --gold-soft:rgba(154,107,20,.12);
-  --teal:#2b6f68; --rose:#a4513d;
-  --night:#0f1c26; --night2:#16283a; --star:#fff4d6;
-  --t0:#7fd1c7; --t1:#f0c46a; --t2:#f2a08f;
-  --f-display:"Frank Ruhl Libre","David","Times New Roman",serif;
-  --f-body:"Assistant","Arial Hebrew","Segoe UI",Arial,sans-serif;
-  --f-num:"Cormorant Garamond","Georgia",serif;
+  --bg:#f8f6f1; --panel:#ffffff; --panel2:#efede6; --line:#1f2d3a; --line2:#d3cfc5;
+  --fg:#1f2d3a; --muted:#5b6670; --gold:#0f6b66; --gold-soft:rgba(15,107,102,.10);
+  --teal:#0f6b66; --rose:#4a5f72; --ink:#1f2d3a;
+  --ochre:#4a86a3; --plum:#6b4e8f;
+  --acc:var(--ink); --acc-soft:rgba(31,45,58,.08);
+  --night:#ffffff; --night2:#ffffff; --star:#111111;
+  --t0:#7fd1c7; --t1:#8fbcd4; --t2:#9bcf93;
+  --f-display:"Secular One","Heebo",sans-serif;
+  --f-body:"Heebo","Arial Hebrew","Segoe UI",Arial,sans-serif;
+  --f-num:"Secular One","Heebo",sans-serif;
+  --f-mono:"IBM Plex Mono",Heebo,ui-monospace,Menlo,monospace;
   color-scheme:light;
 }
-@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
-  --bg:#0d171d; --panel:#14222a; --panel2:#101d24; --line:#24363f;
-  --fg:#ece6d8; --muted:#9aa9a6; --gold:#e0b45a; --gold-soft:rgba(224,180,90,.13);
-  --teal:#7cc2b8; --rose:#e09280; color-scheme:dark}}
-:root[data-theme="dark"]{
-  --bg:#0d171d; --panel:#14222a; --panel2:#101d24; --line:#24363f;
-  --fg:#ece6d8; --muted:#9aa9a6; --gold:#e0b45a; --gold-soft:rgba(224,180,90,.13);
-  --teal:#7cc2b8; --rose:#e09280; color-scheme:dark}
 *{box-sizing:border-box}
 html{-webkit-text-size-adjust:100%}
 body{margin:0;background:var(--bg);color:var(--fg);font-family:var(--f-body);font-size:17px;line-height:1.65;
@@ -320,6 +315,159 @@ dl.gloss dt.hl,dl.gloss dt.hl+dd{background:var(--gold-soft);border-radius:6px}
 @media (max-width:900px){.board{grid-template-columns:1fr}.board .side{position:static;order:2}}
 @media (prefers-reduced-motion:no-preference){.lit{animation:pop .6s ease-out;transform-box:fill-box;transform-origin:center}@keyframes pop{from{opacity:0;transform:scale(.4)}}}
 @media print{body{background:#fff}.steps,.nav,.btn,.tabs{display:none!important}}
+/* ================= design 03 "עיתון מספרים": overrides ================= */
+body[data-view="me"]{--acc:var(--teal);--acc-soft:rgba(15,107,102,.10)}
+body[data-view="join"]{--acc:#8c7bb0;--acc-soft:rgba(140,123,176,.12)}
+body[data-view="fam"],body[data-view="stages"]{--acc:var(--ochre);--acc-soft:rgba(74,134,163,.12)}
+body[data-view="circle"]{--acc:#6f9fc2;--acc-soft:rgba(111,159,194,.14)}
+body[data-view="wall"]{--acc:var(--plum);--acc-soft:rgba(107,78,143,.12)}
+body[data-view="stages"],body[data-view="game"]{--acc:var(--ink);--acc-soft:rgba(31,45,58,.08)}
+.post{border-inline-start:6px solid var(--plum)}
+h1,h2,h3{font-weight:400;letter-spacing:0}
+body{font-size:17px}
+.btn{border-radius:6px;background:var(--acc);color:#fff;font-weight:700}
+.btn.light{background:#fff;color:var(--ink);box-shadow:none;border:2px solid var(--ink)}
+.btn.ghost{border:2px solid var(--ink);color:var(--ink);background:#fff}
+.link{color:var(--teal)}
+.card,.pc,.ix,.st,.note,.game-row,.score,.post,.wall-compose,dialog{border:2px solid var(--line2);border-radius:8px;box-shadow:none;background:#fff}
+.card{border-color:var(--acc)}
+.eyebrow{font-family:var(--f-mono);letter-spacing:0;color:var(--muted);font-size:.92rem}
+.code{font-family:var(--f-mono);font-weight:600;color:var(--teal)}
+.top{border-bottom:3px solid var(--acc);padding-bottom:10px}
+.top h1{font-size:clamp(1.7rem,5vw,2.3rem)}
+.top .muted{font-family:var(--f-mono);font-size:.95rem}
+.num{font-family:var(--f-num);font-weight:400;color:var(--teal)}
+.chip{border:1.5px solid var(--line2);background:#fff;font-family:var(--f-mono);font-size:.85rem}
+.chip b{font-family:var(--f-num);color:var(--teal)}
+.tag{font-family:var(--f-mono);font-weight:600}
+.ask{border:2px solid var(--acc);border-inline-start-width:8px;background:#fff;border-radius:6px}
+.ask b{font-family:var(--f-mono);color:var(--acc);letter-spacing:0}
+.steps button{border:2px solid var(--line2);color:var(--muted);border-radius:6px;font-weight:700}
+.steps button.done{border-color:var(--ochre);color:var(--ochre)}
+.steps button.on{background:var(--ochre);border-color:var(--ochre);color:#fff}
+.stage .lead{color:#333;font-size:1.1rem}
+.stage h2{font-size:clamp(1.8rem,3.8vw,2.6rem)}
+.big .num{font-size:clamp(5rem,11vw,7.5rem)}
+input[type=text],select,textarea{border:2px solid var(--ink)!important;border-radius:6px!important;background:#fff!important}
+label.f{font-weight:700}
+label.f small{font-family:var(--f-mono);font-size:.9rem}
+.tabs{background:#fff;border:2px solid var(--acc);border-radius:8px;padding:4px}
+.tabs button{border-radius:5px;color:var(--ink)}
+.tabs button.on{background:var(--acc);color:#fff;box-shadow:none}
+.locked{border:2px dashed var(--line2);border-radius:8px;font-family:var(--f-mono);font-size:.9rem}
+.now-pill{background:var(--acc);font-family:var(--f-mono);border-radius:4px}
+.st.now{border-color:var(--acc);box-shadow:none}
+.st .me{background:var(--acc-soft);border-radius:6px}
+.st .me b{color:var(--acc)}
+.st h3{font-size:1.35rem}
+.ix b{font-size:1.1rem}
+.sec>h3{font-size:1.5rem}
+.night{background:#fff;color:var(--ink);border:2px solid var(--teal);border-top-width:8px;border-radius:8px}
+.hero{padding:34px 22px 28px}
+.hero h1{color:var(--teal)}
+.hero .btn.light{background:var(--teal);color:#fff;border-color:var(--teal)}
+.hero .btn.light:hover{background:#0a4f4b}
+.hero .f input{border-color:var(--teal)}
+body[data-view="home"] .card{border-color:#8c7bb0;border-top:6px solid #8c7bb0}
+body[data-view="home"] .card .btn.small{background:#8c7bb0;color:#fff;border-color:#8c7bb0}
+.hero .q{color:var(--muted);font-family:var(--f-mono);font-size:1rem;opacity:1}
+.hero p{opacity:1;color:#333}
+.hero ul{opacity:1}
+.hero li::before{color:var(--teal)}
+.board .side{padding:14px}
+.sky text{fill:var(--ink)}
+.sky text[font-size="52"]{fill:var(--teal);font-family:var(--f-num)}
+.sky text[font-size="13"]{fill:var(--muted);font-family:var(--f-mono)}
+.sky text[font-size="16"]{fill:var(--muted)}
+.sky circle[stroke="rgba(255,244,214,.18)"]{stroke:var(--ochre);stroke-opacity:1;stroke-width:2}
+.legend{opacity:1;font-family:var(--f-mono);font-size:.78rem;color:var(--muted)}
+.cm-tg{border:1.5px solid var(--line2);background:#fff;color:var(--ink);border-radius:6px;font-family:var(--f-mono)}
+.join-box .code{font-size:2.4rem}
+.qr{border:2px solid var(--ink);border-radius:8px}
+.mem{border:1.5px solid var(--line2);border-radius:6px}
+.mystery{background:#fff;border:2px solid var(--ink);border-radius:8px;font-weight:400}
+.param .pn{color:var(--ink);font-size:1.3rem}
+.param .pv{background:var(--teal);color:#fff;font-family:var(--f-mono);font-weight:600}
+.param .pt{color:var(--teal)}
+.param .pd{opacity:1;color:var(--muted);font-family:var(--f-mono);font-size:.78rem}
+.param .pa{opacity:1;color:#222}
+.param{border-top:1px solid var(--line2)}
+details.deep{background:var(--panel2);border-radius:6px}
+details.deep summary{color:var(--teal)}
+.reader .box{border-radius:8px;border:2px solid var(--ink);box-shadow:0 30px 70px rgba(0,0,0,.25)}
+.reader h3{color:var(--muted);font-family:var(--f-mono);font-weight:600;font-size:clamp(.9rem,1.4vw,1.05rem);letter-spacing:0}
+.reader .x{background:#fff;border:2px solid var(--ink);border-radius:6px}
+.lead-actions button,.lead-actions a{border:2px solid var(--ochre);color:var(--ochre);border-radius:6px;font-weight:700}
+.lead-actions button:hover,.lead-actions a:hover{background:var(--ochre);color:#fff}
+.lc{border:2px solid var(--line2);border-inline-start:6px solid var(--lcacc,var(--line2));border-radius:6px;box-shadow:none;padding-left:30px;background:#fff}
+.lc:hover,.lc:focus-visible{border-color:var(--teal);box-shadow:none}
+.lc .nm{font-size:1.15rem}
+.lc .r .num{background:var(--teal);color:#fff;font-family:var(--f-mono);font-weight:600;font-size:.8rem}
+.lc .r .v{font-size:.78rem}
+.lc .more{color:var(--teal)}
+#leadStage circle[fill="url(#sky2)"]{fill:#fff;stroke:var(--ochre);stroke-width:2}
+#leadStage circle[stroke="rgba(255,244,214,.16)"]{stroke:transparent}
+#leadStage text{fill:var(--ink)!important;font-family:var(--f-body)}
+.lcenter{color:var(--ink)}
+.lcenter .num{color:var(--teal)}
+.lcenter button{border:2px solid var(--ink);background:#fff;color:var(--ink);border-radius:6px;font-weight:700}
+.lcenter small{opacity:1;color:var(--muted);font-family:var(--f-mono);font-size:.75rem}
+.gnav button{border:2px solid var(--line2);border-radius:6px;font-weight:700}
+.gnav button[aria-current="page"]{background:var(--acc);border-color:var(--acc);color:#fff}
+@media (max-width:760px){
+  .gnav{background:var(--acc);border-top:0;box-shadow:none}
+  .gnav button{border:0;color:rgba(255,255,255,.7);background:none}
+  .gnav button[aria-current="page"]{background:none;color:#fff}
+  .gnav .nbadge{background:#9bcf93;color:#111}
+}
+.game-row .tr{font-family:var(--f-body);font-weight:700}
+.game-row .tr .k{font-family:var(--f-mono);color:var(--teal);font-weight:600}
+.pick button.nm{border:2px solid var(--line2);background:#fff;border-radius:6px}
+.pick button.nm[aria-pressed="true"]{border-color:var(--ink);background:var(--ink);color:#fff}
+.sopt{border:2px solid var(--line2);border-radius:6px}
+.sopt:has(input:checked){border-color:var(--ink);background:var(--panel2)}
+.fbk button{border:1.5px solid var(--line2);border-radius:4px;font-family:var(--f-mono);font-size:.72rem}
+.fbk button[aria-pressed="true"]{border-color:var(--teal);background:var(--gold-soft)}
+dl.gloss dt{font-family:var(--f-body);font-weight:700}
+dl.gloss dt.hl,dl.gloss dt.hl+dd{background:var(--panel2)}
+.deck-hint{margin:0 0 12px;padding:10px 12px;background:var(--acc-soft);border-radius:6px;font-family:var(--f-mono);font-size:.95rem;color:var(--acc)}
+.deck{display:flex;gap:12px;overflow-x:auto;scroll-snap-type:x mandatory;padding:2px 16px 8px;margin:0 -16px;scrollbar-width:none;-webkit-overflow-scrolling:touch}
+.deck::-webkit-scrollbar{display:none}
+.kard{flex:0 0 min(82vw,320px);scroll-snap-align:start;border:2px solid var(--acc);border-radius:8px;padding:20px 20px 18px;background:#fff;display:flex;flex-direction:column;align-items:flex-start;min-height:420px;box-sizing:border-box}
+.kard.soft{border-color:var(--line2)}
+.kard .k{margin:0;font-family:var(--f-mono);font-size:.92rem;color:var(--muted)}
+.kard .big{display:block;margin:6px 0 0;font-family:var(--f-num);font-size:5.2rem;line-height:.95;color:var(--teal)}
+.kard h2{margin:6px 0 0;font-size:1.6rem}
+.kard .x{margin:10px 0 0;font-size:1rem;line-height:1.55;color:#333}
+.kard details{margin-top:auto;padding-top:14px;width:100%}
+.kard details summary{cursor:pointer;list-style:none;display:inline-block;padding:10px 16px;background:var(--acc);color:#fff;border-radius:6px;font-weight:700;font-size:.95rem}
+.kard details summary::-webkit-details-marker{display:none}
+.kard details[open] summary{background:#fff;color:var(--acc);border:2px solid var(--acc);padding:8px 14px}
+.kard details .param{border-top:0;padding:12px 0 0}
+.kard details .param .ph{display:none}
+.kard .ixl{margin:8px 0 0;padding:0;list-style:none;display:grid;gap:8px;width:100%}
+.kard .ixl li{padding:10px 12px;border:1.5px solid var(--line2);border-radius:6px}
+.kard .ixl b{display:block;font-size:.95rem;margin-bottom:2px}
+.kard .ixl p{margin:0;font-size:.9rem;line-height:1.5;color:#333}
+.kard.cta{justify-content:center;align-items:center;text-align:center;border-color:var(--ochre);background:rgba(74,134,163,.08)}
+.kard.cta .k,.kard.cta h2{color:var(--ochre)}.kard.cta .btn{background:var(--ochre)}
+.kard.cta h2{font-size:1.5rem}
+.deck-dots{display:flex;gap:7px;justify-content:center;margin:6px 0 14px}
+.deck-dots i{width:7px;height:7px;border-radius:50%;background:var(--line2)}
+.deck-dots i.on{background:var(--acc)}
+@media (min-width:760px){.deck{margin:0;padding-inline:0;flex-wrap:wrap;overflow:visible}.kard{flex:0 0 calc(50% - 6px)}.deck-dots{display:none}}
+.gmore{display:contents}.gnav .gmore-btn{display:none}
+@media (max-width:760px){.gmore{display:none}.gnav .gmore-btn{display:flex}}
+.deck{align-items:flex-start}
+.kard details{margin-top:16px}
+.lc .lcmenu{position:absolute;top:6px;left:6px;border:0;background:none;color:var(--muted);font-family:var(--f-mono);font-size:1.1rem;line-height:1;padding:4px 8px;border-radius:4px;cursor:pointer}
+.lc .lcmenu:hover{background:var(--panel2);color:var(--ink)}
+.gloss .gi{display:contents}.gloss .gi[hidden]{display:none}
+.qm{display:inline-flex;align-items:center;justify-content:center;width:20px;height:20px;border-radius:50%;border:1.5px solid var(--acc,var(--ink));color:var(--acc,var(--ink));background:#fff;font-size:.78rem;font-weight:700;margin-inline-start:6px;vertical-align:middle;cursor:pointer;padding:0;line-height:1}
+.ctxmenu{position:fixed;z-index:60;background:#fff;border:2px solid var(--ink);border-radius:6px;padding:4px;display:grid;min-width:190px;box-shadow:0 12px 30px rgba(0,0,0,.18)}
+.ctxmenu button{border:0;background:none;text-align:right;padding:10px 12px;font-weight:700;border-radius:4px;color:var(--ink);font-size:1rem}
+.ctxmenu button:hover{background:var(--panel2)}
+.ctxmenu button.danger{color:var(--rose)}
 </style>
 </head>
 <body>
@@ -609,8 +757,8 @@ const FAM={
 const fam=(n,f)=>(FAM[n]&&FAM[n][f])||(FAM[single(n)]&&FAM[single(n)][f])||"";
 const TRIBE=["העצמאות והמחשבה","החומר והעשייה","הרגש והיצירה"];
 const TRIBE_NUMS=["1, 5, 7","2, 4, 8","3, 6, 9"];
-const PCOL=["#ff8a7a","#ffc857","#7ee0c3","#7fb8ff","#c79bff","#ff9fd2","#a6e36b","#ffa94d","#5fd3e6","#e6d26b","#9aa7ff","#f07b9a","#5ec98f","#d9a3ff","#ffd1a1"];
-const TRIBEC=["#7fd1c7","#f0c46a","#f2a08f"];
+const PCOL=["#8fcf9a","#8fbcd4","#7ee0c3","#7fb8ff","#c79bff","#b7a6e3","#a6e36b","#6fa8dc","#5fd3e6","#9fd8b4","#9aa7ff","#8ab6a8","#5ec98f","#d9a3ff","#a3c4e8"];
+const TRIBEC=["#7fd1c7","#8fbcd4","#9bcf93"];
 let colorMode="person";try{colorMode=localStorage.getItem("grp-colormode")||"person"}catch(e){}
 const fillOf=p=>colorMode==="tribe"?TRIBEC[p.tribe]:p.color;
 const TCOL=["var(--t0)","var(--t1)","var(--t2)"];
@@ -618,7 +766,7 @@ const STAGES=[
  {k:"join",t:"המעגל נדלק",short:"הצטרפות"},
  {k:"who",t:"מי אני",short:"מי אני"},
  {k:"num",t:"המספר שלנו",short:"המספר שלנו"},
- {k:"miss",t:"מה חסר, ומי שומר עליו",short:"מה חסר"},
+ {k:"miss",t:"האתגר שלנו, ומי שומר על מה שיש",short:"האתגר שלנו"},
  {k:"roles",t:"התפקידים בקבוצה",short:"תפקידים"},
  {k:"threads",t:"חוטים במארג",short:"חוטים"},
  {k:"close",t:"מה אני לוקח/ת",short:"סגירה"}
@@ -696,6 +844,7 @@ const mock={
 const store=LOCAL?mock:fb;
 
 /* ================= helpers ================= */
+let ctx=null;
 const $=id=>document.getElementById(id);
 const app=$("app");
 const TODAY=new Date();const TY=TODAY.getFullYear();
@@ -770,6 +919,22 @@ function analyzeFamily(members){
     if(a!==b&&single(a.pers)===single(b.soul)&&single(a.soul)!==single(b.soul)&&!seen.has("m"+key(a,b))){seen.add("m"+key(a,b));if(T.filter(t=>t.type==="mirror").length<2)T.push({type:"mirror",a,b,n:single(a.pers),text:`דחף הנשמה של ${b.label} הוא מספר האישיות של ${a.label} (${single(a.pers)}: ${N[single(a.pers)].kw}). מה ש${b.label} צריך/ה בפנים, ${a.label} מראה כלפי חוץ, ולכן כל אחד יכול לראות בשני צד של עצמו.`});}
   }));
   G.threads=T;
+  // extra threads (shown on demand): echoes, same tribe, flowing paths, same personal year
+  const X=[];const SLOT={LP:"שביל החיים",expr:"מספר הביטוי",soul:"דחף הנשמה",pers:"מספר האישיות"};
+  const has=(a,b)=>T.some(t=>t.a&&((t.a===a&&t.b===b)||(t.a===b&&t.b===a)));
+  P.forEach((a,i)=>P.slice(i+1).forEach(b=>{
+    if(has(a,b))return;
+    let done=false;
+    for(const ka of ["LP","expr","soul","pers"]){for(const kb of ["LP","expr","soul","pers"]){
+      if(done||ka===kb)continue;const n=single(a[ka]);if(n!==single(b[kb]))continue;
+      if((ka==="pers"&&kb==="soul")||(ka==="soul"&&kb==="pers"))continue;
+      X.push({type:"echo",a,b,n,text:`המספר ${n} (${N[n].kw}) חוזר אצל שניכם: אצל ${a.label} זה ${SLOT[ka]}, אצל ${b.label} זה ${SLOT[kb]}. אותה איכות, במקום אחר בנפש – ולכן קל לזהות אותה זה אצל זה.`});done=true;}}
+    if(done)return;
+    if(a.tribe===b.tribe){X.push({type:"tribe",a,b,n:a.tribe,text:`${a.label} ו${b.label} מאותו שבט – ${TRIBE[a.tribe]} (${TRIBE_NUMS[a.tribe]}). יש ביניהם שפה משותפת: אותו סוג של מנוע מניע אותם.`});return;}
+    if(relation(a.LP,b.LP)===2){X.push({type:"flow",a,b,n:single(a.LP),text:`שבילי החיים ${single(a.LP)} ו־${single(b.LP)} זורמים יחד: ${get(a.LP,"kw")} פוגש ${get(b.LP,"kw")} בלי מאמץ. חיבור נוח, ששווה לשאול מה הוא יכול להוליד.`});return;}
+    if(a.py===b.py){X.push({type:"year",a,b,n:a.py,text:`${a.label} ו${b.label} באותה שנה אישית – ${a.py}: ${YKW[a.py]}. שניהם עומדים השנה מול אותו סוג של משימה, וזה מקום טוב ללוות זה את זה.`});}
+  }));
+  X.forEach(t=>t.extra=true);G.extra=X;
   // frictions
   const F=[];
   P.forEach((a,i)=>P.slice(i+1).forEach(b=>{
@@ -806,14 +971,16 @@ function go(v){
   try{const u=new URL(location.href);["board","lead","game"].forEach(k=>u.searchParams.delete(k));u.searchParams.set("v",v);history.replaceState(null,"",u);}catch(e){}
   view="";route();window.scrollTo({top:0});
 }
-document.addEventListener("click",e=>{const b=e.target.closest("[data-go]");if(!b)return;e.preventDefault();if(b.dataset.go==="gloss"){openGlossary();return;}if(b.dataset.go==="qr"){openQR();return;}go(b.dataset.go);});
+document.addEventListener("click",e=>{const b=e.target.closest("[data-go]");if(!b)return;e.preventDefault();if(b.dataset.go==="hub"){location.href="https://boazbareket1.github.io/tools-desk/maarag/";return;}if(b.dataset.go==="gloss"){openGlossary();return;}if(b.dataset.go==="qr"){openQR();return;}go(b.dataset.go);});
 function route(fromData){
   if(!ROOM)return renderHome();
   if(!S.meta&&fromData&&online){return renderMissing();}
   if(!S.meta)return renderLoading();
   let v=VIEW||defaultView();
   if(v==="me"&&!isMember())v="join";
+  document.body.dataset.view=v;
   if(v==="game")return renderGame();
+  if(v==="host")return renderHost();
   if(v==="wall")return renderWall();
   if(v==="circle")return renderLead();
   if(v==="stages")return renderBoard();
@@ -822,31 +989,52 @@ function route(fromData){
   if(view!=="join")renderJoin();else updateJoin();
 }
 function navHTML(cur){
-  const items=[isMember()?["me","המפה שלי","◉"]:["join","הצטרפות","+"],["fam","הקבוצה","☷"],["circle","המעגל","◎"],["stages","שלבים","☰"],["game","משחק","✦"],["wall","לוח","✎"],["qr","QR","▦"],["gloss","מילון","?"]];
-  return `<nav class="gnav" aria-label="ניווט בכלי">${items.map(([k,t,i])=>`<button type="button" data-go="${k}" ${k===cur?'aria-current="page"':""}><span class="gi" aria-hidden="true">${i}</span><span>${t}</span>${k==="wall"&&wallUnread()?`<span class="nbadge">${wallUnread()}</span>`:""}</button>`).join("")}</nav>`;
+  const all=[isMember()?["me","המפה שלי","◉"]:["join","הצטרפות","+"],["fam","הקבוצה","☷"],["circle","המעגל","◎"],["wall","לוח","✎"],["stages","שלבים","☰"],["game","משחק","✦"],["qr","QR","▦"],["gloss","מילון","?"],["hub","המארג","⌂"]];
+  const btn=([k,t,i])=>`<button type="button" data-go="${k}" ${k===cur?'aria-current="page"':""}><span class="gi" aria-hidden="true">${i}</span><span>${t}</span>${k==="wall"&&wallUnread()?`<span class="nbadge">${wallUnread()}</span>`:""}</button>`;
+  // phones: four primary items + "עוד"; wide screens: everything
+  if(FACIL())all.splice(1,0,["host","מנחה","★"]);
+  const prim=all.slice(0,4),more=all.slice(4);const moreOn=more.some(x=>x[0]===cur);
+  return `<nav class="gnav" aria-label="ניווט בכלי">${prim.map(btn).join("")}<span class="gmore">${more.map(btn).join("")}</span><button type="button" class="gmore-btn" data-more ${moreOn?'aria-current="page"':""}><span class="gi" aria-hidden="true">⋯</span><span>עוד</span></button></nav>`;
 }
+document.addEventListener("click",e=>{
+  const b=e.target.closest("[data-more]");
+  if(!b){if(ctx&&ctx.classList.contains("morectx")&&!e.target.closest(".ctxmenu"))closeCtx();return;}
+  e.preventDefault();if(ctx){closeCtx();return;}
+  ctx=document.createElement("div");ctx.className="ctxmenu morectx";ctx.setAttribute("role","menu");
+  ctx.innerHTML=(FACIL()?[["host","★ מסך המנחה"]]:[]).concat([["stages","שלבים"],["game","משחק הזיהוי"],["qr","QR להצטרפות"],["gloss","מילון מושגים"],["hub","⌂ המארג – כל הכלים"]]).map(([k,t])=>`<button type="button" data-go="${k}">${t}</button>`).join("");
+  document.body.appendChild(ctx);const r=b.getBoundingClientRect();
+  ctx.style.left=Math.max(8,Math.min(innerWidth-ctx.offsetWidth-8,r.left))+"px";ctx.style.top=(r.top-ctx.offsetHeight-8)+"px";
+  ctx.querySelectorAll("[data-go]").forEach(m=>m.addEventListener("click",closeCtx));
+},true);
 function addNav(cur){const w=app.querySelector(".wrap");if(w)w.insertAdjacentHTML("afterbegin",navHTML(cur));}
 function renderLoading(){view="loading";app.innerHTML=`<div class="wrap"><p class="muted" style="text-align:center;margin-top:30vh">מתחברים למעגל…</p></div>`;}
 function renderMissing(){view="missing";app.innerHTML=`<div class="wrap"><div class="card" style="margin-top:20vh;text-align:center"><h2>לא מצאנו את המעגל</h2><p class="muted">ייתכן שהקוד שגוי. אפשר לבקש קישור חדש ממי שפתח/ה את המעגל.</p><a class="btn" href="${BASE}${LOCAL?"?local=1":""}" style="text-decoration:none;display:inline-block">לדף הפתיחה</a></div></div>`;}
 
 /* ---------- home ---------- */
+function myCirclesHTML(){
+  let keys=[];try{keys=Object.keys(localStorage).filter(k=>k.startsWith("grp-host:"));}catch(e){}
+  if(!keys.length)return "";
+  const items=keys.map(k=>{const c=k.slice("grp-host:".length);return `<li><a href="${BASE}?r=${c}${LOCAL?"&local=1":""}" style="font-weight:700;color:var(--teal)">${esc(ls.get("grp-name:"+c)||"מעגל")}</a> <span class="muted" style="font-family:var(--f-mono);direction:ltr;display:inline-block">${c}</span></li>`;}).join("");
+  return `<div class="card" style="margin-top:16px;border-color:var(--teal);border-top:6px solid var(--teal)"><h2 style="font-size:1.2rem">המעגלים שפתחת במכשיר הזה</h2><ul style="margin:8px 0 0;padding-inline-start:18px;display:grid;gap:6px">${items}</ul></div>`;
+}
 function renderHome(){
-  view="home";
+  view="home";document.body.dataset.view="home";
   app.innerHTML=`<div class="wrap">
   <section class="night hero">
     <p class="q">מה המספרים מספרים על המעגל שהתכנס כאן?</p>
     <h1>המארג הקבוצתי</h1>
     <p>כל משתתף מצטרף מהטלפון, מגלה את המפה האישית שלו, ואז רואים יחד איך אנשים שרק נפגשו נארגים לקבוצה אחת.</p>
     <label class="f" style="max-width:340px;margin:0 auto 14px;text-align:right">איך נקרא למעגל?<input type="text" id="famName" placeholder="למשל: סדנת יום שישי" autocomplete="off"></label>
-    <label class="f" style="max-width:340px;margin:0 auto 14px;text-align:right">קוד מנחה<small>פתיחת מעגל חדש שמורה למנחה. להצטרפות למעגל קיים לא צריך קוד.</small><input type="text" id="hostCode" autocomplete="off" inputmode="text" dir="auto"></label>
+    <label class="f" style="max-width:340px;margin:0 auto 14px;text-align:right">קוד מנחה או שובר<small>פתיחת מעגל חדש שמורה למנחה, או למי שרכש/ה שובר למעגל אחד. להצטרפות למעגל קיים לא צריך קוד. <a href="https://boazbareket1.github.io/tools-desk/maarag/open.html" style="color:var(--teal)">איך משיגים שובר?</a></small><input type="text" id="hostCode" autocomplete="off" inputmode="text" dir="auto"></label>
     <button class="btn light" id="createBtn">פתיחת מעגל חדש ←</button>
     <p class="err" id="homeErr" style="margin-top:10px"></p>
     <ul>
       <li>עד 10 משתתפים. סורקים קוד, ממלאים שם ותאריך לידה. בלי הרשמה.</li>
       <li>כל אחד מקבל בטלפון את המפה האישית שלו.</li>
-      <li>אחר כך נחשפים בהדרגה: השליחות של הקבוצה, מה חסר, התפקידים והחוטים שמחברים ביניכם.</li>
+      <li>אחר כך נחשפים בהדרגה: השליחות של הקבוצה, האתגר שלנו, התפקידים והחוטים שמחברים ביניכם.</li>
     </ul>
   </section>
+  ${myCirclesHTML()}
   <div class="card" style="margin-top:16px">
     <h2 style="font-size:1.2rem">קיבלתם קוד מעגל?</h2>
     <div class="row" style="margin-top:10px"><input type="text" id="codeIn" placeholder="קוד המעגל" style="max-width:200px;direction:ltr;text-transform:uppercase;letter-spacing:.15em" autocomplete="off"><button class="btn small" id="codeBtn">כניסה</button></div>
@@ -861,6 +1049,8 @@ function renderHome(){
 /* host code: only the facilitator may open new circles. The code itself is not in the file, only its SHA-256.
    To change it: compute the SHA-256 of the new code (e.g. printf 'code' | sha256sum) and replace HOST_HASH. */
 const HOST_HASH="c1f916534a33c70e6695a100531090ec79483c0900cf33ac087d01acb145bfc9";
+/* launch period: a public code that opens one circle per use (set to "" to close the launch) */
+const LAUNCH_CODE="";
 async function sha256(t){const b=await crypto.subtle.digest("SHA-256",new TextEncoder().encode(t));return [...new Uint8Array(b)].map(x=>x.toString(16).padStart(2,"0")).join("");}
 async function checkHostCode(code){
   if(LOCAL)return true;
@@ -871,12 +1061,26 @@ async function checkHostCode(code){
 async function createRoom(){
   const name=$("famName").value.trim()||"המעגל שלנו";
   $("createBtn").disabled=true;$("homeErr").textContent="";
-  if(!await checkHostCode($("hostCode").value)){$("homeErr").textContent="קוד המנחה לא נכון. פתיחת מעגל חדש שמורה למנחה.";$("createBtn").disabled=false;return;}
+  const raw=$("hostCode").value.trim();
+  let voucher=null;
+  if(!await checkHostCode(raw)){
+    // not the facilitator's code: maybe a one-circle voucher
+    const vc=raw.toUpperCase().replace(/[^A-Z0-9]/g,"");
+    if(vc===LAUNCH_CODE){voucher="launch";}
+    else if(vc.length>=8&&!LOCAL){
+      try{const v=await store.get(`vouchers/${vc}`);
+        if(!v){$("homeErr").textContent="הקוד לא נכון. פתיחת מעגל חדש שמורה למנחה או למי שיש לו שובר.";$("createBtn").disabled=false;return;}
+        if(v.used){$("homeErr").textContent="השובר הזה כבר מומש. כל שובר פותח מעגל אחד.";$("createBtn").disabled=false;return;}
+        voucher=vc;
+      }catch(e){$("homeErr").textContent="לא הצלחנו לבדוק את השובר. בדקו את החיבור ונסו שוב.";$("createBtn").disabled=false;return;}
+    }else{$("homeErr").textContent="הקוד לא נכון. פתיחת מעגל חדש שמורה למנחה או למי שיש לו שובר.";$("createBtn").disabled=false;return;}
+  }
   const A="ABCDEFGHJKMNPQRSTUVWXYZ23456789";
   try{
     let code;for(let i=0;i<5;i++){code=Array.from({length:5},()=>A[Math.floor(Math.random()*A.length)]).join("");if(!(await store.get(`rooms/${code}/meta`)))break;}
-    await store.put(`rooms/${code}/meta`,{name:name.slice(0,60),created:Date.now(),stage:0,open:false,type:"group"});
-    ls.set("grp-host:"+code,"1");
+    await store.put(`rooms/${code}/meta`,Object.assign({name:name.slice(0,60),created:Date.now(),stage:0,open:false,type:"group"},voucher?{voucher}:{}));
+    if(voucher&&voucher!=="launch")await store.patch(`vouchers/${voucher}`,{used:true,usedAt:Date.now(),room:code,tool:"group"});
+    ls.set("grp-host:"+code,"1");ls.set("grp-name:"+code,name.slice(0,60));
     location.href=BASE+"?r="+code+(LOCAL?"&local=1":"");
   }catch(e){$("homeErr").textContent="לא הצלחנו לפתוח מעגל. בדקו את החיבור לאינטרנט ונסו שוב.";$("createBtn").disabled=false;}
 }
@@ -887,12 +1091,56 @@ function claimHTML(){
   return `<div class="card" style="margin-top:14px"><h2 style="font-size:1.15rem">כבר במעגל? זה את/ה?</h2><p class="muted" style="margin:4px 0 10px">אם המנחה הוסיף/ה אותך, או שהחלפת מכשיר – בחר/י את השם שלך.</p><div style="display:flex;flex-wrap:wrap;gap:8px">${G.P.map(p=>`<button class="btn small" data-claim="${p.id}" style="background:#fff;color:var(--fg);border:1.5px solid var(--line2)">${esc(p.label)}</button>`).join("")}</div></div>`;
 }
 function bindClaim(){document.querySelectorAll("[data-claim]").forEach(b=>b.onclick=()=>{const id=b.dataset.claim;if(!S.members[id])return;if(!confirm(`להיכנס למעגל בתור ${S.members[id].name}?`))return;ls.set("grp-me:"+ROOM,id);view="";go("me");});}
+function renderHost(){
+  view="host";
+  const P=G.P;
+  app.innerHTML=`<div class="wrap">
+   <div class="top"><h1>מסך המנחה</h1><span class="muted">${esc(S.meta.name)}</span></div>
+   <div class="card" style="border-color:var(--teal);border-top:6px solid var(--teal)">
+     <h2 style="font-size:1.2rem;margin:0 0 4px">${esc(S.meta.name)} <button class="link" id="fcRename" style="font-size:.9rem">שינוי שם</button></h2>
+     <p class="muted" style="margin:0 0 12px">קוד המעגל: <span class="code" style="font-size:1.2rem">${ROOM}</span> · ${isClosed()?"המעגל סגור להצטרפות":"המעגל פתוח להצטרפות"}</p>
+     <div style="display:grid;gap:8px">
+       <button class="btn" id="fcAdd">+ הוספת משתתף/ת</button>
+       <button class="btn ghost" id="fcQR">QR וקישור להזמנה</button>
+       <button class="btn ghost" id="fcBoard">לוח השלבים (מסך גדול)</button>
+       <button class="btn ghost" id="fcToggle">${isClosed()?"לפתוח את המעגל להצטרפות":"לסגור את המעגל להצטרפות"}</button>
+     </div>
+   </div>
+   <div class="card" style="margin-top:14px"><h2 style="font-size:1.15rem;margin:0 0 8px">במעגל עכשיו: ${G.n}</h2>
+     <div class="members">${P.map(p=>`<span class="mem">${dotOf(p)}${esc(p.name)}<button data-edit="${p.id}" aria-label="עריכת ${esc(p.name)}" title="עריכה">✎</button><button data-del="${p.id}" aria-label="הסרת ${esc(p.name)}">×</button></span>`).join("")||'<span class="muted">עוד אין משתתפים</span>'}</div>
+   </div>
+   <p class="muted" style="margin-top:16px;font-size:.9rem">${isMember()?"":"גם את/ה חלק מהמעגל? <button class=\"link\" data-go=\"join\">הצטרפות כמשתתף/ת</button> · "}<a href="${BASE}${LOCAL?"?local=1":""}" style="color:var(--teal)">לדף הפתיחה של הכלי</a></p>
+  </div>`;
+  bindFacil();
+  const t=$("fcToggle");if(t)t.onclick=async()=>{t.disabled=true;await store.patch(`rooms/${ROOM}/meta`,{closed:!isClosed()});S.meta.closed=!isClosed();renderHost();};
+  app.querySelectorAll("[data-del]").forEach(b=>b.onclick=()=>{const p=G.P.find(p=>p.id===b.dataset.del);if(p&&confirmDel(p))store.del(`rooms/${ROOM}/members/${p.id}`);});
+  addNav("host");
+}
+function facilCardHTML(){
+  if(!FACIL())return "";
+  return `<div class="card" style="margin-bottom:14px;border-color:var(--teal);border-top:6px solid var(--teal)"><p class="k" style="font-family:var(--f-mono);font-size:.9rem;color:var(--muted);margin:0">את/ה המנחה של המעגל הזה</p>
+    <h2 style="font-size:1.25rem;margin:4px 0 6px">${esc(S.meta.name)} <button class="link" id="fcRename" style="font-size:.9rem">שינוי שם</button></h2>
+    <p class="muted" style="margin:0 0 10px">קוד המעגל: <span class="code" style="font-size:1.2rem">${ROOM}</span> · שמרו את הקישור – ממנו חוזרים למעגל.</p>
+    <div style="display:flex;flex-wrap:wrap;gap:8px"><button class="btn small" id="fcAdd">+ הוספת משתתף/ת</button><button class="btn small ghost" id="fcQR">QR וקישור להזמנה</button><button class="btn small ghost" data-go="host">★ מסך המנחה</button></div>
+    <p class="muted" style="margin:10px 0 0;font-size:.9rem">גם את/ה חלק מהמעגל? מלא/י את הפרטים שלך למטה, כמו כולם.</p></div>`;
+}
+function bindFacil(){
+  const a=$("fcAdd");if(a)a.onclick=()=>openAdd();
+  const q=$("fcQR");if(q)q.onclick=()=>openQR();
+  const b=$("fcBoard");if(b)b.onclick=()=>go("stages");
+  const r=$("fcRename");if(r)r.onclick=renameCircle;
+}
+async function renameCircle(){
+  const n=prompt("שם המעגל:",S.meta.name||"");if(n===null)return;const name=n.trim().slice(0,60);if(!name)return;
+  try{await store.patch(`rooms/${ROOM}/meta`,{name});S.meta.name=name;ls.set("grp-name:"+ROOM,name);route();}catch(e){alert("לא הצלחנו לשמור את השם.");}
+}
 function renderJoin(){
   view="join";
-  if(isClosed()&&!FACIL()){app.innerHTML=`<div class="wrap"><div class="top"><h1>${esc(S.meta.name)}</h1></div><div class="card" style="text-align:center"><h2 style="font-size:1.4rem">המעגל סגור להצטרפות</h2><p class="muted">${CLOSED_MSG}</p></div>${claimHTML()}</div>`;bindClaim();addNav("join");return;}
+  if(isClosed()&&!FACIL()){app.innerHTML=`<div class="wrap"><div class="top"><h1>${esc(S.meta.name)}</h1></div>${facilCardHTML()}<div class="card" style="text-align:center"><h2 style="font-size:1.4rem">המעגל סגור להצטרפות</h2><p class="muted">${CLOSED_MSG}</p></div>${claimHTML()}</div>`;bindClaim();bindFacil();addNav("join");return;}
   if(G.n>=MAXP){app.innerHTML=`<div class="wrap"><div class="top"><h1>${esc(S.meta.name)}</h1></div><div class="card" style="text-align:center"><h2 style="font-size:1.4rem">המעגל מלא</h2><p class="muted">במעגל כבר ${MAXP} משתתפים, וזה המקסימום. אם כבר הצטרפת ממכשיר אחר, בחר/י את שמך למטה.</p></div>${claimHTML()}</div>`;bindClaim();return;}
   app.innerHTML=`<div class="wrap">
   <div class="top"><h1>${esc(S.meta.name)}</h1><span class="muted" id="joinCount"></span></div>
+  ${facilCardHTML()}
   <div class="card">
     <h2 style="font-size:1.4rem">הצטרפות למעגל</h2>
     <p class="muted" style="margin:4px 0 0">השם המלא כפי שניתן בלידה, כולל שם המשפחה מהלידה.</p>
@@ -907,7 +1155,7 @@ function renderJoin(){
   <p class="muted" style="font-size:.85rem;margin-top:16px">הפרטים נשמרים רק בתוך המעגל הזה, ומי שיש לו את הקישור למעגל יכול לראות אותם. אפשר לבקש מהמנחה להסיר אותך מהמעגל בכל שלב.</p>
   ${claimHTML()}
   </div>`;
-  $("jBtn").onclick=join;bindClaim();updateJoin();addNav("join");
+  $("jBtn").onclick=join;bindClaim();bindFacil();updateJoin();addNav("join");
 }
 function updateJoin(){if((isClosed()&&!FACIL())===!!$("jBtn"))return renderJoin();if(G.n>=MAXP)return renderJoin();const c=$("joinCount");if(c)c.textContent=G.n?`${G.n} מתוך ${MAXP} כבר במעגל`:"";}
 function validPerson(name,bd,errEl){
@@ -953,11 +1201,11 @@ function skySVG(opts={}){
   const P=G.P,n=P.length,cx=200,cy=200,R=n<=1?0:(n<=4?118:148);
   const pos=new Map();P.forEach((p,i)=>{const a=-Math.PI/2+i*2*Math.PI/Math.max(n,1);pos.set(p,[cx+R*Math.cos(a),cy+R*Math.sin(a)]);});
   let lines="";
-  if(opts.threads){const col={give:"#f0c46a",soul:"#7fd1c7",mirror:"#c7b6f5"};
+  if(opts.threads){const col={give:"#8fbcd4",soul:"#7fd1c7",mirror:"#c7b6f5"};
     (opts.threads).filter(t=>t.a&&t.b).forEach(t=>{const [x1,y1]=pos.get(t.a),[x2,y2]=pos.get(t.b);lines+=`<path d="M${x1},${y1} Q${cx},${cy} ${x2},${y2}" fill="none" stroke="${col[t.type]}" stroke-width="2.4" opacity=".8" ${t.type==="mirror"?'stroke-dasharray="5 6"':""}/>`;});}
   if(opts.friction){opts.friction.forEach(f=>{const [x1,y1]=pos.get(f.a),[x2,y2]=pos.get(f.b);lines+=`<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke="#f2a08f" stroke-width="2.4" stroke-dasharray="3 7" stroke-linecap="round"/>`;});}
   const ring=n>1?`<circle cx="${cx}" cy="${cy}" r="${R}" fill="none" stroke="rgba(255,244,214,.18)" stroke-width="1.5"/>`:"";
-  const center=opts.center?`<text x="${cx}" y="${cy+14}" text-anchor="middle" font-size="52" font-family="Cormorant Garamond,Georgia,serif" font-weight="600" fill="#f0c46a">${opts.center}</text><text x="${cx}" y="${cy+40}" text-anchor="middle" font-size="13" opacity=".8">${opts.centerLabel||""}</text>`:"";
+  const center=opts.center?`<text x="${cx}" y="${cy+14}" text-anchor="middle" font-size="52" font-family="Cormorant Garamond,Georgia,serif" font-weight="600" fill="#8fbcd4">${opts.center}</text><text x="${cx}" y="${cy+40}" text-anchor="middle" font-size="13" opacity=".8">${opts.centerLabel||""}</text>`:"";
   const dots=P.map(p=>{const [x,y]=pos.get(p);const c=fillOf(p);const lab=esc(p.label.length>12?p.label.slice(0,11)+"…":p.label);
     const below=y>cy+20||n===1;const ty=below?y+34:y-22;
     const num=opts.num?`<text x="${x}" y="${y+6}" text-anchor="middle" font-size="17" font-weight="700" fill="#10202a">${opts.num(p)}</text>`:"";
@@ -986,7 +1234,7 @@ function renderBoard(){
   if(k==="who"&&mysteryShown&&G.P[mysteryIdx])skyOpts.hi=G.P[mysteryIdx].id;
   app.innerHTML=`<div class="wrap wide">
    <div class="top"><h1>${esc(S.meta.name)}</h1>
-     <span class="muted">קוד המעגל <span class="code">${ROOM}</span> · ${G.n<MAXP?`<button class="link" id="addBtn">+ הוספת משתתף/ת</button>`:`<span>המעגל מלא (${MAXP})</span>`} · <button class="link" type="button" data-sharedlg="">שיתוף / PDF</button> · <button class="link" type="button" data-fbopen>משוב על הניתוחים</button>${online?"":" · <span style='color:var(--rose)'>אין חיבור</span>"}</span></div>
+     <span class="muted">${FACIL()?`<button class="link" onclick="renameCircle()">שינוי שם</button> · `:""}קוד המעגל <span class="code">${ROOM}</span> · ${G.n<MAXP?`<button class="link" id="addBtn">+ הוספת משתתף/ת</button>`:`<span>המעגל מלא (${MAXP})</span>`} · <button class="link" type="button" data-sharedlg="">שיתוף / PDF</button> · <button class="link" type="button" data-fbopen>משוב על הניתוחים</button>${online?"":" · <span style='color:var(--rose)'>אין חיבור</span>"}</span></div>
    <nav class="steps" aria-label="שלבי המפגש">${STAGES.map((s,i)=>`<button data-st="${i}" class="${i===st?"on":i<=curStage()?"done":""}" ${i>maxSt?'disabled title="נפתח כשהמנחה מתקדם"':""}>${i}. ${s.short}</button>`).join("")}</nav>${FACIL()?"":`<p class="muted" style="margin:0 0 6px;font-size:.9rem">${S.meta.open?"כל השלבים פתוחים.":"השלבים נפתחים כשהמנחה מתקדם במפגש."}</p>`}
    <div class="board">
      <aside class="side night">${st===0?`<div class="join-box"><p style="margin:6px 0 10px;opacity:.9">סרקו כדי להצטרף</p><div class="qr">${qrSVG(joinURL())}</div><p style="margin:10px 0 0;opacity:.85">או היכנסו לקישור והקלידו את הקוד</p><div class="code">${ROOM}</div></div>`:""}
@@ -999,12 +1247,12 @@ function renderBoard(){
    </div></div>`;
   app.querySelectorAll("[data-st]").forEach(b=>b.onclick=()=>goStage(+b.dataset.st));
   $("prevBtn").onclick=()=>goStage(st-1);$("nextBtn").onclick=()=>goStage(st+1);
-  if($("addBtn"))$("addBtn").onclick=()=>openAdd();
+  if($("addBtn"))$("addBtn").onclick=()=>openAdd();const ab2=$("addBtn2");if(ab2)ab2.onclick=()=>openAdd();
   if($("openTg"))$("openTg").onchange=e=>store.patch(`rooms/${ROOM}/meta`,{open:e.target.checked});
   if($("closeTg"))$("closeTg").onchange=e=>store.patch(`rooms/${ROOM}/meta`,{closed:e.target.checked});
   app.querySelectorAll("[data-del]").forEach(b=>b.onclick=()=>{const p=G.P.find(p=>p.id===b.dataset.del);if(p&&confirmDel(p))store.del(`rooms/${ROOM}/members/${p.id}`);});
   const ms=$("mysteryBtn");if(ms)ms.onclick=()=>{if(!mysteryShown&&mysteryIdx>=0){mysteryShown=true;}else{mysteryIdx=(mysteryIdx+1)%G.n;mysteryShown=false;}renderBoard();};
-  const wa=$("waBtn");if(wa)wa.href="https://wa.me/?text="+encodeURIComponent(`מצטרפים למעגל "${S.meta.name}" במארג הקבוצתי: ממלאים שם ותאריך לידה ומקבלים מפה אישית\n${joinURL()}`);
+  const wa=$("waBtn");if(wa)wa.href="https://wa.me/?text="+encodeURIComponent(`*${S.meta.name}*\nמצטרפים למעגל במארג הקבוצתי: פותחים את הקישור, ממלאים שם ותאריך לידה ומקבלים מפה אישית.\nקוד המעגל: ${ROOM}\n${joinURL()}`);
   addNav("stages");
   const cp=$("copyBtn");if(cp)cp.onclick=async()=>{try{await navigator.clipboard.writeText(joinURL());cp.textContent="הקישור הועתק ✓";}catch(e){prompt("העתיקו את הקישור:",joinURL());}};
 }
@@ -1018,10 +1266,11 @@ function personCard(p,body){return `<div class="pc"><div class="who">${dotOf(p)}
 function stageHTML(st){
   const k=STAGES[st].k,P=G.P;let h=`<div class="eyebrow">שלב ${st} מתוך ${STAGES.length-1}</div><h2>${STAGES[st].t}</h2>`;
   if(k==="join"){
-    h+=`<p class="lead">כל אחד סורק את הקוד בטלפון, ממלא שם ותאריך לידה, ונקודת אור נדלקת במעגל. מי שאין לו טלפון: "הוספת משתתף/ת" למעלה. עד ${MAXP} משתתפים.</p>
+    h+=`<p class="lead">כל אחד סורק את הקוד בטלפון וממלא שם ותאריך לידה. מי שאין לו טלפון – מוסיפים כאן. עד ${MAXP} משתתפים.</p>
     <div class="row" style="margin-top:0"><a class="btn ghost small" id="waBtn" target="_blank" rel="noopener" style="text-decoration:none">שליחת הקישור בוואטסאפ</a><button class="btn ghost small" id="copyBtn">העתקת הקישור</button></div>
     <h3 style="margin-top:22px;font-size:1.15rem">במעגל עכשיו: ${G.n} מתוך ${MAXP}</h3><div class="members">${P.map(p=>`<span class="mem">${dotOf(p)}${esc(p.name)}<button data-edit="${p.id}" aria-label="עריכת ${esc(p.name)}" title="עריכה">✎</button><button data-del="${p.id}" aria-label="הסרת ${esc(p.name)}">×</button></span>`).join("")||'<span class="muted">עוד אין משתתפים</span>'}</div>
-    <p class="muted" style="margin-top:16px;font-size:.92rem">כשעוברים לשלב 1 המעגל נסגר אוטומטית להצטרפות, כדי שמי שלא היה במפגש לא ייכנס אחר כך. אפשר לפתוח ולסגור בסימון למטה. מי שמצטרף/ת באיחור נכנס/ת אוטומטית לתמונה הקבוצתית. כדי להציג את הלוח ממחשב או מקרן אחרים: <span style="direction:ltr;display:inline-block;word-break:break-all">${esc(boardURL())}</span></p>`;
+    <p style="margin-top:10px"><button class="btn small" id="addBtn2">+ הוספת משתתף/ת</button></p>
+    <details class="more" style="margin-top:14px"><summary class="muted" style="font-size:.9rem">עוד אפשרויות</summary><p class="muted" style="font-size:.9rem;margin-top:6px">כשעוברים לשלב 1 המעגל נסגר אוטומטית להצטרפות, כדי שמי שלא היה במפגש לא ייכנס אחר כך. אפשר לפתוח ולסגור בסימון למטה. מי שמצטרף/ת באיחור נכנס/ת אוטומטית לתמונה הקבוצתית. כדי להציג את הלוח ממחשב או מקרן אחרים: <span style="direction:ltr;display:inline-block;word-break:break-all">${esc(boardURL())}</span></p></details>`;
     return h;
   }
   if(k==="who"){
@@ -1042,7 +1291,7 @@ function stageHTML(st){
   if(k==="miss"){
     h+=`<p class="lead">לכל אחד ארבעה מספרי ליבה: הדרך, הביטוי, הנשמה והאישיות. כך נראים כל המספרים של הקבוצה ביחד.</p>
     <div class="chips">${[1,2,3,4,5,6,7,8,9].map(n=>`<span class="chip" style="${G.core[n]?"":"opacity:.45;border-style:dashed"}"><b>${n}</b>${G.core[n]?"×"+G.core[n]:"חסר"}</span>`).join("")}</div>`;
-    if(G.missing.length)h+=`<h3 style="margin-top:18px;font-size:1.2rem">מה חסר בקבוצה</h3>${G.missing.map(n=>`<p><b>${n} · ${N[n].kw}.</b> ${fam(n,"miss")}</p>`).join("")}`;
+    if(G.missing.length)h+=`<h3 style="margin-top:18px;font-size:1.2rem">האתגר של הקבוצה</h3><p class="muted" style="margin:0 0 8px">מספרים שאף אחד לא נושא. לא חיסרון, הזמנה לצמוח יחד.</p>${G.missing.map(n=>`<p><b>${n} · ${N[n].kw}.</b> ${fam(n,"miss")}</p>`).join("")}`;
     else h+=`<p style="font-size:1.1rem">כל המספרים מ־1 עד 9 נמצאים בקבוצה. יש לכם ארגז כלים מלא, והאתגר הוא לדעת מתי להשתמש בכל כלי.</p>`;
     if(G.rare.length)h+=`<h3 style="margin-top:18px;font-size:1.2rem">שומרי האוצרות</h3><p class="muted" style="margin:2px 0 8px">מספר שרק אחד בקבוצה נושא. הוא/היא שומר/ת עליו בשביל כולם.</p><div class="grid">${G.rare.map(n=>{const p=G.carriers[n][0];return personCard(p,`<p><span class="num">${n}</span> שומר/ת ה${N[n].kw.split(",")[0]}</p><p class="muted">${fam(n,"give")}</p>`);}).join("")}</div>`;
   }
@@ -1051,7 +1300,7 @@ function stageHTML(st){
     <div class="grid">${P.map(p=>personCard(p,`<p><span class="num">${p.LP}</span> <b>${fam(p.LP,"role")}</b></p><p>${fam(p.LP,"give")}</p><p class="muted"><b>לומד/ת בקבוצה:</b> ${fam(p.LP,"learn")}</p>`)).join("")}</div>`;
   }
   if(k==="threads"){
-    const lab={give:["נותן־מקבל","#f0c46a"],soul:["תאומי נשמה","#7fd1c7"],mirror:["מראה","#c7b6f5"]};
+    const lab={give:["נותן־מקבל","#8fbcd4"],soul:["תאומי נשמה","#7fd1c7"],mirror:["מראה","#c7b6f5"]};
     h+=`<p class="lead">חוטים שמחברים בין המשתתפים: מי משלים למי את מה שחסר, מי צריך מבפנים את אותו דבר, ומי משקף למי צד נסתר.</p>
     <div class="legend" style="justify-content:flex-start;padding:0 0 6px">${Object.values(lab).map(l=>`<span><i style="background:${l[1]}"></i>${l[0]}</span>`).join("")}</div>
     <div>${G.threads.some(t=>t.text)?G.threads.filter(t=>t.text).map(t=>`<div class="thread"><span class="tag" style="background:${lab[t.type][1]}">${lab[t.type][0]}</span><p style="margin:0">${esc(t.text)}</p></div>`).join(""):`<p>החוטים בקבוצה הזו עדינים: אין חפיפות בולטות, וכל אחד מביא צבע משלו. שווה לשאול מה מחבר ביניכם מעבר למספרים.</p>`}</div>`;
@@ -1075,7 +1324,7 @@ function renderPhone(){
    <div id="pbody">${myMap(me)}</div>
    <p style="margin-top:28px;text-align:center">${G.n<MAXP&&canAdd()?`<button class="link" id="pAdd">+ הוספת משתתף/ת נוסף/ת</button> · `:""}<button class="link" id="pOut">זה לא אני</button></p>
   </div>`;
-  addNav("me");
+  addNav("me");bindDeck();
   if($("pAdd"))$("pAdd").onclick=()=>openAdd();
   $("pOut").onclick=()=>{ls.del("grp-me:"+ROOM);go("join");};
   window.scrollTo({top:scrollY});
@@ -1098,7 +1347,7 @@ function renderFamily(){
    ${me&&famTab==="mine"?meInFamily(me):`
     <p class="muted" style="margin:6px 0 12px">לחיצה על כרטיס פותחת את המפה המלאה של אותו משתתף. ${G.n>1?`המספר של הקבוצה: <b style="color:var(--gold)">${G.LP}</b> · ${get(G.LP,"title")}`:""}</p>
     <div id="leadList" style="margin-top:0">${P.map((p,i)=>cardHTML(p,i,null,0)).join("")||'<div class="locked">עוד אין משתתפים במעגל.</div>'}</div>
-    ${G.n>1?`<div class="lead-actions" style="margin-top:16px"><button data-g="mission">המספר שלנו</button><button data-g="miss">מה חסר</button><button data-g="links">כל החיווטים</button></div>`:""}`}
+    ${G.n>1?`<div class="lead-actions" style="margin-top:16px"><button data-g="mission">המספר שלנו</button><button data-g="miss">האתגר שלנו</button><button data-g="links">כל החיווטים</button></div>`:""}`}
    <p style="margin-top:24px;text-align:center"><button class="btn small" type="button" data-sharedlg="">שיתוף / שליחה / PDF</button></p>
    <p style="margin-top:10px;text-align:center">${G.n>=MAXP?`<span class="muted">המעגל מלא (${MAXP} משתתפים)</span>`:canAdd()?`<button class="link" id="fAdd">+ הוספת משתתף/ת</button>`:`<span class="muted">המעגל סגור להצטרפות</span>`}</p>
   </div>`;
@@ -1116,8 +1365,8 @@ function personIx(p){
   const r=relation(p.LP,p.expr);
   ix.push(["שביל החיים מול מספר הביטוי: הדרך והכלים",r>=3?`הדרך שלך (${get(p.LP,"kw")}) והכלים שקיבלת בשם (${get(p.expr,"kw")}) מאותה משפחה. מה שבאת ללמוד ומה שקל לך הולכים יד ביד.`:r===2?`הכלים שבשם שלך (${get(p.expr,"kw")}) תומכים בדרך שלך (${get(p.LP,"kw")}), גם אם בדרך עקיפה.`:`יש מתח בין הדרך שלך (${get(p.LP,"kw")}) לבין הכלים שבשם (${get(p.expr,"kw")}). לפעמים מה שקל לך הוא לא מה שהדרך מבקשת, ושם בדיוק הצמיחה.`]);
   ix.push(["דחף הנשמה מול מספר האישיות: מה בפנים ומה רואים מבחוץ",grp(p.soul)===grp(p.pers)?`דחף הנשמה (${p.soul}) מתאר מה את/ה צריך/ה בפנים: ${get(p.soul,"kw")}. מספר האישיות (${p.pers}) מתאר את הרושם הראשון שאנשים מקבלים ממך: ${get(p.pers,"kw")}. השניים מאותה משפחת מספרים, ולכן אנשים פוגשים אותך די כמו שאת/ה באמת.`:`דחף הנשמה (${p.soul}) מתאר מה את/ה צריך/ה בפנים: ${get(p.soul,"kw")}. מספר האישיות (${p.pers}) מתאר את הרושם הראשון שאנשים מקבלים ממך: ${get(p.pers,"kw")}. ייתכן שאנשים מכירים רק חלק ממך, וכדאי לשתף גם את מה שבפנים.`]);
-  ix.push(["המתנה של יום הלידה",`נולדת ב־${p.B.d} לחודש, וזה מעניק לך ${get(p.bday,"gift")}.`]);
-  ix.push([`השנה שלך: ${p.py}, ${YKW[p.py]}`,N[p.py].year]);
+  ix.push(["המתנה של יום הלידה"+qm("yom"),`נולדת ב־${p.B.d} לחודש, וזה מעניק לך ${get(p.bday,"gift")}.`]);
+  ix.push([`השנה שלך: ${p.py}, ${YKW[p.py]}`+qm("shana"),N[p.py].year]);
   return ix;
 }
 const PARAMS={
@@ -1133,36 +1382,46 @@ function paramHTML(key,p){
   return `<div class="param"><div class="ph"><span class="pn">${P.n}</span><span class="pv">${v}</span><button type="button" class="qterm" data-term="${term}" aria-label="מה זה ${P.n}?">?</button></div><p class="pd">${P.d}</p><p class="pa">${body}</p>${fbBtns(p.id,key+":"+v,body)}${key==="LP"?lpDeep(p):""}</div>`;
 }
 function myMap(p){
-  const lp=p.LP,ess=get(lp,"essence");
+  const lp=p.LP;
   const ix=personIx(p);
+  const firstSent=t=>{const m=String(t).replace(/<[^>]+>/g,"").match(/^(.+?[.!?])(\s|$)/);return m?m[1]:t;};
+  const P4=[["LP","שביל החיים"+qm("shvil"),get(p.LP,"title"),get(p.LP,"essence")],["expr","מספר הביטוי"+qm("bitui"),get(p.expr,"kw").split(",")[0],get(p.expr,"expr")],["soul","דחף הנשמה"+qm("neshama"),get(p.soul,"kw").split(",")[0],get(p.soul,"soul")],["pers","מספר האישיות"+qm("ishiut"),get(p.pers,"kw").split(",")[0],get(p.pers,"persona")]];
+  const cards=P4.map(([key,name,title,body],i)=>`<section class="kard" data-ci="${i}">
+    <p class="k">${String(i+1).padStart(2,"0")} / 0${P4.length+2} — ${name}</p>
+    <span class="big">${p[key]}</span>
+    <h2>${esc(title)}</h2>
+    <p class="x">${esc(firstSent(body))}</p>
+    <details><summary>עוד על זה</summary>${paramHTML(key,p)}</details>
+  </section>`).join("");
   let curH="";
-  if(p.cur){const a=p.an,c=p.cur;curH=`<div class="ix"><b>השם של היום</b><p>${c.expr.v===a.expr.v?"מספר הביטוי נשאר זהה.":`השם של היום מוסיף ${get(c.expr.v,"kw")}.`} ${c.soul.v&&single(c.soul.v)!==single(a.soul.v)?`מבפנים נוספה כמיהה ל${get(c.soul.v,"kw")}.`:""}</p></div>`;}
-  return `<section class="night essence">
-    <div style="opacity:.8;font-size:.9rem;margin-bottom:4px">המספרים שלך</div>
-    ${["LP","expr","soul","pers"].map(k=>paramHTML(k,p)).join("")}
-  </section>
-  <div class="sec"><h3>הצמתים שלך</h3>${ix.map((x,i)=>`<div class="ix"><b>${x[0]}</b><p>${x[1]}</p>${fbBtns(p.id,"ix"+i+":"+[p.LP+"/"+p.expr,p.soul+"/"+p.pers,"bday"+p.bday,"py"+p.py][i],x[1])}</div>`).join("")}${curH}</div>
-  <details class="more"><summary>עוד עליי: חוזקות, צל וכיוונים</summary>
-    <div class="ix"><b>חוזקות</b><p>${get(lp,"strengths").join(" · ")}</p></div>
-    <div class="ix"><b>הצל</b><p>${get(lp,"shadow").join(" · ")}</p></div>
-    <div class="ix"><b>אהבה</b><p>${get(lp,"love")}</p></div>
-    <div class="ix"><b>שליחות ועבודה</b><p>${get(lp,"career")}</p></div>
-  </details>
-  <div class="sec"><div class="ix" style="border-color:var(--gold)"><b>שאלה לדרך</b><p>${get(lp,"growth")}</p></div></div>
-  <div class="sec"><h3>לשמור ולשתף</h3><p class="muted" style="margin:0 0 6px;font-size:.92rem">"המפה האישית המורחבת" פותחת את כלי מפת המספרים עם הפרטים שלך, ובו ניתוח מעמיק יותר: מחזורי חיים, טבלת לידה, שיעורים קרמתיים ועוד. אפשר לשמור אותה גם אחרי הסדנה.</p>${shareBlock(p)}</div>
-  <p style="text-align:center;margin-top:20px"><button class="btn small" type="button" onclick="famTab='mine';go('fam')">ומה המקום שלי בקבוצה? ←</button></p>`;
+  if(p.cur){const a=p.an,c=p.cur;curH=`<li><b>השם של היום</b><p>${c.expr.v===a.expr.v?"מספר הביטוי נשאר זהה.":`השם של היום מוסיף ${get(c.expr.v,"kw")}.`} ${c.soul.v&&single(c.soul.v)!==single(a.soul.v)?`מבפנים נוספה כמיהה ל${get(c.soul.v,"kw")}.`:""}</p></li>`;}
+  const ixCard=`<section class="kard soft" data-ci="4"><p class="k">05 / 06 — הצמתים שלך</p><h2 style="margin-top:4px">איפה המספרים נפגשים</h2>
+    <ul class="ixl">${ix.map((x,i)=>`<li><b>${x[0]}</b><p>${x[1]}</p>${fbBtns(p.id,"ix"+i+":"+[p.LP+"/"+p.expr,p.soul+"/"+p.pers,"bday"+p.bday,"py"+p.py][i],x[1])}</li>`).join("")}${curH}</ul></section>`;
+  const moreCard=`<section class="kard soft" data-ci="5"><p class="k">06 / 06 — עוד עליי</p><h2 style="margin-top:4px">חוזקות, צל וכיוונים</h2>
+    <ul class="ixl"><li><b>חוזקות</b><p>${get(lp,"strengths").join(" · ")}</p></li><li><b>הצל</b><p>${get(lp,"shadow").join(" · ")}</p></li><li><b>אהבה</b><p>${get(lp,"love")}</p></li><li><b>שליחות ועבודה</b><p>${get(lp,"career")}</p></li><li style="border-color:var(--teal)"><b style="color:var(--teal)">שאלה לדרך</b><p>${get(lp,"growth")}</p></li></ul></section>`;
+  const ctaCard=`<section class="kard cta" data-ci="6"><p class="k">ומה עכשיו?</p><h2>המקום שלי בקבוצה</h2><p class="x">איך המספרים שלך נפגשים עם המספרים של כולם.</p><button class="btn" type="button" style="margin-top:14px" onclick="famTab='mine';go('fam')">למקום שלי בקבוצה ←</button></section>`;
+  const seen=ls.get("grp-deckhint");
+  return `${seen?"":`<p class="deck-hint">זו המפה שלך. החלק/י הצידה כדי לראות את המספר הבא.</p>`}
+  <div class="deck" id="deck">${cards}${ixCard}${moreCard}${ctaCard}</div>
+  <div class="deck-dots" id="deckDots" aria-hidden="true">${Array.from({length:7},(_,i)=>`<i class="${i?"":"on"}"></i>`).join("")}</div>
+  <div class="sec"><h3>לשמור ולשתף</h3><p class="muted" style="margin:0 0 6px;font-size:.92rem">"המפה האישית המורחבת" פותחת את כלי מפת המספרים עם הפרטים שלך, ובו ניתוח מעמיק יותר: מחזורי חיים, טבלת לידה, שיעורים קרמתיים ועוד.</p>${shareBlock(p)}</div>`;
 }
+function bindDeck(){
+  const d=$("deck"),dots=$("deckDots");if(!d||!dots)return;
+  d.addEventListener("scroll",()=>{const w=d.firstElementChild?d.firstElementChild.getBoundingClientRect().width+12:1;const i=Math.round(Math.abs(d.scrollLeft)/w);[...dots.children].forEach((e,j)=>e.classList.toggle("on",j===i));if(i>0)ls.set("grp-deckhint","1");},{passive:true});
+}
+
 function meInFamily(p){
   const open=S.meta.open,cs=curStage(),CL=STAGES.length-1;
   if(G.n<2)return `<div class="locked">מחכים לעוד משתתפים. התמונה הקבוצתית תיפתח כשיצטרפו עוד אנשים.</div>`;
   const items=[];
   const th=myThreads(G,p);
-  items.push([2,"המספר שלנו",`השליחות של הקבוצה: ${fam(G.LP,"mission")}`,familyRel(p,G)]);
+  items.push([2,"המספר שלנו"+qm("mishpacha"),`השליחות של הקבוצה: ${fam(G.LP,"mission")}`,familyRel(p,G)]);
   const keeps=G.rare.filter(n=>G.carriers[n][0]===p),lacks=G.missing;
-  items.push([3,"מה חסר, ומי שומר עליו",lacks.length?`בקבוצה חסרים המספרים ${lacks.join(", ")}.`:"בקבוצה נמצאים כל המספרים מ־1 עד 9.",
+  items.push([3,"האתגר שלנו"+qm("chaser"),lacks.length?`בקבוצה חסרים המספרים ${lacks.join(", ")}.`:"בקבוצה נמצאים כל המספרים מ־1 עד 9.",
     keeps.length?`את/ה שומר/ת בקבוצה את ה־${keeps.join(" וה־")}: ${keeps.map(n=>fam(n,"give")).join(" ")}`:(lacks.length?`גם את/ה יכול/ה להשלים את מה שחסר. מה מתוך "${N[lacks[0]].kw}" מתאים לך לקחת על עצמך במפגש?`:"את/ה חלק מארגז כלים מלא. מה הכלי שאת/ה הכי אוהב/ת להביא?")]);
-  items.push([4,"התפקיד שלי",`לכל אחד בקבוצה תפקיד טבעי לפי מספר הדרך שלו.`,`את/ה <b>${fam(p.LP,"role")}</b>. ${fam(p.LP,"give")} <br><b>מה הקבוצה יכולה ללמד אותך:</b> ${fam(p.LP,"learn")}`]);
-  items.push([5,"החוטים שלי",`בקבוצה ${G.threads.filter(t=>t.text).length} חוטים של השלמה, נשמה ומראה.`,th.length?th.map(t=>esc(t.text)).join("<br>"):"החוטים שלך עדינים: את/ה מביא/ה צבע משלך. עם מי במעגל הרגשת חיבור, ולמה?"]);
+  items.push([4,"התפקיד שלי"+qm("tafkid"),`לכל אחד בקבוצה תפקיד טבעי לפי מספר הדרך שלו.`,`את/ה <b>${fam(p.LP,"role")}</b>. ${fam(p.LP,"give")} <br><b>מה הקבוצה יכולה ללמד אותך:</b> ${fam(p.LP,"learn")}`]);
+  items.push([5,"החוטים שלי"+qm("notenmekabel"),`בקבוצה ${G.threads.filter(t=>t.text).length} חוטים של השלמה, נשמה ומראה.`,th.length?th.map(t=>esc(t.text)).join("<br>"):"החוטים שלך עדינים: את/ה מביא/ה צבע משלך. עם מי במעגל הרגשת חיבור, ולמה?"]);
   let h="";let shown=0;
   items.forEach(([s,t,g,m])=>{if(!open&&s>cs)return;shown++;h+=`<div class="st${s===cs?" now":""}" id="pst${s}"><h3>${t}${s===cs&&!open?'<span class="now-pill">עכשיו במעגל</span>':""}</h3><p class="grp">${g}</p><div class="me"><b>ואצלך:</b> ${m}</div></div>`;});
   if(open||cs>=CL){h+=`<div class="st${cs===CL?" now":""}" id="pst${CL}"><h3>מה אני לוקח/ת</h3><label class="f">מה אני לוקח/ת מהמפגש<input type="text" id="noteTake" maxlength="240" autocomplete="off"></label><label class="f">מה נתתי לקבוצה<input type="text" id="noteGive" maxlength="240" autocomplete="off"></label><div class="row"><button class="btn small" id="noteBtn">שליחה למעגל</button><span class="status" id="noteSt"></span></div></div>`;shown++;}
@@ -1187,7 +1446,8 @@ function personReading(p){
   h+=`<h3>שאלה לדרך</h3><p>${get(p.LP,"growth")}</p>`;
   return h;
 }
-const LINKLAB={give:"נותן־מקבל",soul:"תאומי נשמה",mirror:"מראה",friction:"חיכוך וצמיחה"};
+const LINKLAB={give:"נותן־מקבל",soul:"תאומי נשמה",mirror:"מראה",friction:"חיכוך וצמיחה",echo:"הד",tribe:"אותו שבט",flow:"זורמים יחד",year:"אותה שנה"};
+let moreLinks=false;
 function linkReading(t){
   if(t.type==="friction"){const f=t;return `<div class="eyebrow">${LINKLAB.friction}</div><h2>${esc(f.a.label)} ו${esc(f.b.label)}</h2>
     <p>${f.lead?`שני אנשים עם כוח הובלה (${f.a.LP}). כל אחד רוצה לקבוע את הכיוון.`:`${get(f.a.LP,"kw")} מול ${get(f.b.LP,"kw")}: שתי דרכים שונות לראות את העולם.`}</p>
@@ -1198,6 +1458,7 @@ function linkReading(t){
   if(r.type==="soul")return `<div class="eyebrow">${LINKLAB.soul}</div><h2>${r.members.map(p=>esc(p.label)).join(" · ")}</h2><p>${esc(r.text)}</p><h3>מה הלב הזה צריך (${r.n})</h3><p>${N[r.n].soul.replace(/את\/ה/g,"אתם").replace(/כמה\/ה/g,"כמהים")}</p>`;
   if(r.type==="give")return `<div class="eyebrow">${LINKLAB.give}</div><h2>${esc(r.a.label)} ← ${esc(r.b.label)}</h2><p>${esc(r.text)}</p><h3>מה ${esc(r.a.label)} מביא/ה (${r.n})</h3><p>${fam(r.n,"give")}</p><h3>מה ${esc(r.b.label)} לומד/ת</h3><p>${N[r.n].lesson}</p>`;
   if(r.type==="mirror")return `<div class="eyebrow">${LINKLAB.mirror}</div><h2>${esc(r.a.label)} ו${esc(r.b.label)}</h2><p>${esc(r.text)}</p><h3>מה ${esc(r.a.label)} מקרין/ה</h3><p>${get(r.a.pers,"persona")}</p><h3>מה ${esc(r.b.label)} מרגיש/ה בפנים</h3><p>${get(r.b.soul,"soul")}</p>`;
+  if(r.extra)return `<div class="eyebrow">${LINKLAB[r.type]} · חיווט נוסף</div><h2>${esc(r.a.label)} ו${esc(r.b.label)}</h2><p>${esc(r.text)}</p>`;
   return `<p>${esc(r.text||"")}</p>`;
 }
 function groupReading(k){return groupReading0(k).replace(/<div class="ask">[\s\S]*?<\/div>/g,"");}
@@ -1205,8 +1466,8 @@ function groupReading0(k){
   const P=G.P;
   if(G.n<2)return `<h2>מחכים לעוד משתתפים</h2><p>התמונה הקבוצתית נפתחת כשיש לפחות שני משתתפים.</p>`;
   if(k==="mission")return `<div class="eyebrow">המספר שלנו</div><h2>${G.LP} · ${get(G.LP,"title")}</h2><p class="muted">${P.map(p=>p.LP).join(" + ")} = ${G.sumLP}</p><p>${fam(G.LP,"mission")}</p>${G.dom.length?`<h3>האנרגיה הדומיננטית: ${G.dom.join(", ")}</h3><p>${G.dom.map(n=>fam(n,"dom")).join(" ")}</p>`:""}<h3>שלושת השבטים</h3>${[0,1,2].map(t=>`<p><b>${TRIBE[t]}:</b> ${G.tribes[t].map(p=>esc(p.label)).join(", ")||"אף אחד"}</p>`).join("")}<div class="ask"><b>שאלה למעגל</b>${ASK.num}</div>`;
-  if(k==="miss")return `<div class="eyebrow">מה חסר, ומי שומר עליו</div><h2>${G.missing.length?"חסרים: "+G.missing.join(", "):"כל המספרים נמצאים"}</h2>${G.missing.map(n=>`<h3>${n} · ${N[n].kw}</h3><p>${fam(n,"miss")}</p>`).join("")}${G.rare.length?`<h3>שומרי האוצרות</h3>${G.rare.map(n=>`<p><b>${esc(G.carriers[n][0].label)}</b> שומר/ת את ה־${n}: ${fam(n,"give")}</p>`).join("")}`:""}<div class="ask"><b>שאלה למעגל</b>${ASK.miss}</div>`;
-  if(k==="links")return `<div class="eyebrow">כל החיווטים</div><h2>החוטים במארג</h2>${G.threads.filter(t=>t.text).map(t=>`<h3>${LINKLAB[t.type]}</h3><p>${esc(t.text)}</p>`).join("")||"<p>החוטים בקבוצה הזו עדינים: אין חפיפות בולטות.</p>"}<div class="ask"><b>שאלה למעגל</b>${ASK.threads}</div>`;
+  if(k==="miss")return `<div class="eyebrow">האתגר שלנו</div><h2>${G.missing.length?"האתגר: "+G.missing.join(", "):"כל המספרים נמצאים"}</h2>${G.missing.map(n=>`<h3>${n} · ${N[n].kw}</h3><p>${fam(n,"miss")}</p>`).join("")}${G.rare.length?`<h3>שומרי האוצרות</h3>${G.rare.map(n=>`<p><b>${esc(G.carriers[n][0].label)}</b> שומר/ת את ה־${n}: ${fam(n,"give")}</p>`).join("")}`:""}<div class="ask"><b>שאלה למעגל</b>${ASK.miss}</div>`;
+  if(k==="links")return `<div class="eyebrow">כל החיווטים</div><h2>החוטים במארג</h2>${G.threads.filter(t=>t.text).map(t=>`<h3>${LINKLAB[t.type]}</h3><p>${esc(t.text)}</p>`).join("")||"<p>החוטים בקבוצה הזו עדינים: אין חפיפות בולטות.</p>"}<div class="ask"><b>שאלה למעגל</b>${ASK.threads}</div>`+((G.extra||[]).length?`<h3 style="margin-top:22px;border-top:1px solid var(--line2);padding-top:12px">חיווטים נוספים</h3><p class="muted">קשרים עדינים יותר – לא תמיד מופיעים במעגל, אפשר להציג אותם בכפתור "עוד חיווטים".</p>${G.extra.map(t=>`<p><b>${LINKLAB[t.type]}:</b> ${esc(t.text)}</p>`).join("")}`:"");
   return "";
 }
 let reader=null;
@@ -1227,16 +1488,17 @@ function renderLead(){
   const keepOpen=reader?reader.innerHTML:null;
   app.innerHTML=`<div class="wrap" style="max-width:1600px">
    <div class="lead-top"><h1>${esc(S.meta.name)} <span class="muted" style="font-size:.6em">· תצוגת הנחיה</span></h1>
-    <div class="lead-actions"><button data-g="mission">המספר שלנו</button><button data-g="miss">מה חסר</button><button data-g="links">כל החיווטים</button><button data-cm type="button">${colorMode==="person"?"צביעה לפי שבט":"צביעה לפי משתתף"}</button><button type="button" data-sharedlg="">שיתוף / PDF</button><button type="button" data-fbopen>משוב</button></div></div>
+    <div class="lead-actions"><button data-g="mission">המספר שלנו</button><button data-g="miss">האתגר שלנו</button><button data-g="links">כל החיווטים</button><button data-ml type="button">${moreLinks?"פחות חיווטים":"עוד חיווטים"}</button><button data-cm type="button">${colorMode==="person"?"צביעה לפי שבט":"צביעה לפי משתתף"}</button><button type="button" data-sharedlg="">שיתוף / PDF</button><button type="button" data-fbopen>משוב</button></div></div>
    <div id="leadStage"></div><div id="leadList"></div>
    <p class="muted" style="text-align:center;font-size:.88rem;margin-top:8px">לחיצה על כרטיס פותחת את הניתוח המלא להקראה. לחיצה על קו במרכז מקריאה את החיבור.</p></div>`;
   app.querySelectorAll("[data-g]").forEach(b=>b.onclick=()=>openReader(groupReading(b.dataset.g)));
+  const ml=app.querySelector("[data-ml]");if(ml)ml.onclick=()=>{moreLinks=!moreLinks;renderLead();};
   addNav("circle");
   layoutLead();
 }
 function leadLinks(){
   const L=(G.threads||[]).filter(t=>t.a&&t.b);
-  return L;
+  return moreLinks?L.concat(G.extra||[]):L;
 }
 function layoutLead(){
   const st=$("leadStage"),list=$("leadList");if(!st)return;
@@ -1251,10 +1513,10 @@ function layoutLead(){
   const pos=new Map();
   P.forEach((p,i)=>{const a=-Math.PI/2+i*2*Math.PI/Math.max(n,1);pos.set(p,{a,dx:cx+rDot*Math.cos(a),dy:cy+rDot*Math.sin(a),kx:cx+rx*Math.cos(a),ky:cy+ry*Math.sin(a)});});
   const L=leadLinks();
-  const col={give:"#f0c46a",soul:"#7fd1c7",mirror:"#c7b6f5",friction:"#f2a08f"};
+  const col={give:"#8fbcd4",soul:"#7fd1c7",mirror:"#c7b6f5",friction:"#f2a08f",echo:"#b7a6e3",tribe:"#9bcf93",flow:"#6f9fc2",year:"#8c7bb0"};
   let lines="";
   L.forEach((t,i)=>{const A=pos.get(t.a),B=pos.get(t.b);if(!A||!B)return;const d=`M${A.dx},${A.dy} Q${cx},${cy} ${B.dx},${B.dy}`;
-    lines+=`<path class="hit" data-li="${i}" d="${d}" fill="none" stroke="transparent" stroke-width="16" tabindex="0" role="button" aria-label="${LINKLAB[t.type]}: ${esc(t.a.label)} ו${esc(t.b.label)}"/><path class="vis" d="${d}" fill="none" stroke="${col[t.type]}" stroke-width="2.6" opacity=".85" ${t.type==="mirror"?'stroke-dasharray="6 6"':t.type==="friction"?'stroke-dasharray="3 7" stroke-linecap="round"':""} pointer-events="none"/>`;});
+    lines+=`<path class="hit" data-li="${i}" d="${d}" fill="none" stroke="transparent" stroke-width="16" tabindex="0" role="button" aria-label="${LINKLAB[t.type]}: ${esc(t.a.label)} ו${esc(t.b.label)}"/><path class="vis" d="${d}" fill="none" stroke="${col[t.type]}" stroke-width="${t.extra?1.6:2.6}" opacity="${t.extra?.7:.85}" ${t.type==="mirror"?'stroke-dasharray="6 6"':t.type==="friction"?'stroke-dasharray="3 7" stroke-linecap="round"':""} pointer-events="none"/>`;});
   const conn=narrow?"":P.map(p=>{const q=pos.get(p);const ex=cx+(rx-cardW/2+8)*Math.cos(q.a),ey=cy+(ry-cardH/2+18)*Math.sin(q.a);return `<line x1="${q.dx}" y1="${q.dy}" x2="${ex}" y2="${ey}" stroke="var(--line)" stroke-width="1.5"/>`;}).join("");
   const dots=P.map(p=>{const q=pos.get(p),c=fillOf(p);return `<circle cx="${q.dx}" cy="${q.dy}" r="16" fill="${c}" opacity=".25"/><circle cx="${q.dx}" cy="${q.dy}" r="8" fill="${c}" filter="url(#glow2)"/>${colorMode==="person"?`<circle cx="${q.dx}" cy="${q.dy}" r="12" fill="none" stroke="${TRIBEC[p.tribe]}" stroke-width="2.5"/>`:""}${narrow?`<text x="${cx+(rDot-34)*Math.cos(q.a)}" y="${cy+(rDot-34)*Math.sin(q.a)+5}" text-anchor="middle" font-size="13" font-weight="600" fill="#eef2f0" font-family="Assistant,Arial">${esc(p.label)}</text>`:""}`;}).join("");
   st.innerHTML=`<svg class="bg" viewBox="0 0 ${W} ${H}" aria-hidden="false"><defs><radialGradient id="sky2" cx="50%" cy="35%" r="65%"><stop offset="0" stop-color="#16283a"/><stop offset="1" stop-color="#0f1c26"/></radialGradient><filter id="glow2" x="-80%" y="-80%" width="260%" height="260%"><feGaussianBlur stdDeviation="4" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter></defs>
@@ -1269,16 +1531,32 @@ function layoutLead(){
 }
 function cardHTML(p,i,q,w,compact){
   const style=q?`left:${q.kx}px;top:${q.ky}px;width:${w}px`:"";
-  if(compact)return `<button class="lc" data-i="${i}" style="${style}"><span class="nm">${dotOf(p)}${esc(p.label)}</span>
+  const menu=FACIL()?`<span class="lcmenu" data-lcm="${p.id}" role="button" tabindex="0" aria-label="פעולות על ${esc(p.label)}">…</span>`:"";
+  if(compact)return `<button class="lc" data-i="${i}" style="${style};--lcacc:${TRIBEC[p.tribe]}">${menu}<span class="nm">${dotOf(p)}${esc(p.label)}</span>
     <span class="r cr"><small>שביל</small><span class="num">${p.LP}</span><small>ביטוי</small><span class="num">${p.expr}</span><small>נשמה</small><span class="num">${p.soul}</span></span>
     <span class="r"><span class="v">${get(p.LP,"title")} · <span class="more">להקראה ←</span></span></span></button>`;
-  return `<button class="lc" data-i="${i}" style="${style}"><span class="nm">${dotOf(p)}${esc(p.label)}</span>
+  return `<button class="lc" data-i="${i}" style="${style};--lcacc:${TRIBEC[p.tribe]}">${menu}<span class="nm">${dotOf(p)}${esc(p.label)}</span>
     <span class="r"><small>שביל החיים</small><span class="num">${p.LP}</span><span class="v">${get(p.LP,"title")}</span></span>
     <span class="r"><small>ביטוי</small><span class="num">${p.expr}</span><span class="v">${short(p.expr)}</span></span>
     <span class="r"><small>דחף הנשמה</small><span class="num">${p.soul}</span><span class="v">${short(p.soul)}</span></span>
     <span class="more">להקראה ←</span></button>`;
 }
 addEventListener("resize",()=>{if(view==="lead")layoutLead();});
+function closeCtx(){if(ctx){ctx.remove();ctx=null;}}
+document.addEventListener("click",e=>{
+  const b=e.target.closest("[data-lcm]");
+  if(!b){if(ctx&&!ctx.classList.contains("morectx")&&!e.target.closest(".ctxmenu"))closeCtx();return;}
+  e.preventDefault();e.stopPropagation();closeCtx();
+  const id=b.dataset.lcm,p=G.P.find(x=>x.id===id);if(!p)return;
+  ctx=document.createElement("div");ctx.className="ctxmenu";ctx.setAttribute("role","menu");
+  ctx.innerHTML=`<button type="button" data-a="read">הקראת המפה</button><button type="button" data-a="edit">עריכת שם ותאריך</button><button type="button" class="danger" data-a="del">הסרה מהמעגל</button>`;
+  document.body.appendChild(ctx);
+  const r=b.getBoundingClientRect();ctx.style.top=Math.min(innerHeight-ctx.offsetHeight-8,r.bottom+4)+"px";ctx.style.left=Math.max(8,Math.min(innerWidth-ctx.offsetWidth-8,r.left))+"px";
+  ctx.querySelectorAll("[data-a]").forEach(m=>m.onclick=ev=>{ev.stopPropagation();const a=m.dataset.a;closeCtx();
+    if(a==="read"){const i=G.P.indexOf(p);openReader(personReading(p),G.P,i);}
+    else if(a==="edit")openAdd(p.id);
+    else if(a==="del"&&confirmDel(p))store.del(`rooms/${ROOM}/members/${p.id}`);});
+},true);
 
 
 /* ---------- identification game (?game=1) ---------- */
@@ -1398,7 +1676,7 @@ function openShare(pid){
   const opt=(v,t,sub)=>`<label class="sopt"><input type="radio" name="sscope" value="${v}" ${shareState.scope===v?"checked":""}><span><b>${t}</b><small>${sub}</small></span></label>`;
   d.innerHTML=`<h2 style="font-size:1.4rem">מה לשתף?</h2>
    <div class="sopts">${P?opt("me",P.id===myId()?"המפה האישית שלי":`המפה של ${esc(P.label)}`,"שלושת הפרמטרים, הצמתים, התפקיד בקבוצה והחוטים"):""}
-   ${opt("family","התמונה הקבוצתית","המספר של הקבוצה, מה חסר, החוטים והתפקידים")}
+   ${opt("family","התמונה הקבוצתית","המספר של הקבוצה, האתגר, החוטים והתפקידים")}
    ${opt("all","המארג המלא","רשימת המשתתפים עם תאריכי לידה, התמונה הקבוצתית, והמפה של כל אחד. מתאים להדבקה בשיחה עם Claude")}</div>
    ${FACIL()?opt("host","למנחה: המארג המלא עם המשוב","רשימת המשתתפים עם תאריכי לידה, כל המפות, ובסוף סיכום הסימונים קולע / לא קולע. לא נשלח למשתתפים. מתאים להדבקה בשיחה עם Claude"):""}
    <h3 style="font-size:1.05rem;margin:16px 0 8px">איך?</h3>
@@ -1544,6 +1822,10 @@ const GLOSS=[
  ["master","מספר מאסטר","11, 22 ו־33 לא מצמצמים. הם מסמנים פוטנציאל גבוה ורגישות מוגברת, שדורשים קרקוע."],
  ["karmati","שיעור קרמתי","מספר מ־1 עד 9 שאינו מופיע באף אות בשם. מתאר תחום שבו הכלים פחות מולדים, וצריך ללמוד אותו."],
  ["hov","חוב קרמתי","המספרים 13, 14, 16 או 19 כשהם מופיעים בדרך החישוב. במסורת הנומרולוגית הם מסמנים שיעור שנשאר פתוח."],
+ ["pisga","פסגה (מחזורי החיים)","החיים מתחלקים לארבע תקופות, לפי תאריך הלידה. לכל תקופה מספר פסגה: הנושא וההזדמנות של אותן שנים – מה החיים מזמינים אותך ללמוד ולבנות."],
+ ["etgar","אתגר (מחזורי החיים)","לצד כל פסגה יש מספר אתגר: המכשול שהתקופה מבקשת ללמוד לעבור. אתגר 0 הוא מיוחד – בחירה חופשית, בלי מכשול מובנה."],
+ ["hed","הד (חיווט נוסף)","אותו מספר אצל שני משתתפים, אבל במקום אחר במפה: למשל שביל החיים של אחד הוא מספר הביטוי של אחרת. אותה איכות, בשכבה אחרת של הנפש."],
+ ["zorem","זורמים יחד (חיווט נוסף)","שני שבילי חיים שידועים כמשתלבים בקלות. חיבור נוח, שכדאי לשאול מה הוא יכול להוליד."],
  ["shana","שנה אישית","מחושבת מיום וחודש הלידה ומהשנה הנוכחית. כל שנה היא שלב במחזור של תשע שנים, מהתחלה (1) ועד סיום (9)."],
  ["mishpacha","המספר של הקבוצה","מחברים את שבילי החיים של כל המשתתפים ומצמצמים. מתאר את הכיוון המשותף ואת השליחות של הקבוצה."],
  ["shvatim","שלושת השבטים","המספרים מתחלקים לשלוש קבוצות: עצמאות ומחשבה (1, 5, 7), חומר ועשייה (2, 4, 8), רגש ויצירה (3, 6, 9). מאותו שבט מבינים זה את זה בקלות. בכלי, הטבעת סביב כל נקודה מסמנת את השבט."],
@@ -1554,9 +1836,19 @@ const GLOSS=[
  ["otzar","שומר/ת אוצר","מספר שרק משתתף אחד בקבוצה נושא. הוא/היא שומר/ת על האיכות הזו בשביל כולם."],
  ["chaser","מה חסר בקבוצה","מספר שלא מופיע אצל אף אחד מהמשתתפים בארבעת מספרי הליבה. תחום שהקבוצה צריכה לפתח במודע."]
 ];
+const qm=id=>`<button type="button" class="qm" data-term="${id}" aria-label="מה זה?" title="מה זה?">?</button>`;
 function glossaryHTML(focus){
   return `<div class="eyebrow">מילון מושגים</div><h2>מה זה אומר?</h2><p class="muted">ההסברים לכל המונחים שמופיעים בכלי. זהו כלי להתבוננות ולשיחה, לא אבחון.</p>
-  <dl class="gloss">${GLOSS.map(([id,t,d])=>`<dt id="g-${id}" class="${id===focus?"hl":""}">${t}</dt><dd>${d}</dd>`).join("")}</dl>`;
+  <input type="search" id="glossQ" placeholder="חיפוש מושג… (למשל: שנה, שביל, מראה)" autocomplete="off" style="width:100%;height:46px;border:2px solid var(--ink);border-radius:6px;padding:0 12px;font-size:1rem;font-family:var(--f-body);margin:6px 0 10px">
+  <p class="muted" id="glossNone" hidden>לא נמצא מושג כזה. אפשר לנסות מילה אחרת.</p>
+  <dl class="gloss" id="glossList">${GLOSS.map(([id,t,d])=>`<div class="gi"><dt id="g-${id}" class="${id===focus?"hl":""}">${t}</dt><dd>${d}</dd></div>`).join("")}</dl>`;
+}
+function bindGloss(){
+  const q=document.getElementById("glossQ");if(!q)return;
+  q.addEventListener("input",()=>{const v=q.value.trim().replace(/[\u0591-\u05C7]/g,"").toLowerCase();let n=0;
+    document.querySelectorAll("#glossList .gi").forEach(el=>{const hit=!v||el.textContent.toLowerCase().includes(v);el.hidden=!hit;if(hit)n++;});
+    document.getElementById("glossNone").hidden=n>0;});
+  setTimeout(()=>{try{if(!document.querySelector("#glossList .hl"))q.focus({preventScroll:true});}catch(e){}},50);
 }
 function openQR(){
   openReader(`<div class="eyebrow">הצטרפות למעגל</div><h2>${esc(S.meta?S.meta.name:"")}</h2>
@@ -1565,13 +1857,13 @@ function openQR(){
    <p style="text-align:center;margin:8px 0 0">סורקים את הקוד, או נכנסים לקישור ומקלידים</p>
    <p style="text-align:center;margin:4px 0 0"><span class="code" style="font-size:2.4rem">${ROOM}</span></p>
    <p class="muted" style="text-align:center;direction:ltr;word-break:break-all;font-size:.9rem">${esc(BASE)}</p>
-   <p style="text-align:center;margin-top:12px"><button class="btn ghost small" type="button" id="qrCopy">העתקת הקישור</button> <a class="btn ghost small" style="text-decoration:none" target="_blank" rel="noopener" href="https://wa.me/?text=${encodeURIComponent(`מצטרפים למעגל "${S.meta?S.meta.name:""}" במארג הקבוצתי:\n${joinURL()}`)}">שליחה בוואטסאפ</a></p>
+   <p style="text-align:center;margin-top:12px"><button class="btn ghost small" type="button" id="qrCopy">העתקת הקישור</button> <a class="btn ghost small" style="text-decoration:none" target="_blank" rel="noopener" href="https://wa.me/?text=${encodeURIComponent(`*${S.meta?S.meta.name:""}*\nמצטרפים למעגל במארג הקבוצתי: פותחים את הקישור, ממלאים שם ותאריך לידה ומקבלים מפה אישית.\nקוד המעגל: ${ROOM}\n${joinURL()}`)}">שליחה בוואטסאפ</a></p>
    ${FACIL()?"":`<p class="muted" style="text-align:center;margin-top:14px;font-size:.85rem">מנחה במכשיר אחר? <button class="link" id="iAmHost">כניסת מנחה עם קוד</button></p>`}`);
   const ih=document.getElementById("iAmHost");if(ih)ih.onclick=async()=>{const c=prompt("קוד המנחה:");if(c===null)return;if(await checkHostCode(c)){ls.set("grp-host:"+ROOM,"1");openQR();route();}else alert("הקוד לא נכון.");};
   const c=document.getElementById("qrCopy");if(c)c.onclick=async()=>{try{await navigator.clipboard.writeText(joinURL());c.textContent="הועתק ✓";}catch(e){prompt("העתיקו את הקישור:",joinURL());}};
   const ro=document.getElementById("reopenBtn");if(ro)ro.onclick=async()=>{ro.disabled=true;await store.patch(`rooms/${ROOM}/meta`,{closed:false});S.meta.closed=false;openQR();};
 }
-function openGlossary(focus){openReader(glossaryHTML(focus));if(focus){const el=document.getElementById("g-"+focus);if(el)el.scrollIntoView({block:"center"});}}
+function openGlossary(focus){openReader(glossaryHTML(focus));bindGloss();if(focus){const el=document.getElementById("g-"+focus);if(el)el.scrollIntoView({block:"center"});}}
 document.addEventListener("click",e=>{const b=e.target.closest("[data-term]");if(!b)return;e.preventDefault();e.stopPropagation();openGlossary(b.dataset.term);},true);
 
 /* ================= feedback: "fits / doesn't fit" on each paragraph ================= */
@@ -1633,8 +1925,8 @@ function cyclesHTML(p){
   const rows=per.map((x,i)=>`<div class="cyc${i===cur?" now":""}"><div class="cyc-h"><b>תקופה ${i+1}</b> · גילאים ${x[1]===null?`${x[0]} ומעלה`:`${x[0]}–${x[1]}`}${i===cur?' <span class="now-pill">עכשיו</span>':""}</div>
     <p><b>פסגה ${x[2]}:</b> ${get(x[2],"pinnacle")}</p><p><b>אתגר ${x[3]}:</b> ${x[3]===0?CH0:get(x[3],"challenge")}</p></div>`).join("");
   const c=per[cur];
-  return `<details class="deep cycles"><summary>מחזורי החיים שלך: איפה את/ה עכשיו</summary>
-   <p class="pd" style="margin-top:8px">החיים מתחלקים לארבע תקופות. לכל תקופה <b>פסגה</b>, הנושא וההזדמנות שלה, ו<b>אתגר</b>, המכשול שהיא מבקשת ללמוד לעבור. היום, בגיל ${age}, את/ה בתקופה ${cur+1}${c?`: פסגה ${c[2]} (${get(c[2],"kw")}) ואתגר ${c[3]}`:""}.</p>${rows}</details>`;
+  return `<details class="deep cycles"><summary>מחזורי החיים שלך: איפה את/ה עכשיו ${qm("pisga")}</summary>
+   <p class="pd" style="margin-top:8px">החיים מתחלקים לארבע תקופות. לכל תקופה <b>פסגה</b>${qm("pisga")}, הנושא וההזדמנות שלה, ו<b>אתגר</b>${qm("etgar")}, המכשול שהיא מבקשת ללמוד לעבור. היום, בגיל ${age}, את/ה בתקופה ${cur+1}${c?`: פסגה ${c[2]} (${get(c[2],"kw")}) ואתגר ${c[3]}`:""}.</p>${rows}</details>`;
 }
 function lessonsHTML(p){
   if(!p.lessons.length)return "";
