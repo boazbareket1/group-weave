@@ -960,6 +960,7 @@ function familyRel(p,G){
 let S={meta:null,members:{},notes:{}};let G={P:[]};let online=true;let view="";let phoneTab="me";let boardStage=null;let mysteryIdx=-1,mysteryShown=false;
 function onData(st,ok){
   online=ok;S={meta:st.meta||null,members:st.members||{},notes:st.notes||{},fb:st.fb||{},wall:st.wall||{}};
+  if(S.meta&&S.meta.name&&isHost())ls.set("grp-name:"+ROOM,S.meta.name);
   G=analyzeFamily(S.members);
   route(true);
 }
@@ -1033,8 +1034,23 @@ function renderMissing(){view="missing";app.innerHTML=`<div class="wrap"><div cl
 function myCirclesHTML(){
   let keys=[];try{keys=Object.keys(localStorage).filter(k=>k.startsWith("grp-host:"));}catch(e){}
   if(!keys.length)return "";
-  const items=keys.map(k=>{const c=k.slice("grp-host:".length);return `<li><a href="${BASE}?r=${c}${LOCAL?"&local=1":""}" style="font-weight:700;color:var(--teal)">${esc(ls.get("grp-name:"+c)||"מעגל")}</a> <span class="muted" style="font-family:var(--f-mono);direction:ltr;display:inline-block">${c}</span></li>`;}).join("");
+  const items=keys.map(k=>{const c=k.slice("grp-host:".length);return `<li data-mc="${esc(c)}"><a href="${BASE}?r=${c}${LOCAL?"&local=1":""}" style="font-weight:700;color:var(--teal)" class="mcn">${esc(ls.get("grp-name:"+c)||"מעגל")}</a> <span class="muted" style="font-family:var(--f-mono);direction:ltr;display:inline-block">${c}</span> <span class="muted mci"></span></li>`;}).join("");
   return `<div class="card" style="margin-top:16px;border-color:var(--teal);border-top:6px solid var(--teal)"><h2 style="font-size:1.2rem">המעגלים שפתחת במכשיר הזה</h2><ul style="margin:8px 0 0;padding-inline-start:18px;display:grid;gap:6px">${items}</ul></div>`;
+}
+/* fill in real names + member counts from the database (names typed on another device, renamed circles) */
+async function refreshMyCircles(){
+  for(const li of document.querySelectorAll("[data-mc]")){
+    const c=li.dataset.mc;
+    try{
+      const m=await store.get(`rooms/${c}/meta`);
+      if(!li.isConnected)return;
+      if(!m){li.querySelector(".mci").innerHTML=`· המעגל כבר לא קיים · <button type="button" class="link" data-mcrm="${esc(c)}" style="font-size:.9rem">הסרה מהרשימה</button>`;li.querySelector(".mcn").style.color="var(--muted)";continue;}
+      if(m.name){ls.set("grp-name:"+c,m.name);li.querySelector(".mcn").textContent=m.name;}
+      const mem=await store.get(`rooms/${c}/members`);const n=mem?Object.keys(mem).length:0;
+      if(li.isConnected)li.querySelector(".mci").textContent=`· ${n?n+" משתתפים":"עוד אין משתתפים"}${m.closed?" · סגור":""}`;
+    }catch(e){}
+  }
+  document.querySelectorAll("[data-mcrm]").forEach(b=>b.onclick=()=>{const c=b.dataset.mcrm;["host","name","me"].forEach(k=>ls.del("grp-"+k+":"+c));const li=b.closest("li");const ul=li.parentNode;li.remove();if(!ul.children.length)ul.closest(".card").remove();});
 }
 function renderHome(){
   view="home";document.body.dataset.view="home";
@@ -1062,6 +1078,7 @@ function renderHome(){
   </div>`;
   if(LOCAL||ls.get("grp-unlocked")===HOST_HASH)$("hostCode").closest("label").hidden=true;
   $("createBtn").onclick=createRoom;
+  refreshMyCircles();
   $("codeBtn").onclick=()=>{const c=$("codeIn").value.toUpperCase().replace(/[^A-Z0-9]/g,"");if(c)location.href=BASE+"?r="+c+(LOCAL?"&local=1":"");};
   $("codeIn").onkeydown=e=>{if(e.key==="Enter")$("codeBtn").click();};
 }
