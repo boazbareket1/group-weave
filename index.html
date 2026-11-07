@@ -1191,7 +1191,7 @@ function renderHome(){
    To change it: compute the SHA-256 of the new code (e.g. printf 'code' | sha256sum) and replace HOST_HASH. */
 const HOST_HASH="c1f916534a33c70e6695a100531090ec79483c0900cf33ac087d01acb145bfc9";
 /* launch period: a public code that opens one circle per use (set to "" to close the launch) */
-const LAUNCH_CODE="";
+const LAUNCH_CODE="88888888";
 async function sha256(t){const b=await crypto.subtle.digest("SHA-256",new TextEncoder().encode(t));return [...new Uint8Array(b)].map(x=>x.toString(16).padStart(2,"0")).join("");}
 async function checkHostCode(code){
   if(LOCAL)return true;
