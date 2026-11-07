@@ -1165,7 +1165,7 @@ function renderHome(){
     <h1>המארג הקבוצתי</h1>
     <p>כל משתתף מצטרף מהטלפון, מגלה את המפה האישית שלו, ואז רואים יחד איך אנשים שרק נפגשו נארגים לקבוצה אחת.</p>
     <label class="f" style="max-width:340px;margin:0 auto 14px;text-align:right">איך נקרא למעגל?<input type="text" id="famName" placeholder="למשל: סדנת יום שישי" autocomplete="off"></label>
-    <label class="f" style="max-width:340px;margin:0 auto 14px;text-align:right">קוד מנחה או שובר<small>פתיחת מעגל חדש שמורה למנחה, או למי שרכש/ה שובר למעגל אחד. להצטרפות למעגל קיים לא צריך קוד. <a href="https://boazbareket1.github.io/tools-desk/maarag/open.html" style="color:var(--teal)">איך משיגים שובר?</a></small><input type="text" id="hostCode" autocomplete="off" inputmode="text" dir="auto"></label>
+    <label class="f" style="max-width:340px;margin:0 auto 14px;text-align:right">קוד פתיחה<small>פתיחת מעגל חדש שמורה למי שיש לו קוד. להצטרפות למעגל קיים לא צריך קוד. <a href="https://boazbareket1.github.io/tools-desk/maarag/open.html" style="color:var(--teal)">איך משיגים קוד?</a></small><input type="text" id="hostCode" autocomplete="off" inputmode="text" dir="auto"></label>
     <button class="btn light" id="createBtn">פתיחת מעגל חדש ←</button>
     <p class="err" id="homeErr" style="margin-top:10px"></p>
     <ul>
@@ -1210,11 +1210,11 @@ async function createRoom(){
     if(vc===LAUNCH_CODE){voucher="launch";}
     else if(vc.length>=8&&!LOCAL){
       try{const v=await store.get(`vouchers/${vc}`);
-        if(!v){$("homeErr").textContent="הקוד לא נכון. פתיחת מעגל חדש שמורה למנחה או למי שיש לו שובר.";$("createBtn").disabled=false;return;}
+        if(!v){$("homeErr").textContent="הקוד לא נכון. פתיחת מעגל חדש שמורה למי שיש לו קוד.";$("createBtn").disabled=false;return;}
         if(v.used){$("homeErr").textContent="השובר הזה כבר מומש. כל שובר פותח מעגל אחד.";$("createBtn").disabled=false;return;}
         voucher=vc;
       }catch(e){$("homeErr").textContent="לא הצלחנו לבדוק את השובר. בדקו את החיבור ונסו שוב.";$("createBtn").disabled=false;return;}
-    }else{$("homeErr").textContent="הקוד לא נכון. פתיחת מעגל חדש שמורה למנחה או למי שיש לו שובר.";$("createBtn").disabled=false;return;}
+    }else{$("homeErr").textContent="הקוד לא נכון. פתיחת מעגל חדש שמורה למי שיש לו קוד.";$("createBtn").disabled=false;return;}
   }
   const A="ABCDEFGHJKMNPQRSTUVWXYZ23456789";
   try{
