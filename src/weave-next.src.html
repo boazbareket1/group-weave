@@ -1201,7 +1201,7 @@ async function aiModel(name,mode){
     AIM={X,ai,models:{}};
   }
   const k=name+"|"+(mode||"");
-  return AIM.models[k]||(AIM.models[k]=AIM.X.getGenerativeModel(AIM.ai,mode==="me"?{model:name,systemInstruction:AI_SYS_ME,generationConfig:{temperature:.55,maxOutputTokens:3000,responseMimeType:"application/json"}}:{model:name,systemInstruction:AI_SYS,generationConfig:{temperature:.8,maxOutputTokens:1400}}));
+  return AIM.models[k]||(AIM.models[k]=AIM.X.getGenerativeModel(AIM.ai,mode==="me"?{model:name,systemInstruction:AI_SYS_ME,generationConfig:{temperature:.55,maxOutputTokens:6000,responseMimeType:"application/json"}}:{model:name,systemInstruction:AI_SYS,generationConfig:{temperature:.8,maxOutputTokens:1400}}));
 }
 async function aiWrite(prompt,mode){
   if(LOCAL){await new Promise(r=>setTimeout(r,500));return "**[טקסט הדגמה במצב מקומי]** כאן תופיע הקריאה המעמיקה. במצב אמיתי הקריאה נשמרת במעגל, וכולם רואים את אותו נוסח.";}
@@ -1264,13 +1264,26 @@ ${p.curRaw&&p.curRaw!==p.name?`השם בשימוש היום: ${p.curRaw}
 הקשר: ${p.first} משתתף/ת במעגל ⟦קבוצתי¦משפחתי⟧. הקריאה לעיניו/ה בלבד, בטלפון.
 
 החזר/י JSON במבנה הזה בדיוק:
-{"LP":{"n":0,"text":""},"expr":{"n":0,"text":""},"soul":{"n":0,"text":""},"pers":{"n":0,"text":""},"bday":{"n":0,"text":""},"py":{"n":0,"text":""},"core":{"text":""}}
+{"LP":{"n":0,"text":""},"expr":{"n":0,"text":""},"soul":{"n":0,"text":""},"pers":{"n":0,"text":""},"bday":{"n":0,"text":""},"py":{"n":0,"text":""},"lpx":{"gift":"","challenge":"","family":"","work":""},"core":{"text":""}}
 - LP שביל החיים, expr מספר הביטוי, soul דחף הנשמה, pers מספר האישיות, bday מספר יום הלידה, py השנה האישית – בכל אחד n הוא המספר שצורף, ו־text פסקה של 60–100 מילים שמפענחת אותו אצל ${p.first}.
+- lpx – העמקה בשביל החיים, 40–70 מילים לכל אחד: gift המתנה העמוקה, challenge האתגר המרכזי, family בבית ובמשפחה, work בעבודה ובעשייה.
 - core "הלב של המפה": 90–140 מילים – איך המספרים עובדים יחד, מה מבקש לצמוח עכשיו, ושאלה אחת להתבוננות.`;
 }
 function aiPairRaw(a,b){
   const L=p=>{const m=S.members[p.id]||{};return `- ${p.first}: שם לידה ${p.name}, תאריך לידה ${fmtD(m.bdate||"")}${p.curRaw&&p.curRaw!==p.name?`, השם בשימוש היום ${p.curRaw}`:""}. המספרים: שביל החיים ${p.LP}, ביטוי ${p.expr}, דחף הנשמה ${p.soul}, אישיות ${p.pers}, שנה אישית ${p.py}`;};
-  return `נתונים של שני ⟦משתתפים במעגל קבוצתי (רובם נפגשו עכשיו)¦בני משפחה במעגל משפחתי⟧:
+@@group
+  return `נתונים של שני משתתפים במעגל קבוצתי – אנשים שרובם נפגשו עכשיו:
+${L(a)}
+${L(b)}
+השנה הנוכחית: ${TY}
+המטרה: החוט ביניהם, בתמצית. הטקסט עשוי להיקרא בקול במעגל, לכן בלי שום דבר אינטימי או מביך, ובלי הנחות על היכרות קודמת ביניהם.
+
+החזר/י JSON במבנה הזה בדיוק:
+{"together":{"text":""}}
+- text: עד ארבעה משפטים קצרים בלבד – הדבר החשוב ביותר בחיבור בין ${a.first} ל${b.first}: מה מחבר או משלים ביניהם, ומה כדאי שיגלו זה על זה. אפשר לסיים בשאלה קצרה אחת ששניהם יכולים לשאול זה את זה.
+פנה/י אל שניהם ("אתם") ובשמות הפרטיים.`;
+@@family
+  return `נתונים של שני בני משפחה במעגל משפחתי:
 ${L(a)}
 ${L(b)}
 השנה הנוכחית: ${TY}
@@ -1281,6 +1294,7 @@ ${L(b)}
 - LP שביל החיים, expr מספר הביטוי, soul דחף הנשמה, pers מספר האישיות, py השנה האישית: a ו־b הם המספרים שצורפו לכל אחד, ו־text פסקה של 50–90 מילים על המפגש בין שניהם בתחום הזה – מה מחבר, מה משלים, איפה עלול להיות חיכוך ולמה זה לא אישי.
 - together: 60–100 מילים – מה החוט הזה יכול לתת לשניהם, ושאלה אחת פתוחה שכדאי שישאלו זה את זה עכשיו.
 פנה/י אל שניהם ("אתם") ובשמות הפרטיים.`;
+@@end
 }
 const PKN={LP:"שביל החיים",expr:"מספר הביטוי",soul:"דחף הנשמה",pers:"מספר האישיות",py:"השנה האישית"};
 function aiPairHTML(d,a,b){
@@ -1289,15 +1303,16 @@ function aiPairHTML(d,a,b){
   const off=Object.keys(PKN).filter(k=>d[k]&&!ok(k));if(off.length)console.info("pair reading skipped",off.join(","));
   return Object.keys(PKN).filter(ok).map(k=>`<h4 class="gxh">${PKN[k]} <span class="muted">${a[k]} · ${b[k]}</span></h4>${aiFmt(d[k].text)}`).join("")+(d.together&&d.together.text?`<h4 class="gxh">החוט ביניכם</h4>${aiFmt(d.together.text)}`:"");
 }
-function aiMeKey(p){const m=S.members[p.id]||{};let h=0;for(const c of p.id+"|"+p.name+"|"+p.curRaw+"|"+m.bdate+"|"+TY)h=(h*31+c.charCodeAt(0))|0;return "me3_"+(h>>>0).toString(36);}
+function aiMeKey(p){const m=S.members[p.id]||{};let h=0;for(const c of p.id+"|"+p.name+"|"+p.curRaw+"|"+m.bdate+"|"+TY)h=(h*31+c.charCodeAt(0))|0;return "me4_"+(h>>>0).toString(36);}
 const AI_GLITCH=/[\u0591-\u05C7]|[א-ת][A-Za-z]|[A-Za-z][א-ת]|[ךםןףץ][א-ת]/;
 function aiClean(t){return String(t).replace(/[\u0591-\u05C7]/g,"").replace(/([א-ת])[A-Za-z]+|[A-Za-z]+(?=[א-ת])/g,"$1");}
-function aiBad(d){return Object.values(d||{}).some(v=>v&&AI_GLITCH.test(v.text||""));}
-function aiTidy(d){Object.values(d).forEach(v=>{if(v&&v.text)v.text=aiClean(v.text);});return d;}
+function aiBad(d){return Object.values(d||{}).some(v=>v&&Object.values(v).some(t=>typeof t==="string"&&AI_GLITCH.test(t)));}
+function aiTidy(d){Object.values(d).forEach(v=>{if(v&&typeof v==="object")for(const k in v)if(typeof v[k]==="string")v[k]=aiClean(v[k]);});return d;}
 function aiMeParse(t){const a=t.indexOf("{"),b=t.lastIndexOf("}");return JSON.parse(t.slice(a,b+1));}
 function aiMePlace(root,p,d){
   const ok=k=>d[k]&&d[k].text&&(k==="core"||+d[k].n===+p[k]||single(+d[k].n)===single(p[k]));
   root.querySelectorAll("[data-gk]").forEach(el=>{const k=el.dataset.gk;if(ok(k)){el.innerHTML=(k==="core"?"<h3>הלב של המפה</h3>":"")+aiFmt(d[k].text);el.hidden=false;}else if(k==="core")el.hidden=true;});
+  if(d.lpx&&ok("LP"))root.querySelectorAll("[data-lx]").forEach(el=>{const t=d.lpx[el.dataset.lx];if(t)el.innerHTML=esc(t).replace(/\*\*([^*]+)\*\*/g,"<b>$1</b>");});
   const off=["LP","expr","soul","pers","bday","py"].filter(k=>d[k]&&!ok(k)).map(k=>`${k}: ${d[k].n}≠${p[k]}`);if(off.length)console.info("deep reading skipped",off.join(", "));
 }
 async function aiMeFill(root){
@@ -1353,7 +1368,7 @@ function aiBox(kind,ps,label){
 function aiPeople(box){return box.dataset.ids.split(",").map(id=>G.P.find(p=>p.id===id)).filter(Boolean);}
 async function aiFill(box,make){
   const ps=aiPeople(box);if(!ps.length||!ROOM)return;
-  const kind=box.dataset.ai,key=(kind==="pair"?"p3":"")+aiKey(kind,ps),tx=box.querySelector(".aitext");
+  const kind=box.dataset.ai,key=(kind==="pair"?"p4":"")+aiKey(kind,ps),tx=box.querySelector(".aitext");
   const show=c=>{tx.innerHTML=c.data?aiPairHTML(c.data,ps[0],ps[1]):aiFmt(c.text);};
   try{const c=await store.get(`rooms/${ROOM}/ai/${key}`);if(c&&(c.text||c.data)){show(c);return;}}catch(e){}
   if(!make)return;
@@ -2475,10 +2490,10 @@ function lpDeep(p){
   const shade=lpShade(p),debt=p.B.debt&&DEBT[p.B.debt];
   return `<details class="deep"><summary>להעמקה: עוד על שביל החיים שלך</summary>
    ${shade?`<div class="dx"><b>הגוון שלך</b><p>${shade}</p></div>`:""}
-   <div class="dx"><b>המתנה העמוקה</b><p>${X.gift}</p></div>
-   <div class="dx"><b>האתגר המרכזי</b><p>${X.challenge}</p></div>
-   <div class="dx"><b>בבית ובמשפחה</b><p>${X.family}</p></div>
-   <div class="dx"><b>בעבודה ובעשייה</b><p>${X.work}</p></div>
+   <div class="dx"><b>המתנה העמוקה</b><p data-lx="gift">${X.gift}</p></div>
+   <div class="dx"><b>האתגר המרכזי</b><p data-lx="challenge">${X.challenge}</p></div>
+   <div class="dx"><b>בבית ובמשפחה</b><p data-lx="family">${X.family}</p></div>
+   <div class="dx"><b>בעבודה ובעשייה</b><p data-lx="work">${X.work}</p></div>
    ${debt?`<div class="dx"><b>חוב קרמתי בשביל החיים</b><p>${debt}</p></div>`:""}
    <div class="dx"><b>סימן שאת/ה בדרך</b><p>${X.sign}</p></div>
    <div class="dx"><b>תרגול קטן</b><p>${X.practice}</p></div>
