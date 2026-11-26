@@ -1138,7 +1138,7 @@ const store=LOCAL?mock:fb;
    The tool computes every number (our method, no mixing). Gemini only WRITES from those facts.
    Free tier: Gemini Developer API with the Firebase project on Spark (no billing account).
    Results are cached in rooms/{ROOM}/ai/{key}, so each reading is written once and the whole circle sees the same text. */
-const AI_APPCHECK=false,AI_SITEKEY="6LeMsDMuAAAAABNZjiVg1dvU7vuTS97HsTaE7ziS",AI_VER="13.1.0",AI_MODELS=["gemini-2.5-flash","gemini-flash-latest","gemini-2.0-flash"];
+const AI_APPCHECK=false,AI_SITEKEY="6LeMsDMuAAAAABNZjiVg1dvU7vuTS97HsTaE7ziS",AI_VER="13.1.0",AI_MODELS=["gemini-flash-lite-latest","gemini-3.8-flash","gemini-flash-latest"];
 const AI_CFG={apiKey:"AIzaSyBJ42Obu9iyXYnHmTmLXhCKNoBohbQztVA",authDomain:"group-numerology.firebaseapp.com",databaseURL:DB,projectId:"group-numerology",appId:"1:73723083486:web:838839a99a51bd3980a04f"};
 const AI_SYS=`אתה כותב/ת קריאות נומרולוגיות בעברית עבור "המארג", כלי למעגלים קבוצתיים ומשפחתיים שמנחים בעז ויפעת ברקת.
 כללים מחייבים:
@@ -1217,6 +1217,33 @@ ${aiPersonFacts(p)}
 4. מה את/ה מביא/ה למעגל הזה, ושאלה אחת להתבוננות.
 פנה/י ישירות ובשם הפרטי.`;
 }
+function aiGroupPrompt(){
+  const P=G.P;
+  const ppl=P.map(p=>`- ${p.label}: שביל חיים ${p.LP} (${get(p.LP,"title")}), ביטוי ${p.expr}, דחף נשמה ${p.soul}, אישיות ${p.pers}, שבט ${TRIBE[p.tribe]}`).join("\n");
+  const th=(G.threads||[]).filter(t=>t.text).slice(0,10).map(t=>"- "+t.text).join("\n");
+  const fr=(G.frictions||[]).slice(0,4).map(f=>`- ${f.a.label} ו${f.b.label} (שבילי חיים ${f.a.LP} ו־${f.b.LP})`).join("\n");
+  return `כתוב/י את תמונת המעגל הקבוצתי "${S.meta.name}" – ${G.n} משתתפים. הטקסט מוקרן ונקרא בקול מול כולם, לכן נשאר ברמת המעגל והקשרים, בלי ניתוח אישי חושפני של אף אחד.
+
+המשתתפים:
+${ppl}
+
+המספר של המעגל (סכום שבילי החיים): ${G.LP} – ${get(G.LP,"title")} (${get(G.LP,"kw")})
+מספרים דומיננטיים במעגל: ${(G.dom||[]).join(", ")||"אין"}
+מספרים חסרים במעגל (האתגר המשותף): ${(G.missing||[]).join(", ")||"אין"}
+מספרים נדירים (רק אצל אחד): ${(G.rare||[]).join(", ")||"אין"}
+שבטים: ${[0,1,2].map(t=>`${TRIBE[t]} ${(G.tribes&&G.tribes[t]||[]).length}`).join(", ")}
+השנה המשותפת של המעגל: ${G.year}
+חוטים שהכלי זיהה:
+${th||"-"}
+${fr?"מקומות שעלול להיווצר בהם חיכוך:\n"+fr:""}
+
+כתוב/י 230–330 מילים, בחמש פסקאות קצרות:
+1. מי המעגל הזה – הלב והשליחות שלו, מתוך המספר של המעגל.
+2. במה המעגל עשיר, ומה חסר בו – ואיך זה עשוי להיראות כשהם יחד.
+3. ההצלבות: 3–4 חיבורים בולטים בין אנשים בשמותיהם – מי משלים את מי, מי מדבר באותה שפה. חם וחיובי.
+4. איפה עלול להיווצר חיכוך במעגל, ואיך הוא יכול להפוך למקור צמיחה (בלי להאשים איש).
+5. מה המעגל יכול לייצר יחד – ושאלה אחת פתוחה לכל המעגל.`;
+}
 function aiKey(kind,ps){
   const sig=ps.map(p=>p.id+":"+p.label+":"+p.LP+p.expr+p.soul+p.pers+p.bday).sort().join("|");
   let h=0;for(const c of sig)h=(h*31+c.charCodeAt(0))|0;
@@ -1224,7 +1251,7 @@ function aiKey(kind,ps){
 }
 function aiFmt(t){return esc(t).replace(/\*\*([^*]+)\*\*/g,"<b>$1</b>").split(/\n{2,}/).map(x=>`<p>${x.replace(/\n/g,"<br>")}</p>`).join("");}
 function aiBox(kind,ps,label){
-  return `<div class="aibox" data-ai="${kind}" data-ids="${ps.map(p=>esc(p.id)).join(",")}"><h3>${label}</h3><div class="aitext"><button type="button" class="aigo">כתבו לי קריאה אישית ✦</button><p class="muted aihint">${kind==="pair"?"Gemini כותב את החוט ביניכם מתוך המספרים שהכלי חישב. הקריאה נשמרת במעגל.":"Gemini כותב קריאה אישית מתוך המספרים שלך. רק את/ה רואה אותה."}</p></div></div>`;
+  return `<div class="aibox" data-ai="${kind}" data-ids="${ps.map(p=>esc(p.id)).join(",")}"><h3>${label}</h3><div class="aitext"><button type="button" class="aigo">${kind==="group"?"כתבו את תמונת המעגל ✦":"כתבו לי קריאה אישית ✦"}</button><p class="muted aihint">${kind==="group"?"Gemini כותב תמונה של המעגל כולו וההצלבות בו, מתוך המספרים. הקריאה נשמרת במעגל ומתאימה להקראה.":kind==="pair"?"Gemini כותב את החוט ביניכם מתוך המספרים שהכלי חישב. הקריאה נשמרת במעגל.":"Gemini כותב קריאה אישית מתוך המספרים שלך. רק את/ה רואה אותה."}</p></div></div>`;
 }
 function aiPeople(box){return box.dataset.ids.split(",").map(id=>G.P.find(p=>p.id===id)).filter(Boolean);}
 async function aiFill(box,make){
@@ -1234,7 +1261,7 @@ async function aiFill(box,make){
   if(!make)return;
   tx.innerHTML=`<p class="aiwait">כותבים בשבילכם… זה לוקח כמה שניות</p>`;
   try{
-    const text=await aiWrite(kind==="pair"?aiPairPrompt(ps[0],ps[1]):aiPersonPrompt(ps[0]));
+    const text=await aiWrite(kind==="pair"?aiPairPrompt(ps[0],ps[1]):kind==="group"?aiGroupPrompt():aiPersonPrompt(ps[0]));
     try{await store.put(`rooms/${ROOM}/ai/${key}`,{text,kind,t:Date.now()});}catch(e){}
     tx.innerHTML=aiFmt(text)+`<p class="muted aisrc">נכתב על ידי Gemini מתוך המספרים של המארג</p>`;
   }catch(e){
@@ -1805,6 +1832,7 @@ function renderFamily(){
     <p class="muted" style="margin:6px 0 12px">לחיצה על כרטיס פותחת את המפה המלאה של אותו משתתף. ${G.n>1?`המספר של הקבוצה: <b style="color:var(--teal)">${G.LP}</b> · ${get(G.LP,"title")}`:""}</p>
     <div id="leadList" style="margin-top:0">${P.map((p,i)=>cardHTML(p,i,null,0)).join("")||'<div class="locked">עוד אין משתתפים במעגל.</div>'}</div>
     ${G.n>1?`<div class="lead-actions" style="margin-top:16px"><button data-g="mission">המספר שלנו</button><button data-g="miss">האתגר שלנו</button><button data-g="links">כל החיווטים</button></div>`:""}`}
+   ${G.n>1&&!(me&&famTab==="mine")?aiBox("group",P,"תמונת הקבוצה וההצלבות – קריאה עם AI"):""}
    <p style="margin-top:24px;text-align:center"><button class="btn small" type="button" data-sharedlg="">שיתוף / שליחה / PDF</button></p>
    <p style="margin-top:10px;text-align:center">${G.n>=MAXP?`<span class="muted">המעגל מלא (${MAXP} משתתפים)</span>`:canAdd()?`<button class="link" id="fAdd">+ הוספת משתתף/ת</button>`:`<span class="muted">המעגל סגור להצטרפות</span>`}</p>
   </div>`;
@@ -1958,6 +1986,7 @@ function renderLead(){
    <div class="lead-top"><h1>${esc(S.meta.name)} <span class="muted" style="font-size:.6em">· תצוגת הנחיה</span></h1>
     <div class="lead-actions"><button data-g="mission">המספר שלנו</button><button data-g="miss">האתגר שלנו</button><button data-g="links">כל החיווטים</button><button data-ml type="button">${moreLinks?"פחות חיווטים":"עוד חיווטים"}</button><button data-cm type="button">${colorMode==="person"?"צביעה לפי שבט":"צביעה לפי משתתף"}</button><button type="button" data-sharedlg="">שיתוף / PDF</button><button type="button" data-fbopen>משוב</button></div></div>
    <div id="leadStage"></div><div id="leadList"></div>
+   ${G.n>1?`<div style="max-width:900px;margin:18px auto 0">${aiBox("group",G.P,"תמונת המעגל וההצלבות – קריאה עם AI")}</div>`:""}
    <p class="muted" style="text-align:center;font-size:.88rem;margin-top:8px">לחיצה על כרטיס פותחת את הניתוח המלא להקראה. לחיצה על קו במרכז מקריאה את החיבור.</p></div>`;
   app.querySelectorAll("[data-g]").forEach(b=>b.onclick=()=>openReader(groupReading(b.dataset.g)));
   const ml=app.querySelector("[data-ml]");if(ml)ml.onclick=()=>{moreLinks=!moreLinks;renderLead();};
