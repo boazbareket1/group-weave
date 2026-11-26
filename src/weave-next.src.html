@@ -1317,7 +1317,7 @@ function aiPairHTML(d,a,b){
   const eq=(x,y)=>+x===+y||single(+x)===single(y);
   const ok=k=>d[k]&&d[k].text&&eq(d[k].a,a[k])&&eq(d[k].b,b[k]);
   const off=Object.keys(PKN).filter(k=>d[k]&&!ok(k));if(off.length)console.info("pair reading skipped",off.join(","));
-  return Object.keys(PKN).filter(ok).map(k=>`<h4 class="gxh">${PKN[k]} <span class="muted">${a[k]} · ${b[k]}</span></h4>${aiFmt(d[k].text)}`).join("")+(d.together&&d.together.text?`<h4 class="gxh">החוט ביניכם</h4>${aiFmt(d.together.text)}`:"");
+  return Object.keys(PKN).filter(ok).map(k=>`<h4 class="gxh">${PKN[k]} <span class="muted">${a[k]} · ${b[k]}</span></h4>${aiFmt(d[k].text)}`).join("")+(d.together&&d.together.text?(Object.keys(PKN).some(ok)?`<h4 class="gxh">החוט ביניכם</h4>`:"")+aiFmt(d.together.text):"");
 }
 function aiMeKey(p){const m=S.members[p.id]||{};let h=0;for(const c of p.id+"|"+p.name+"|"+p.curRaw+"|"+m.bdate+"|"+TY)h=(h*31+c.charCodeAt(0))|0;return "me6_"+(h>>>0).toString(36);}
 const AI_GLITCH=/[\u0591-\u05BD\u05BF\u05C1\u05C2\u05C4-\u05C7]|[א-ת][A-Za-z]|[A-Za-z][א-ת]|[ךםןףץ][א-ת]/;
