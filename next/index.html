@@ -1138,7 +1138,7 @@ const store=LOCAL?mock:fb;
    The tool computes every number (our method, no mixing). Gemini only WRITES from those facts.
    Free tier: Gemini Developer API with the Firebase project on Spark (no billing account).
    Results are cached in rooms/{ROOM}/ai/{key}, so each reading is written once and the whole circle sees the same text. */
-const AI_VER="13.1.0",AI_MODELS=["gemini-2.5-flash","gemini-flash-latest","gemini-2.0-flash"];
+const AI_SITEKEY="6LeMsDMuAAAAABNZjiVg1dvU7vuTS97HsTaE7ziS",AI_VER="13.1.0",AI_MODELS=["gemini-2.5-flash","gemini-flash-latest","gemini-2.0-flash"];
 const AI_CFG={apiKey:"AIzaSyBJ42Obu9iyXYnHmTmLXhCKNoBohbQztVA",authDomain:"group-numerology.firebaseapp.com",databaseURL:DB,projectId:"group-numerology",appId:"1:73723083486:web:838839a99a51bd3980a04f"};
 const AI_SYS=`אתה כותב/ת קריאות נומרולוגיות בעברית עבור "המארג", כלי למעגלים קבוצתיים ומשפחתיים שמנחים בעז ויפעת ברקת.
 כללים מחייבים:
@@ -1154,7 +1154,13 @@ async function aiModel(name){
   if(!AIM){
     const A=await import(`https://www.gstatic.com/firebasejs/${AI_VER}/firebase-app.js`);
     const X=await import(`https://www.gstatic.com/firebasejs/${AI_VER}/firebase-ai.js`);
-    const app=A.getApps().find(a=>a.name==="maarag-ai")||A.initializeApp(AI_CFG,"maarag-ai");
+    let app=A.getApps().find(a=>a.name==="maarag-ai");
+    if(!app){
+      app=A.initializeApp(AI_CFG,"maarag-ai");
+      /* App Check (reCAPTCHA v3) – AI Logic is enforced: only requests from our site get through */
+      const C=await import(`https://www.gstatic.com/firebasejs/${AI_VER}/firebase-app-check.js`);
+      C.initializeAppCheck(app,{provider:new C.ReCaptchaV3Provider(AI_SITEKEY),isTokenAutoRefreshEnabled:true});
+    }
     const ai=X.getAI(app,{backend:new X.GoogleAIBackend()});
     AIM={X,ai,models:{}};
   }
