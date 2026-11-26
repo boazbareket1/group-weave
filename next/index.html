@@ -438,6 +438,12 @@ details.deep summary{color:var(--teal)}
 .oneline{margin:6px 0 0;font-size:.98rem;line-height:1.55}
 .aibox{margin:14px 0;padding:16px 18px;border:2px solid var(--teal);border-radius:10px;background:#fff}
 .aibox h3{margin:0 0 8px;color:var(--teal)}
+.gx{margin:12px 0 0;padding:10px 0 0;border-top:1.5px dashed var(--line2);width:100%}
+.gx p{margin:0 0 8px;font-size:.95rem;line-height:1.6;color:#2a3540}
+.kard .ixl .gx p{font-size:.88rem}
+.gxcore{padding:16px 18px;border:2px solid var(--teal);border-radius:10px;background:#fff}
+.gxh{margin:12px 0 4px;font-size:1rem;color:var(--teal)}.gxh .muted{font-family:var(--f-mono);font-weight:400}
+.gxcore h3{margin:0 0 8px;color:var(--teal)}.gxcore p{margin:0 0 10px;line-height:1.7}
 .aibox p{margin:0 0 10px;line-height:1.7}
 .aigo{min-height:46px;padding:0 18px;border:0;border-radius:8px;background:var(--teal);color:#fff;font:inherit;font-weight:700;cursor:pointer}
 .aihint{font-size:.9rem;margin-top:8px!important}
@@ -1149,8 +1155,20 @@ const AI_SYS=`אתה כותב/ת קריאות נומרולוגיות בעברי�
 - בלי מידע אינטימי או מביך: הטקסט עשוי להיקרא בקול מול המעגל.
 - פנה/י בשמות הפרטיים. כשהמין הדקדוקי לא ברור מהשם – השתמש/י בניסוח נייטרלי או בלוכסן (את/ה).
 - עברית תקינה וזורמת, משפטים קצרים. בלי כותרות ראשיות, בלי אימוג'ים. מותר הדגשה קצרה עם **כך**.`;
+/* Personal map: the model gets ONLY the raw data (birth name, birth date, current name) and reads independently.
+   The calculation rules are stated so its numbers match the tool's; a paragraph is placed only where its number matches the card. */
+const AI_SYS_ME=`את/ה נומרולוג/ית מנוסה שכותב/ת בעברית. מקבלים רק נתונים גולמיים: שם לידה, תאריך לידה, ולפעמים שם בשימוש היום. מחשבים בעצמך ומפענחים באופן עצמאי.
+שיטת החישוב (מחייבת, בלי לערבב שיטות אחרות – לא אסטרולוגיה, לא קבלה, לא "אנרגיית אותיות", לא פירמידה):
+- גימטריה עברית בשיטת המספר הקטן: א1 ב2 ג3 ד4 ה5 ו6 ז7 ח8 ט9 י1 כ/ך2 ל3 מ/ם4 נ/ן5 ס6 ע7 פ/ף8 צ/ץ9 ק1 ר2 ש3 ת4. שם לועזי – השיטה הפיתגוראית A=1…I=9, J=1… .
+- כל מילה בשם מצומצמת לחוד (חיבור ספרות עד ספרה אחת, אבל 11, 22, 33 נשמרים), ואז מחברים את המילים ומצמצמים שוב.
+- מספר הביטוי = כל אותיות שם הלידה. דחף הנשמה = התנועות בלבד (א, ה, ו, י). מספר האישיות = שאר האותיות (העיצורים).
+- שביל החיים = יום, חודש ושנה – כל אחד מצומצם לחוד, ואז מחברים ומצמצמים (11/22/33 נשמרים).
+- מספר יום הלידה = יום הלידה מצומצם (11 ו־22 נשמרים). שנה אישית = יום + חודש הלידה + ספרות השנה הנוכחית, מצומצם לספרה אחת.
+- המספרים מחושבים משם הלידה. השם של היום, אם ניתן, משמש רק לגוון נוסף בפסקת "הלב של המפה".
+כתיבה: חם, אישי, ספציפי, לא גנרי ובלי קלישאות. כהזמנה להתבוננות ("ייתכן", "לעיתים", "שווה לבדוק"), לא אבחנה או גורל. פנייה ישירה בשם הפרטי; כשהמין הדקדוקי לא ברור – את/ה. משפטים קצרים, עברית תקינה, בלי אימוג'ים. מותר הדגשה קצרה עם **כך**. אל תזכיר/י בטקסט את החישוב עצמו ואל תפתח/י פסקה במספר.
+מחזירים JSON בלבד.`;
 let AIM=null,aiFail="";
-async function aiModel(name){
+async function aiModel(name,mode){
   if(!AIM){
     const A=await import(`https://www.gstatic.com/firebasejs/${AI_VER}/firebase-app.js`);
     const X=await import(`https://www.gstatic.com/firebasejs/${AI_VER}/firebase-ai.js`);
@@ -1166,12 +1184,13 @@ async function aiModel(name){
     const ai=X.getAI(app,{backend:new X.GoogleAIBackend()});
     AIM={X,ai,models:{}};
   }
-  return AIM.models[name]||(AIM.models[name]=AIM.X.getGenerativeModel(AIM.ai,{model:name,systemInstruction:AI_SYS,generationConfig:{temperature:.8,maxOutputTokens:1400}}));
+  const k=name+"|"+(mode||"");
+  return AIM.models[k]||(AIM.models[k]=AIM.X.getGenerativeModel(AIM.ai,mode==="me"?{model:name,systemInstruction:AI_SYS_ME,generationConfig:{temperature:.7,maxOutputTokens:3000,responseMimeType:"application/json"}}:{model:name,systemInstruction:AI_SYS,generationConfig:{temperature:.8,maxOutputTokens:1400}}));
 }
-async function aiWrite(prompt){
-  if(LOCAL){await new Promise(r=>setTimeout(r,500));return "**[טקסט הדגמה במצב מקומי]** כאן תופיע הקריאה שג'מיני כותב מתוך המספרים. במצב אמיתי הקריאה נשמרת במעגל, וכולם רואים את אותו נוסח.";}
+async function aiWrite(prompt,mode){
+  if(LOCAL){await new Promise(r=>setTimeout(r,500));return "**[טקסט הדגמה במצב מקומי]** כאן תופיע הקריאה המעמיקה. במצב אמיתי הקריאה נשמרת במעגל, וכולם רואים את אותו נוסח.";}
   let last;
-  for(const m of AI_MODELS){try{const r=await (await aiModel(m)).generateContent(prompt);const t=r.response.text();if(t&&t.trim())return t.trim();}catch(e){last=e;}}
+  for(const m of AI_MODELS){try{const r=await (await aiModel(m,mode)).generateContent(prompt);const t=r.response.text();if(t&&t.trim())return t.trim();}catch(e){last=e;}}
   throw last||new Error("no text");
 }
 /* facts the model may use, all computed by the tool */
@@ -1217,6 +1236,62 @@ ${aiPersonFacts(p)}
 4. מה את/ה מביא/ה למעגל הזה, ושאלה אחת להתבוננות.
 פנה/י ישירות ובשם הפרטי.`;
 }
+const fmtD=d=>{const [y,m,dd]=d.split("-");return `${+dd}.${+m}.${y}`;};
+function aiMePrompt(p){
+  const m=S.members[p.id]||{};
+  return `נתונים:
+שם לידה: ${p.name}
+תאריך לידה: ${fmtD(m.bdate||"")}
+${p.curRaw&&p.curRaw!==p.name?`השם בשימוש היום: ${p.curRaw}
+`:""}השנה הנוכחית: ${TY}
+הקשר: ${p.first} משתתף/ת במעגל קבוצתי. הקריאה לעיניו/ה בלבד, בטלפון.
+
+החזר/י JSON במבנה הזה בדיוק:
+{"LP":{"n":0,"text":""},"expr":{"n":0,"text":""},"soul":{"n":0,"text":""},"pers":{"n":0,"text":""},"bday":{"n":0,"text":""},"py":{"n":0,"text":""},"core":{"text":""}}
+- LP שביל החיים, expr מספר הביטוי, soul דחף הנשמה, pers מספר האישיות, bday מספר יום הלידה, py השנה האישית – בכל אחד n הוא המספר שחישבת, ו־text פסקה של 60–100 מילים שמפענחת אותו אצל ${p.first}.
+- core "הלב של המפה": 90–140 מילים – איך המספרים עובדים יחד, מה מבקש לצמוח עכשיו, ושאלה אחת להתבוננות.`;
+}
+function aiPairRaw(a,b){
+  const L=p=>{const m=S.members[p.id]||{};return `- ${p.first}: שם לידה ${p.name}, תאריך לידה ${fmtD(m.bdate||"")}${p.curRaw&&p.curRaw!==p.name?`, השם בשימוש היום ${p.curRaw}`:""}`;};
+  return `נתונים של שני משתתפים במעגל קבוצתי (רובם נפגשו עכשיו):
+${L(a)}
+${L(b)}
+השנה הנוכחית: ${TY}
+המטרה: לפענח את החוט ביניהם – לעזור לשניהם להכיר ולהבין זה את זה. הטקסט עשוי להיקרא בקול במעגל, לכן בלי שום דבר אינטימי או מביך.
+
+החזר/י JSON במבנה הזה בדיוק (a = ${a.first}, b = ${b.first}):
+{"LP":{"a":0,"b":0,"text":""},"expr":{"a":0,"b":0,"text":""},"soul":{"a":0,"b":0,"text":""},"pers":{"a":0,"b":0,"text":""},"py":{"a":0,"b":0,"text":""},"together":{"text":""}}
+- LP שביל החיים, expr מספר הביטוי, soul דחף הנשמה, pers מספר האישיות, py השנה האישית: a ו־b הם המספרים שחישבת לכל אחד, ו־text פסקה של 50–90 מילים על המפגש בין שניהם בתחום הזה – מה מחבר, מה משלים, איפה עלול להיות חיכוך ולמה זה לא אישי.
+- together: 60–100 מילים – מה החוט הזה יכול לתת לשניהם, ושאלה אחת פתוחה שכדאי שישאלו זה את זה עכשיו.
+פנה/י אל שניהם ("אתם") ובשמות הפרטיים.`;
+}
+const PKN={LP:"שביל החיים",expr:"מספר הביטוי",soul:"דחף הנשמה",pers:"מספר האישיות",py:"השנה האישית"};
+function aiPairHTML(d,a,b){
+  const eq=(x,y)=>+x===+y||single(+x)===single(y);
+  const ok=k=>d[k]&&d[k].text&&eq(d[k].a,a[k])&&eq(d[k].b,b[k]);
+  const off=Object.keys(PKN).filter(k=>d[k]&&!ok(k));if(off.length)console.info("pair reading skipped",off.join(","));
+  return Object.keys(PKN).filter(ok).map(k=>`<h4 class="gxh">${PKN[k]} <span class="muted">${a[k]} · ${b[k]}</span></h4>${aiFmt(d[k].text)}`).join("")+(d.together&&d.together.text?`<h4 class="gxh">החוט ביניכם</h4>${aiFmt(d.together.text)}`:"");
+}
+function aiMeKey(p){const m=S.members[p.id]||{};let h=0;for(const c of p.id+"|"+p.name+"|"+p.curRaw+"|"+m.bdate+"|"+TY)h=(h*31+c.charCodeAt(0))|0;return "me2_"+(h>>>0).toString(36);}
+function aiMeParse(t){const a=t.indexOf("{"),b=t.lastIndexOf("}");return JSON.parse(t.slice(a,b+1));}
+function aiMePlace(root,p,d){
+  const ok=k=>d[k]&&d[k].text&&(k==="core"||+d[k].n===+p[k]||single(+d[k].n)===single(p[k]));
+  root.querySelectorAll("[data-gk]").forEach(el=>{const k=el.dataset.gk;if(ok(k)){el.innerHTML=(k==="core"?"<h3>הלב של המפה</h3>":"")+aiFmt(d[k].text);el.hidden=false;}else if(k==="core")el.hidden=true;});
+  const off=["LP","expr","soul","pers","bday","py"].filter(k=>d[k]&&!ok(k)).map(k=>`${k}: ${d[k].n}≠${p[k]}`);if(off.length)console.info("deep reading skipped",off.join(", "));
+}
+async function aiMeFill(root){
+  const p=G.P.find(x=>x.id===root.dataset.gme);if(!p||!ROOM)return;
+  const key=aiMeKey(p),path=`rooms/${ROOM}/ai/${key}`,core=root.querySelector('[data-gk="core"]');
+  try{const c=await store.get(path);if(c&&c.data){aiMePlace(document,p,c.data);return;}}catch(e){}
+  if(core){core.hidden=false;core.innerHTML=`<p class="aiwait">מעמיקים את הקריאה שלך… זה לוקח כמה שניות</p>`;}
+  try{
+    let d;
+    if(LOCAL){await new Promise(r=>setTimeout(r,500));d={core:{text:"**[הדגמה במצב מקומי]** כאן תופיע הקריאה המעמיקה, וכל פסקה תיכנס לכרטיס שלה."}};["LP","expr","soul","pers","bday","py"].forEach(k=>d[k]={n:p[k],text:"[הדגמה] פסקה מעמיקה לכרטיס הזה."});}
+    else{let t,err;for(let i=0;i<2;i++){try{t=await aiWrite(aiMePrompt(p),"me");d=aiMeParse(t);break;}catch(e){err=e;}}if(!d)throw err;}
+    try{await store.put(path,{data:d,kind:"me2",t:Date.now()});}catch(e){}
+    aiMePlace(document,p,d);
+  }catch(e){aiFail=String(e&&e.message||e);console.warn("deep",aiFail);if(core)core.hidden=true;}
+}
 function aiGroupPrompt(){
   const P=G.P;
   const ppl=P.map(p=>`- ${p.label}: שביל חיים ${p.LP} (${get(p.LP,"title")}), ביטוי ${p.expr}, דחף נשמה ${p.soul}, אישיות ${p.pers}, שבט ${TRIBE[p.tribe]}`).join("\n");
@@ -1251,26 +1326,34 @@ function aiKey(kind,ps){
 }
 function aiFmt(t){return esc(t).replace(/\*\*([^*]+)\*\*/g,"<b>$1</b>").split(/\n{2,}/).map(x=>`<p>${x.replace(/\n/g,"<br>")}</p>`).join("");}
 function aiBox(kind,ps,label){
-  return `<div class="aibox" data-ai="${kind}" data-ids="${ps.map(p=>esc(p.id)).join(",")}"><h3>${label}</h3><div class="aitext"><button type="button" class="aigo">${kind==="group"?"כתבו את תמונת המעגל ✦":"כתבו לי קריאה אישית ✦"}</button><p class="muted aihint">${kind==="group"?"Gemini כותב תמונה של המעגל כולו וההצלבות בו, מתוך המספרים. הקריאה נשמרת במעגל ומתאימה להקראה.":kind==="pair"?"Gemini כותב את החוט ביניכם מתוך המספרים שהכלי חישב. הקריאה נשמרת במעגל.":"Gemini כותב קריאה אישית מתוך המספרים שלך. רק את/ה רואה אותה."}</p></div></div>`;
+  return `<div class="aibox" data-ai="${kind}" data-ids="${ps.map(p=>esc(p.id)).join(",")}"><h3>${label}</h3><div class="aitext"><button type="button" class="aigo">${kind==="group"?"כתבו את תמונת המעגל ✦":"כתבו לי קריאה אישית ✦"}</button><p class="muted aihint">${kind==="group"?"תמונה של המעגל כולו וההצלבות בו. הקריאה נשמרת במעגל ומתאימה להקראה.":kind==="pair"?"החוט ביניכם, לעומק. הקריאה נשמרת במעגל.":"קריאה אישית לעומק. רק את/ה רואה אותה."}</p></div></div>`;
 }
 function aiPeople(box){return box.dataset.ids.split(",").map(id=>G.P.find(p=>p.id===id)).filter(Boolean);}
 async function aiFill(box,make){
   const ps=aiPeople(box);if(!ps.length||!ROOM)return;
-  const kind=box.dataset.ai,key=aiKey(kind,ps),tx=box.querySelector(".aitext");
-  try{const c=await store.get(`rooms/${ROOM}/ai/${key}`);if(c&&c.text){tx.innerHTML=aiFmt(c.text)+`<p class="muted aisrc">נכתב על ידי Gemini מתוך המספרים של המארג</p>`;return;}}catch(e){}
+  const kind=box.dataset.ai,key=(kind==="pair"?"p2":"")+aiKey(kind,ps),tx=box.querySelector(".aitext");
+  const show=c=>{tx.innerHTML=c.data?aiPairHTML(c.data,ps[0],ps[1]):aiFmt(c.text);};
+  try{const c=await store.get(`rooms/${ROOM}/ai/${key}`);if(c&&(c.text||c.data)){show(c);return;}}catch(e){}
   if(!make)return;
   tx.innerHTML=`<p class="aiwait">כותבים בשבילכם… זה לוקח כמה שניות</p>`;
   try{
-    const text=await aiWrite(kind==="pair"?aiPairPrompt(ps[0],ps[1]):kind==="group"?aiGroupPrompt():aiPersonPrompt(ps[0]));
-    try{await store.put(`rooms/${ROOM}/ai/${key}`,{text,kind,t:Date.now()});}catch(e){}
-    tx.innerHTML=aiFmt(text)+`<p class="muted aisrc">נכתב על ידי Gemini מתוך המספרים של המארג</p>`;
+    let rec;
+    if(kind==="pair"){
+      let d,err;
+      if(LOCAL){await new Promise(r=>setTimeout(r,500));d={together:{text:"**[הדגמה במצב מקומי]** כאן יופיע החוט ביניכם לעומק, מחולק לפי שביל החיים, הביטוי, הנשמה, האישיות והשנה."}};}
+      else for(let i=0;i<2;i++){try{d=aiMeParse(await aiWrite(aiPairRaw(ps[0],ps[1]),"me"));break;}catch(e){err=e;}}
+      if(!d)throw err;rec={data:d,kind,t:Date.now()};
+    }else rec={text:await aiWrite(kind==="group"?aiGroupPrompt():aiPersonPrompt(ps[0])),kind,t:Date.now()};
+    try{await store.put(`rooms/${ROOM}/ai/${key}`,rec);}catch(e){}
+    show(rec);
   }catch(e){
     aiFail=String(e&&e.message||e);
     tx.innerHTML=`<p class="err">לא הצלחנו לכתוב את הקריאה כרגע. נסו שוב בעוד רגע.</p><button type="button" class="aigo">לנסות שוב</button>`;
     console.warn("AI",aiFail);
   }
 }
-function aiHydrate(root){(root||document).querySelectorAll(".aibox").forEach(b=>{if(!b.dataset.h){b.dataset.h=1;aiFill(b,false);}});}
+function aiHydrate(root){(root||document).querySelectorAll(".aibox").forEach(b=>{if(!b.dataset.h){b.dataset.h=1;aiFill(b,false);}});
+  (root||document).querySelectorAll("[data-gme]").forEach(b=>{if(!b.dataset.h){b.dataset.h=1;aiMeFill(b);}});}
 document.addEventListener("click",e=>{const b=e.target.closest(".aigo");if(!b)return;e.preventDefault();aiFill(b.closest(".aibox"),true);});
 new MutationObserver(()=>aiHydrate()).observe(document.documentElement,{childList:true,subtree:true});
 
@@ -1832,7 +1915,7 @@ function renderFamily(){
     <p class="muted" style="margin:6px 0 12px">לחיצה על כרטיס פותחת את המפה המלאה של אותו משתתף. ${G.n>1?`המספר של הקבוצה: <b style="color:var(--teal)">${G.LP}</b> · ${get(G.LP,"title")}`:""}</p>
     <div id="leadList" style="margin-top:0">${P.map((p,i)=>cardHTML(p,i,null,0)).join("")||'<div class="locked">עוד אין משתתפים במעגל.</div>'}</div>
     ${G.n>1?`<div class="lead-actions" style="margin-top:16px"><button data-g="mission">המספר שלנו</button><button data-g="miss">האתגר שלנו</button><button data-g="links">כל החיווטים</button></div>`:""}`}
-   ${G.n>1&&!(me&&famTab==="mine")?aiBox("group",P,"תמונת הקבוצה וההצלבות – קריאה עם AI"):""}
+   ${G.n>1&&!(me&&famTab==="mine")?aiBox("group",P,"תמונת הקבוצה וההצלבות – קריאה מעמיקה"):""}
    <p style="margin-top:24px;text-align:center"><button class="btn small" type="button" data-sharedlg="">שיתוף / שליחה / PDF</button></p>
    <p style="margin-top:10px;text-align:center">${G.n>=MAXP?`<span class="muted">המעגל מלא (${MAXP} משתתפים)</span>`:canAdd()?`<button class="link" id="fAdd">+ הוספת משתתף/ת</button>`:`<span class="muted">המעגל סגור להצטרפות</span>`}</p>
   </div>`;
@@ -1879,22 +1962,23 @@ function myMap(p){
     <span class="big">${p[key]}</span>
     <h2>${esc(title)}</h2>
     <p class="x">${esc(firstSent(body))}</p>
+    <div class="gx" data-gk="${key}" hidden></div>
     <details><summary>עוד על זה</summary>${paramHTML(key,p)}</details>
   </section>`).join("");
   let curH="";
   if(p.cur){const a=p.an,c=p.cur;curH=`<li><b>השם של היום</b><p>${c.expr.v===a.expr.v?"מספר הביטוי נשאר זהה.":`השם של היום מוסיף ${get(c.expr.v,"kw")}.`} ${c.soul.v&&single(c.soul.v)!==single(a.soul.v)?`מבפנים נוספה כמיהה ל${get(c.soul.v,"kw")}.`:""}</p></li>`;}
   const ixCard=`<section class="kard soft" data-ci="4"><p class="k">05 / 06 — הצמתים שלך</p><h2 style="margin-top:4px">איפה המספרים נפגשים</h2>
     ${deepList(p)}
-    <ul class="ixl">${ix.map((x,i)=>`<li><b>${x[0]}</b><p>${x[1]}</p>${fbBtns(p.id,"ix"+i+":"+(x[2]||[p.LP+"/"+p.expr,p.soul+"/"+p.pers,"bday"+p.bday,"py"+p.py][i]),x[1])}</li>`).join("")}${curH}</ul></section>`;
+    <ul class="ixl">${ix.map((x,i)=>`<li><b>${x[0]}</b><p>${x[1]}</p>${/^המתנה של יום/.test(x[0])?'<div class="gx" data-gk="bday" hidden></div>':/^השנה שלך/.test(x[0])?'<div class="gx" data-gk="py" hidden></div>':""}${fbBtns(p.id,"ix"+i+":"+(x[2]||[p.LP+"/"+p.expr,p.soul+"/"+p.pers,"bday"+p.bday,"py"+p.py][i]),x[1])}</li>`).join("")}${curH}</ul></section>`;
   const moreCard=`<section class="kard soft" data-ci="5"><p class="k">06 / 06 — עוד עליי</p><h2 style="margin-top:4px">חוזקות, צל וכיוונים</h2>
     <ul class="ixl"><li><b>חוזקות</b><p>${get(lp,"strengths").join(" · ")}</p></li><li><b>הצל</b><p>${get(lp,"shadow").join(" · ")}</p></li><li><b>אהבה</b><p>${get(lp,"love")}</p></li><li><b>שליחות ועבודה</b><p>${get(lp,"career")}</p></li><li style="border-color:var(--teal)"><b style="color:var(--teal)">שאלה לדרך</b><p>${get(lp,"growth")}</p></li></ul></section>`;
   const ctaCard=`<section class="kard cta" data-ci="6"><p class="k">ומה עכשיו?</p><h2>המקום שלי בקבוצה</h2><p class="x">איך המספרים שלך נפגשים עם המספרים של כולם.</p><button class="btn" type="button" style="margin-top:14px" onclick="famTab='mine';go('fam')">למקום שלי בקבוצה ←</button></section>`;
   const seen=ls.get("grp-deckhint");
   return `<a class="extmap" href="${esc(personalMapURL(p.id))}" target="_blank" rel="noopener"><b>המפה האישית המורחבת ↗</b><span>ניתוח מעמיק יותר: מחזורי חיים, טבלת לידה, שיעורים קרמתיים ועוד</span></a>
   ${seen?"":`<p class="deck-hint">זו המפה שלך. החלק/י הצידה כדי לראות את המספר הבא.</p>`}
-  <div class="deck" id="deck">${cards}${ixCard}${moreCard}${ctaCard}</div>
+  <div class="deck" id="deck" data-gme="${esc(p.id)}">${cards}${ixCard}${moreCard}${ctaCard}</div>
   <div class="deck-dots" id="deckDots" aria-hidden="true">${Array.from({length:7},(_,i)=>`<i class="${i?"":"on"}"></i>`).join("")}</div>
-  <div class="sec">${aiBox("me",[p],"הקריאה האישית שלי")}</div>
+  <div class="sec gxcore" data-gk="core" hidden></div>
   <div class="sec"><h3>לשמור ולשתף</h3>${shareBlock(p,true)}</div>`;
 }
 function bindDeck(){
@@ -1986,7 +2070,7 @@ function renderLead(){
    <div class="lead-top"><h1>${esc(S.meta.name)} <span class="muted" style="font-size:.6em">· תצוגת הנחיה</span></h1>
     <div class="lead-actions"><button data-g="mission">המספר שלנו</button><button data-g="miss">האתגר שלנו</button><button data-g="links">כל החיווטים</button><button data-ml type="button">${moreLinks?"פחות חיווטים":"עוד חיווטים"}</button><button data-cm type="button">${colorMode==="person"?"צביעה לפי שבט":"צביעה לפי משתתף"}</button><button type="button" data-sharedlg="">שיתוף / PDF</button><button type="button" data-fbopen>משוב</button></div></div>
    <div id="leadStage"></div><div id="leadList"></div>
-   ${G.n>1?`<div style="max-width:900px;margin:18px auto 0">${aiBox("group",G.P,"תמונת המעגל וההצלבות – קריאה עם AI")}</div>`:""}
+   ${G.n>1?`<div style="max-width:900px;margin:18px auto 0">${aiBox("group",G.P,"תמונת המעגל וההצלבות – קריאה מעמיקה")}</div>`:""}
    <p class="muted" style="text-align:center;font-size:.88rem;margin-top:8px">לחיצה על כרטיס פותחת את הניתוח המלא להקראה. לחיצה על קו במרכז מקריאה את החיבור.</p></div>`;
   app.querySelectorAll("[data-g]").forEach(b=>b.onclick=()=>openReader(groupReading(b.dataset.g)));
   const ml=app.querySelector("[data-ml]");if(ml)ml.onclick=()=>{moreLinks=!moreLinks;renderLead();};
