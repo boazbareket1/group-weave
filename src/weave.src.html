@@ -1008,7 +1008,10 @@ function personOf(id,m){
   const an=analyzeName(m.name,"he");const B=birth(m.bdate);
   const cur=m.cur&&he(m.cur)?analyzeName(m.cur,"he"):null;
   const py=single(single(B.d)+single(B.m)+single(dsum(TY)));
-  return {id,name:m.name.trim(),first:m.name.trim().split(/\s+/)[0],an,B,LP:B.LP,
+  /* display name: the name used today (cur, if given) – first name + first letter of the surname ("יפעת ב.") */
+  const disp=((m.cur&&m.cur.trim())||m.name.trim()).split(/\s+/);
+  const first=disp[0],short=disp.length>1?`${disp[0]} ${disp[disp.length-1].replace(/^["'׳״]+/,"").charAt(0)}.`:disp[0];
+  return {id,name:m.name.trim(),curRaw:(m.cur||"").trim(),first,short,an,B,LP:B.LP,
     expr:an?an.expr.v:B.LP,soul:an&&an.soul.v?an.soul.v:B.LP,pers:an&&an.pers.v?an.pers.v:B.LP,
     bday:rv(B.d),lessons:an?an.lessons:[],py,cur,
     mat:rv((an?an.expr.v:B.LP)+B.LP),rt:an&&an.words[0]?rv(rv(an.words[0].sum)+rv(B.d)):null,tribe:grp(B.LP),t:m.t||0};
@@ -1016,7 +1019,7 @@ function personOf(id,m){
 function analyzeFamily(members){
   const P=Object.entries(members||{}).filter(([id,m])=>m&&m.name&&/^\d{4}-\d{2}-\d{2}$/.test(m.bdate)).map(([id,m])=>personOf(id,m)).sort((a,b)=>a.t-b.t);
   // unique display names
-  const cnt={};P.forEach(p=>cnt[p.first]=(cnt[p.first]||0)+1);P.forEach(p=>p.label=cnt[p.first]>1?p.name:p.first);P.forEach((p,i)=>p.color=PCOL[i%PCOL.length]);
+  const cnt={};P.forEach(p=>cnt[p.short]=(cnt[p.short]||0)+1);P.forEach(p=>p.label=cnt[p.short]>1?(p.curRaw||p.name):p.short);P.forEach((p,i)=>p.color=PCOL[i%PCOL.length]);
   const G={P,n:P.length};
   if(!P.length)return G;
   const sumLP=P.reduce((a,p)=>a+p.LP,0);
