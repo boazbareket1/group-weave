@@ -1403,6 +1403,7 @@ function route(fromData){
   if(!S.meta&&fromData&&online){return renderMissing();}
   if(!S.meta)return renderLoading();
   let v=VIEW||defaultView();
+  if(!FACIL()&&tabHidden(v))v="me";
   if(v==="me"&&!isMember())v="join";
   document.body.dataset.view=v;
   if(v==="game")return renderGame();
@@ -1432,6 +1433,8 @@ const ICO=(()=>{const P={
   const all=[isMember()?["me","המפה שלי","◉"]:["join","הצטרפות","+"],["fam","⟦הקבוצה¦המשפחה⟧","☷"],["circle","המעגל","◎"],["wall","לוח","✎"],["stages","שלבים","☰"],["game","משחק","✦"],["qr","QR","▦"],["gloss","מילון","?"],["hub","המארג","⌂"]];
   const btn=([k,t,i])=>`<button type="button" data-go="${k}" ${k===cur?'aria-current="page"':""}><span class="gi" aria-hidden="true">${ICO(k)}</span><span>${t}</span>${k==="wall"&&wallUnread()?`<span class="nbadge">${wallUnread()}</span>`:""}</button>`;
   // phones: four primary items + "עוד"; wide screens: everything
+  /* tabs the facilitator chose to hide in this circle (meta.hide) – hidden for participants only */
+  if(!FACIL()){for(let i=all.length-1;i>=0;i--)if(tabHidden(all[i][0]))all.splice(i,1);}
   if(FACIL())all.splice(1,0,["host","מנחה","★"]);
   const prim=all.slice(0,4),more=all.slice(4);const moreOn=more.some(x=>x[0]===cur);
   return `<nav class="gnav" aria-label="ניווט בכלי">${prim.map(btn).join("")}<span class="gmore">${more.map(btn).join("")}</span><button type="button" class="gmore-btn" data-more ${moreOn?'aria-current="page"':""}><span class="gi" aria-hidden="true">${ICO("more")}</span><span>עוד</span></button></nav>`;
@@ -1441,7 +1444,7 @@ document.addEventListener("click",e=>{
   if(!b){if(ctx&&ctx.classList.contains("morectx")&&!e.target.closest(".ctxmenu"))closeCtx();return;}
   e.preventDefault();if(ctx){closeCtx();return;}
   ctx=document.createElement("div");ctx.className="ctxmenu morectx";ctx.setAttribute("role","menu");
-  ctx.innerHTML=(FACIL()?[["host","מסך המנחה"]]:[]).concat([["stages","שלבים"],["game","משחק הזיהוי"],["qr","QR להצטרפות"],["gloss","מילון מושגים"],["hub","המארג – כל הכלים"]]).map(([k,t])=>`<button type="button" data-go="${k}">${t}</button>`).join("");
+  ctx.innerHTML=(FACIL()?[["host","מסך המנחה"]]:[]).concat([["stages","שלבים"],["game","משחק הזיהוי"],["qr","QR להצטרפות"],["gloss","מילון מושגים"],["hub","המארג – כל הכלים"]]).filter(([k])=>FACIL()||!tabHidden(k)).map(([k,t])=>`<button type="button" data-go="${k}">${t}</button>`).join("");
   document.body.appendChild(ctx);const r=b.getBoundingClientRect();
   ctx.style.left=Math.max(8,Math.min(innerWidth-ctx.offsetWidth-8,r.left))+"px";ctx.style.top=(r.top-ctx.offsetHeight-8)+"px";
   ctx.querySelectorAll("[data-go]").forEach(m=>m.addEventListener("click",closeCtx));
@@ -1551,6 +1554,13 @@ function claimHTML(){
   return `<div class="card" style="margin-top:14px"><h2 style="font-size:1.15rem">כבר במעגל? זה את/ה?</h2><p class="muted" style="margin:4px 0 10px">אם המנחה הוסיף/ה אותך, או שהחלפת מכשיר – בחר/י את השם שלך.</p><div style="display:flex;flex-wrap:wrap;gap:8px">${G.P.map(p=>`<button class="btn small" data-claim="${p.id}" style="background:#fff;color:var(--fg);border:1.5px solid var(--line2)">${esc(p.label)}</button>`).join("")}</div></div>`;
 }
 function bindClaim(){document.querySelectorAll("[data-claim]").forEach(b=>b.onclick=()=>{const id=b.dataset.claim;if(!S.members[id])return;if(!confirm(`להיכנס למעגל בתור ${S.members[id].name}?`))return;ls.set("⟦grp¦fam⟧-me:"+ROOM,id);view="";go("me");});}
+const HIDEABLE=[["circle","המעגל"],["wall","לוח המעגל"],["stages","שלבים"],["game","משחק הזיהוי והמשפט המסתורי"],["gloss","מילון מושגים"]];
+function tabHidden(k){return !!(S&&S.meta&&S.meta.hide&&S.meta.hide[k]);}
+function hideCardHTML(){
+  return `<div class="card" style="margin-top:14px"><h2 style="font-size:1.15rem;margin:0 0 4px">מה מוצג ל⟦משתתפים¦בני המשפחה⟧ במעגל הזה</h2>
+   <p class="muted" style="margin:0 0 10px;font-size:.92rem">מה שמסומן יופיע אצלם. את/ה כמנחה תמשיך/י לראות הכול.</p>
+   <div style="display:grid;gap:6px">${HIDEABLE.map(([k,t])=>`<label style="display:flex;align-items:center;gap:10px;min-height:40px;font-size:1rem"><input type="checkbox" data-hide="${k}" ${tabHidden(k)?"":"checked"} style="width:22px;height:22px;accent-color:var(--teal)"> ${t}</label>`).join("")}</div></div>`;
+}
 function renderHost(){
   view="host";
   const P=G.P;
@@ -1566,12 +1576,14 @@ function renderHost(){
        <button class="btn ghost" id="fcToggle">${isClosed()?"לפתוח את המעגל להצטרפות":"לסגור את המעגל להצטרפות"}</button>
      </div>
    </div>
+   ${hideCardHTML()}
    <div class="card" style="margin-top:14px"><h2 style="font-size:1.15rem;margin:0 0 8px">במעגל עכשיו: ${G.n}</h2>
      <div class="members">${P.map(p=>`<span class="mem">${dotOf(p)}${esc(p.name)}<button data-edit="${p.id}" aria-label="עריכת ${esc(p.name)}" title="עריכה">✎</button><button data-del="${p.id}" aria-label="הסרת ${esc(p.name)}">×</button></span>`).join("")||'<span class="muted">עוד אין משתתפים</span>'}</div>
    </div>
    <p class="muted" style="margin-top:16px;font-size:.9rem">${isMember()?"":"גם את/ה חלק מהמעגל? <button class=\"link\" data-go=\"join\">הצטרפות כמשתתף/ת</button> · "}<a href="${BASE}${LOCAL?"?local=1":""}" style="color:var(--teal)">לדף הפתיחה של הכלי</a></p>
   </div>`;
   bindFacil();
+  app.querySelectorAll("[data-hide]").forEach(c=>c.onchange=async()=>{const k=c.dataset.hide;const h=Object.assign({},S.meta.hide||{});if(c.checked)delete h[k];else h[k]=true;S.meta.hide=h;try{await store.patch(`rooms/${ROOM}/meta`,{hide:h});}catch(e){}});
   const t=$("fcToggle");if(t)t.onclick=async()=>{t.disabled=true;await store.patch(`rooms/${ROOM}/meta`,{closed:!isClosed()});S.meta.closed=!isClosed();renderHost();};
   app.querySelectorAll("[data-del]").forEach(b=>b.onclick=()=>{const p=G.P.find(p=>p.id===b.dataset.del);if(p&&confirmDel(p))store.del(`rooms/${ROOM}/members/${p.id}`);});
   addNav("host");
@@ -1747,7 +1759,7 @@ function stageHTML(st){
     h+=`<p class="lead">לכל אחד יש מספר דרך: הכיוון של החיים שלו. כל אחד כבר רואה בטלפון את המפה האישית המלאה שלו. כאן משחקים: מי זה?</p>`;
     const mp=P[mysteryIdx];
     h+=mp?`<div class="mystery">"${esc(N[single(mp.LP)].essence.split(". ").slice(0,2).join(". ").replace(/את\/ה/g,"הוא/היא"))}."${mysteryShown?`<div style="margin-top:12px;font-family:var(--f-body);font-size:1.1rem;color:var(--teal)">זה ${esc(mp.label)}: ${get(mp.LP,"title")}, שביל חיים ${mp.LP}</div>`:""}</div>`:"";
-    h+=`<div class="row" style="margin-top:6px"><button class="btn ghost small" data-go="game" type="button">משחק הזיהוי</button><button class="btn small" id="mysteryBtn">${mysteryIdx<0?"משפט מסתורי: על מי מדובר?":mysteryShown?"המשפט הבא":"חשיפה"}</button></div>`;
+    if(!tabHidden("game")||FACIL())h+=`<div class="row" style="margin-top:6px"><button class="btn ghost small" data-go="game" type="button">משחק הזיהוי</button><button class="btn small" id="mysteryBtn">${mysteryIdx<0?"משפט מסתורי: על מי מדובר?":mysteryShown?"המשפט הבא":"חשיפה"}</button></div>`;
     h+=`<div class="grid" style="margin-top:18px">${P.map(p=>personCard(p,`<p><span class="num">${p.LP}</span> <b>${get(p.LP,"title")}</b></p><p class="muted">${get(p.LP,"kw")}</p><p class="oneline">${oneLine(p.LP)}</p>`)).join("")}</div>`;
   }
   if(k==="num"){
