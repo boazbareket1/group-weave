@@ -444,7 +444,7 @@ details.deep summary{color:var(--teal)}
 .has-deep .toolx{display:none}
 .kard:has(>.gx:not([hidden]))>.x{display:none}
 .ixl li:has(>.gx:not([hidden]))>p{display:none}
-.param:has(+.gx:not([hidden])) .pa,.param:has(+.gx:not([hidden])) .fbk,.ixl li:has(>.gx:not([hidden]))>.fbk{display:none}
+.param:has(>.gx:not([hidden]))>.pa,.param:has(>.gx:not([hidden]))>.fbk,.ixl li:has(>.gx:not([hidden]))>.fbk{display:none}
 .gxcore{padding:16px 18px;border:2px solid var(--teal);border-radius:10px;background:#fff}
 .gxh{margin:12px 0 4px;font-size:1rem;color:var(--teal)}.gxh .muted{font-family:var(--f-mono);font-weight:400}
 .gxcore h3{margin:0 0 8px;color:var(--teal)}.gxcore p{margin:0 0 10px;line-height:1.7}
@@ -1967,11 +1967,11 @@ const PARAMS={
  soul:{n:"דחף הנשמה",d:"סכום התנועות בשם: מה שמניע אותך מבפנים, כשאף אחד לא רואה."},
  pers:{n:"מספר האישיות",d:"סכום העיצורים בשם: הרושם הראשון שאנשים מקבלים ממך."}
 };
-function paramHTML(key,p){
+function paramHTML(key,p,slot){
   const v=p[key],P=PARAMS[key];
   const body={LP:`<span class="pt">${get(v,"title")}.</span> ${get(v,"essence")}`,expr:get(v,"expr"),soul:get(v,"soul"),pers:get(v,"persona")}[key];
   const term={LP:"shvil",expr:"bitui",soul:"neshama",pers:"ishiut"}[key];
-  return `<div class="param"><div class="ph"><span class="pn">${P.n}</span><span class="pv">${v}</span><button type="button" class="qterm" data-term="${term}" aria-label="מה זה ${P.n}?">?</button></div><p class="pd">${P.d}</p><p class="pa">${body}</p>${fbBtns(p.id,key+":"+v,body)}${key==="LP"?lpDeep(p):""}</div>`;
+  return `<div class="param"><div class="ph"><span class="pn">${P.n}</span><span class="pv">${v}</span><button type="button" class="qterm" data-term="${term}" aria-label="מה זה ${P.n}?">?</button></div><p class="pd">${P.d}</p><p class="pa">${body}</p>${slot?`<div class="gx" data-gk="${key}" hidden></div>`:""}${fbBtns(p.id,key+":"+v,body)}${key==="LP"?lpDeep(p):""}</div>`;
 }
 function myMap(p){
   const lp=p.LP;
@@ -2035,7 +2035,7 @@ function personReading(p){
   const ix=personIx(p),th=myThreads(G,p);
   let h=`<div data-gme="${esc(p.id)}"><h2><span class="pre">המפה של </span>${esc(p.name)}</h2>
   <div class="gxcore" data-gk="core" hidden></div>
-  ${["LP","expr","soul"].map(k=>paramHTML(k,p)+`<div class="gx" data-gk="${k}" hidden></div>`).join("")}
+  ${["LP","expr","soul"].map(k=>paramHTML(k,p,1)).join("")}
 
   <div class="toolx"><h3>${ix[0][0]}</h3><p>${ix[0][1]}</p>
   <h3>${ix[1][0]}</h3><p>${ix[1][1]}</p>`+[...themeHTML(p),...mechHTML(p)].map(x=>`<h3>${x[0]}</h3><p>${x[1]}</p>`).join("")+`</div>`;
