@@ -13,6 +13,7 @@
   python3 src/build.py            בונה index.html ו-../family-weave/index.html
   python3 src/build.py --check    רק בודק שהקבצים הנוכחיים זהים למה שהמקור מייצר
   python3 src/build.py --family PATH   נתיב אחר לקובץ המשפחתי
+  python3 src/build.py --next     גרסת ניסיון: src/weave-next.src.html → next/index.html (קבוצתי)
 כל קובץ שיוצא הוא HTML יחיד ועצמאי – בלי תלות בקובץ חיצוני.
 """
 import re, sys, pathlib
@@ -53,6 +54,14 @@ def main():
         fam = pathlib.Path(args[args.index("--family") + 1]).resolve()
     targets = {"group": HERE.parent / "index.html", "family": fam}
     src = SRC.read_text(encoding="utf-8")
+    if "--next" in args:
+        # trial copy: src/weave-next.src.html → next/index.html (group) [+ family-weave/next/ with --next-family]
+        src = (HERE / "weave-next.src.html").read_text(encoding="utf-8")
+        targets = {"group": HERE.parent / "next" / "index.html"}
+        if "--next-family" in args:
+            targets["family"] = fam.parent / "next" / "index.html"
+        for t in targets.values():
+            t.parent.mkdir(exist_ok=True)
     ok = True
     for which, path in targets.items():
         txt = render(src, which)
