@@ -1269,8 +1269,8 @@ const HIDEABLE=[["circle","המעגל"],["wall","לוח המעגל"],["stages","
 function tabHidden(k){return !!(S&&S.meta&&S.meta.hide&&S.meta.hide[k]);}
 function hideCardHTML(){
   return `<div class="card" style="margin-top:14px"><h2 style="font-size:1.15rem;margin:0 0 4px">מה מוצג ל⟦משתתפים¦בני המשפחה⟧ במעגל הזה</h2>
-   <p class="muted" style="margin:0 0 10px;font-size:.92rem">מה שמסומן יופיע אצלם. את/ה כמנחה תמשיך/י לראות הכול.</p>
-   <div style="display:grid;gap:6px">${HIDEABLE.map(([k,t])=>`<label style="display:flex;align-items:center;gap:10px;min-height:40px;font-size:1rem"><input type="checkbox" data-hide="${k}" ${tabHidden(k)?"":"checked"} style="width:22px;height:22px;accent-color:var(--teal)"> ${t}</label>`).join("")}</div></div>`;
+   <p class="muted" style="margin:0 0 10px;font-size:.92rem">מה שמסומן יופיע אצלם. השינוי נשמר מיד, בלי כפתור. את/ה כמנחה תמשיך/י לראות הכול.</p>
+   <div style="display:grid;gap:6px">${HIDEABLE.map(([k,t])=>`<label style="display:flex;align-items:center;gap:10px;min-height:40px;font-size:1rem"><input type="checkbox" data-hide="${k}" ${tabHidden(k)?"":"checked"} style="width:22px;height:22px;accent-color:var(--teal)"> ${t}</label>`).join("")}</div><p id="hideSaved" class="ok" style="margin:8px 0 0;min-height:1.4em;color:var(--teal);font-weight:700" aria-live="polite"></p></div>`;
 }
 function renderHost(){
   view="host";
@@ -1294,7 +1294,7 @@ function renderHost(){
    <p class="muted" style="margin-top:16px;font-size:.9rem">${isMember()?"":"גם את/ה חלק מהמעגל? <button class=\"link\" data-go=\"join\">הצטרפות כמשתתף/ת</button> · "}<a href="${BASE}${LOCAL?"?local=1":""}" style="color:var(--teal)">לדף הפתיחה של הכלי</a></p>
   </div>`;
   bindFacil();
-  app.querySelectorAll("[data-hide]").forEach(c=>c.onchange=async()=>{const k=c.dataset.hide;const h=Object.assign({},S.meta.hide||{});if(c.checked)delete h[k];else h[k]=true;S.meta.hide=h;try{await store.patch(`rooms/${ROOM}/meta`,{hide:h});}catch(e){}});
+  app.querySelectorAll("[data-hide]").forEach(c=>c.onchange=async()=>{const k=c.dataset.hide;const h=Object.assign({},S.meta.hide||{});if(c.checked)delete h[k];else h[k]=true;S.meta.hide=h;const sv=$("hideSaved");try{await store.patch(`rooms/${ROOM}/meta`,{hide:h});if(sv)sv.textContent="נשמר ✓ "+(c.checked?"מוצג":"מוסתר")+" אצל המשתתפים";}catch(e){if(sv)sv.textContent="לא נשמר – בדקו חיבור ונסו שוב";}});
   const t=$("fcToggle");if(t)t.onclick=async()=>{t.disabled=true;await store.patch(`rooms/${ROOM}/meta`,{closed:!isClosed()});S.meta.closed=!isClosed();renderHost();};
   app.querySelectorAll("[data-del]").forEach(b=>b.onclick=()=>{const p=G.P.find(p=>p.id===b.dataset.del);if(p&&confirmDel(p))store.del(`rooms/${ROOM}/members/${p.id}`);});
   addNav("host");
