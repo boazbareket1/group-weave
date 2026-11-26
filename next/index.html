@@ -1291,8 +1291,8 @@ function aiPairHTML(d,a,b){
   return Object.keys(PKN).filter(ok).map(k=>`<h4 class="gxh">${PKN[k]} <span class="muted">${a[k]} · ${b[k]}</span></h4>${aiKeyLine(d[k])}${aiFmt(d[k].text)}`).join("")+(d.together&&d.together.text?(Object.keys(PKN).some(ok)?`<h4 class="gxh">החוט ביניכם</h4>`:"")+aiKeyLine(d.together)+aiFmt(d.together.text):"");
 }
 function aiMeKey(p){const m=S.members[p.id]||{};let h=0;for(const c of p.id+"|"+p.name+"|"+p.curRaw+"|"+m.bdate+"|"+TY)h=(h*31+c.charCodeAt(0))|0;return "me7_"+(h>>>0).toString(36);}
-const AI_GLITCH=/[\u0591-\u05BD\u05BF\u05C1\u05C2\u05C4-\u05C7]|[א-ת][A-Za-z]|[A-Za-z][א-ת]|[ךםןףץ][א-ת]/;
-function aiClean(t){return String(t).replace(/[\u0591-\u05BD\u05BF\u05C1\u05C2\u05C4-\u05C7]/g,"").replace(/([א-ת])[A-Za-z]+|[A-Za-z]+(?=[א-ת])/g,"$1");}
+const AI_GLITCH=/[\u0591-\u05BD\u05BF\u05C1\u05C2\u05C4-\u05C7\u0600-\u06FF\u0400-\u04FF\u0370-\u03FF]|[א-ת][A-Za-z]|[A-Za-z][א-ת]|[ךםןףץ][א-ת]/;
+function aiClean(t){return String(t).replace(/[\u0591-\u05BD\u05BF\u05C1\u05C2\u05C4-\u05C7\u0600-\u06FF\u0400-\u04FF\u0370-\u03FF]/g,"").replace(/([א-ת])[A-Za-z]+|[A-Za-z]+(?=[א-ת])/g,"$1");}
 function aiBad(d){return Object.values(d||{}).some(v=>v&&Object.values(v).some(t=>typeof t==="string"&&AI_GLITCH.test(t)));}
 function aiTidy(d){Object.values(d).forEach(v=>{if(v&&typeof v==="object")for(const k in v)if(typeof v[k]==="string")v[k]=aiClean(v[k]);});return d;}
 function aiMeParse(t){const a=t.indexOf("{"),b=t.lastIndexOf("}");return JSON.parse(t.slice(a,b+1));}
