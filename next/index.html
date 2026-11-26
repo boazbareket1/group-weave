@@ -1182,7 +1182,7 @@ async function aiModel(name,mode){
     AIM={X,ai,models:{}};
   }
   const k=name+"|"+(mode||"");
-  return AIM.models[k]||(AIM.models[k]=AIM.X.getGenerativeModel(AIM.ai,mode==="me"?{model:name,systemInstruction:AI_SYS_ME,generationConfig:{temperature:.7,maxOutputTokens:3000,responseMimeType:"application/json"}}:{model:name,systemInstruction:AI_SYS,generationConfig:{temperature:.8,maxOutputTokens:1400}}));
+  return AIM.models[k]||(AIM.models[k]=AIM.X.getGenerativeModel(AIM.ai,mode==="me"?{model:name,systemInstruction:AI_SYS_ME,generationConfig:{temperature:.55,maxOutputTokens:3000,responseMimeType:"application/json"}}:{model:name,systemInstruction:AI_SYS,generationConfig:{temperature:.8,maxOutputTokens:1400}}));
 }
 async function aiWrite(prompt,mode){
   if(LOCAL){await new Promise(r=>setTimeout(r,500));return "**[טקסט הדגמה במצב מקומי]** כאן תופיע הקריאה המעמיקה. במצב אמיתי הקריאה נשמרת במעגל, וכולם רואים את אותו נוסח.";}
@@ -1270,7 +1270,11 @@ function aiPairHTML(d,a,b){
   const off=Object.keys(PKN).filter(k=>d[k]&&!ok(k));if(off.length)console.info("pair reading skipped",off.join(","));
   return Object.keys(PKN).filter(ok).map(k=>`<h4 class="gxh">${PKN[k]} <span class="muted">${a[k]} · ${b[k]}</span></h4>${aiFmt(d[k].text)}`).join("")+(d.together&&d.together.text?`<h4 class="gxh">החוט ביניכם</h4>${aiFmt(d.together.text)}`:"");
 }
-function aiMeKey(p){const m=S.members[p.id]||{};let h=0;for(const c of p.id+"|"+p.name+"|"+p.curRaw+"|"+m.bdate+"|"+TY)h=(h*31+c.charCodeAt(0))|0;return "me2_"+(h>>>0).toString(36);}
+function aiMeKey(p){const m=S.members[p.id]||{};let h=0;for(const c of p.id+"|"+p.name+"|"+p.curRaw+"|"+m.bdate+"|"+TY)h=(h*31+c.charCodeAt(0))|0;return "me3_"+(h>>>0).toString(36);}
+const AI_GLITCH=/[\u0591-\u05C7]|[א-ת][A-Za-z]|[A-Za-z][א-ת]|[ךםןףץ][א-ת]/;
+function aiClean(t){return String(t).replace(/[\u0591-\u05C7]/g,"").replace(/([א-ת])[A-Za-z]+|[A-Za-z]+(?=[א-ת])/g,"$1");}
+function aiBad(d){return Object.values(d||{}).some(v=>v&&AI_GLITCH.test(v.text||""));}
+function aiTidy(d){Object.values(d).forEach(v=>{if(v&&v.text)v.text=aiClean(v.text);});return d;}
 function aiMeParse(t){const a=t.indexOf("{"),b=t.lastIndexOf("}");return JSON.parse(t.slice(a,b+1));}
 function aiMePlace(root,p,d){
   const ok=k=>d[k]&&d[k].text&&(k==="core"||+d[k].n===+p[k]||single(+d[k].n)===single(p[k]));
@@ -1279,15 +1283,16 @@ function aiMePlace(root,p,d){
 }
 async function aiMeFill(root){
   const p=G.P.find(x=>x.id===root.dataset.gme);if(!p||!ROOM)return;
+  if(!root.isConnected)return;
   const key=aiMeKey(p),path=`rooms/${ROOM}/ai/${key}`,core=root.querySelector('[data-gk="core"]');
-  try{const c=await store.get(path);if(c&&c.data){aiMePlace(document,p,c.data);return;}}catch(e){}
+  try{const c=await store.get(path);if(c&&c.data&&!aiBad(c.data)){aiMePlace(root,p,c.data);return;}}catch(e){}
   if(core){core.hidden=false;core.innerHTML=`<p class="aiwait">מעמיקים את הקריאה שלך… זה לוקח כמה שניות</p>`;}
   try{
     let d;
     if(LOCAL){await new Promise(r=>setTimeout(r,500));d={core:{text:"**[הדגמה במצב מקומי]** כאן תופיע הקריאה המעמיקה, וכל פסקה תיכנס לכרטיס שלה."}};["LP","expr","soul","pers","bday","py"].forEach(k=>d[k]={n:p[k],text:"[הדגמה] פסקה מעמיקה לכרטיס הזה."});}
-    else{let t,err;for(let i=0;i<2;i++){try{t=await aiWrite(aiMePrompt(p),"me");d=aiMeParse(t);break;}catch(e){err=e;}}if(!d)throw err;}
+    else{let err;for(let i=0;i<3;i++){try{const x=aiMeParse(await aiWrite(aiMePrompt(p),"me"));d=x;if(!aiBad(x))break;}catch(e){err=e;}}if(!d)throw err;aiTidy(d);}
     try{await store.put(path,{data:d,kind:"me2",t:Date.now()});}catch(e){}
-    aiMePlace(document,p,d);
+    aiMePlace(root,p,d);
   }catch(e){aiFail=String(e&&e.message||e);console.warn("deep",aiFail);if(core)core.hidden=true;}
 }
 function aiGroupPrompt(){
@@ -1329,7 +1334,7 @@ function aiBox(kind,ps,label){
 function aiPeople(box){return box.dataset.ids.split(",").map(id=>G.P.find(p=>p.id===id)).filter(Boolean);}
 async function aiFill(box,make){
   const ps=aiPeople(box);if(!ps.length||!ROOM)return;
-  const kind=box.dataset.ai,key=(kind==="pair"?"p2":"")+aiKey(kind,ps),tx=box.querySelector(".aitext");
+  const kind=box.dataset.ai,key=(kind==="pair"?"p3":"")+aiKey(kind,ps),tx=box.querySelector(".aitext");
   const show=c=>{tx.innerHTML=c.data?aiPairHTML(c.data,ps[0],ps[1]):aiFmt(c.text);};
   try{const c=await store.get(`rooms/${ROOM}/ai/${key}`);if(c&&(c.text||c.data)){show(c);return;}}catch(e){}
   if(!make)return;
@@ -1339,7 +1344,7 @@ async function aiFill(box,make){
     if(kind==="pair"){
       let d,err;
       if(LOCAL){await new Promise(r=>setTimeout(r,500));d={together:{text:"**[הדגמה במצב מקומי]** כאן יופיע החוט ביניכם לעומק, מחולק לפי שביל החיים, הביטוי, הנשמה, האישיות והשנה."}};}
-      else for(let i=0;i<2;i++){try{d=aiMeParse(await aiWrite(aiPairRaw(ps[0],ps[1]),"me"));break;}catch(e){err=e;}}
+      else{for(let i=0;i<3;i++){try{const x=aiMeParse(await aiWrite(aiPairRaw(ps[0],ps[1]),"me"));d=x;if(!aiBad(x))break;}catch(e){err=e;}}if(d)aiTidy(d);}
       if(!d)throw err;rec={data:d,kind,t:Date.now()};
     }else rec={text:await aiWrite(kind==="group"?aiGroupPrompt():aiPersonPrompt(ps[0])),kind,t:Date.now()};
     try{await store.put(`rooms/${ROOM}/ai/${key}`,rec);}catch(e){}
@@ -1972,11 +1977,11 @@ function myMap(p){
     <ul class="ixl"><li><b>חוזקות</b><p>${get(lp,"strengths").join(" · ")}</p></li><li><b>הצל</b><p>${get(lp,"shadow").join(" · ")}</p></li><li><b>אהבה</b><p>${get(lp,"love")}</p></li><li><b>שליחות ועבודה</b><p>${get(lp,"career")}</p></li><li style="border-color:var(--teal)"><b style="color:var(--teal)">שאלה לדרך</b><p>${get(lp,"growth")}</p></li></ul></section>`;
   const ctaCard=`<section class="kard cta" data-ci="6"><p class="k">ומה עכשיו?</p><h2>המקום שלי בקבוצה</h2><p class="x">איך המספרים שלך נפגשים עם המספרים של כולם.</p><button class="btn" type="button" style="margin-top:14px" onclick="famTab='mine';go('fam')">למקום שלי בקבוצה ←</button></section>`;
   const seen=ls.get("grp-deckhint");
-  return `<a class="extmap" href="${esc(personalMapURL(p.id))}" target="_blank" rel="noopener"><b>המפה האישית המורחבת ↗</b><span>ניתוח מעמיק יותר: מחזורי חיים, טבלת לידה, שיעורים קרמתיים ועוד</span></a>
+  return `<div data-gme="${esc(p.id)}"><a class="extmap" href="${esc(personalMapURL(p.id))}" target="_blank" rel="noopener"><b>המפה האישית המורחבת ↗</b><span>ניתוח מעמיק יותר: מחזורי חיים, טבלת לידה, שיעורים קרמתיים ועוד</span></a>
   ${seen?"":`<p class="deck-hint">זו המפה שלך. החלק/י הצידה כדי לראות את המספר הבא.</p>`}
-  <div class="deck" id="deck" data-gme="${esc(p.id)}">${cards}${ixCard}${moreCard}${ctaCard}</div>
+  <div class="deck" id="deck">${cards}${ixCard}${moreCard}${ctaCard}</div>
   <div class="deck-dots" id="deckDots" aria-hidden="true">${Array.from({length:7},(_,i)=>`<i class="${i?"":"on"}"></i>`).join("")}</div>
-  <div class="sec gxcore" data-gk="core" hidden></div>
+  <div class="sec gxcore" data-gk="core" hidden></div></div>
   <div class="sec"><h3>לשמור ולשתף</h3>${shareBlock(p,true)}</div>`;
 }
 function bindDeck(){
@@ -2008,15 +2013,16 @@ function meInFamily(p){
 const short=(n,k=2)=>get(n,"kw").split(",").slice(0,k).join(",").trim();
 function personReading(p){
   const ix=personIx(p),th=myThreads(G,p);
-  let h=`<h2><span class="pre">המפה של </span>${esc(p.name)}</h2>
-  ${["LP","expr","soul"].map(k=>paramHTML(k,p)).join("")}
+  let h=`<div data-gme="${esc(p.id)}"><h2><span class="pre">המפה של </span>${esc(p.name)}</h2>
+  ${["LP","expr","soul"].map(k=>paramHTML(k,p)+`<div class="gx" data-gk="${k}" hidden></div>`).join("")}
+  <div class="gxcore" data-gk="core" hidden></div>
   <h3>${ix[0][0]}</h3><p>${ix[0][1]}</p>
   <h3>${ix[1][0]}</h3><p>${ix[1][1]}</p>`+[...themeHTML(p),...mechHTML(p)].map(x=>`<h3>${x[0]}</h3><p>${x[1]}</p>`).join("");
   if(G.n>1){
     h+=`<h3>במעגל: ${fam(p.LP,"role")}</h3><p>${fam(p.LP,"give")}</p><p class="muted">מה המעגל מלמד: ${fam(p.LP,"learn")}</p>`;
     if(th.length)h+=`<h3>החוטים</h3>${th.map(t=>`<p>${esc(t.text)}</p>`).join("")}`;
   }
-  h+=`<h3>שאלה לדרך</h3><p>${get(p.LP,"growth")}</p>`;
+  h+=`<h3>שאלה לדרך</h3><p>${get(p.LP,"growth")}</p>`+`</div>`;
   return h;
 }
 const LINKLAB={give:"נותן־מקבל",soul:"תאומי נשמה",mirror:"מראה",friction:"חיכוך וצמיחה",echo:"הד",tribe:"אותו שבט",flow:"זורמים יחד",year:"אותה שנה"};
