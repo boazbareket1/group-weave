@@ -435,6 +435,7 @@ details.deep summary{color:var(--teal)}
 .fbk button{border:1.5px solid var(--line2);border-radius:4px;font-family:var(--f-mono);font-size:.72rem}
 .fbk button[aria-pressed="true"]{border-color:var(--teal);background:var(--teal-soft)}
 .trialtag{position:fixed;top:8px;left:8px;z-index:50;font-family:var(--f-mono);font-size:.75rem;padding:3px 8px;border:1px dashed var(--slate);border-radius:4px;background:#fff;color:var(--slate);pointer-events:none}
+.oneline{margin:6px 0 0;font-size:.98rem;line-height:1.55}
 .ixl.deep{margin-bottom:14px;padding-bottom:12px;border-bottom:1.5px dashed var(--line2)}
 .mnums{font-size:.92rem;font-weight:700;color:var(--teal)}
 .deepmore summary{cursor:pointer;color:var(--teal);font-weight:700;padding:6px 0}
@@ -940,6 +941,8 @@ function pairInsight(a,b){
   }
   return secs;
 }
+/* one fuller sentence under a title + keywords (board cards) */
+function oneLine(n){const e=(get(n,"essence")||"").split(/(?<=[.!?])\s+/);let t=e[0]||"";if(t.length<60&&e[1])t+=" "+e[1];return t;}
 function deepList(p){
   const th=themeHTML(p),me=mechHTML(p);
   const vis=[th[0],me[0]].filter(Boolean),rest=[...th.slice(1),...me.slice(1)];
@@ -1588,11 +1591,11 @@ function stageHTML(st){
     const mp=P[mysteryIdx];
     h+=mp?`<div class="mystery">"${esc(N[single(mp.LP)].essence.split(". ").slice(0,2).join(". ").replace(/את\/ה/g,"הוא/היא"))}."${mysteryShown?`<div style="margin-top:12px;font-family:var(--f-body);font-size:1.1rem;color:var(--teal)">זה ${esc(mp.label)}: ${get(mp.LP,"title")}, שביל חיים ${mp.LP}</div>`:""}</div>`:"";
     h+=`<div class="row" style="margin-top:6px"><button class="btn ghost small" data-go="game" type="button">משחק הזיהוי</button><button class="btn small" id="mysteryBtn">${mysteryIdx<0?"משפט מסתורי: על מי מדובר?":mysteryShown?"המשפט הבא":"חשיפה"}</button></div>`;
-    h+=`<div class="grid" style="margin-top:18px">${P.map(p=>personCard(p,`<p><span class="num">${p.LP}</span> <b>${get(p.LP,"title")}</b></p><p class="muted">${get(p.LP,"kw")}</p>`)).join("")}</div>`;
+    h+=`<div class="grid" style="margin-top:18px">${P.map(p=>personCard(p,`<p><span class="num">${p.LP}</span> <b>${get(p.LP,"title")}</b></p><p class="muted">${get(p.LP,"kw")}</p><p class="oneline">${oneLine(p.LP)}</p>`)).join("")}</div>`;
   }
   if(k==="num"){
     h+=`<p class="lead">מחברים את מספרי הדרך של כולם (${P.map(p=>p.LP).join(" + ")} = ${G.sumLP}) ומצמצמים למספר אחד: הכיוון המשותף של הקבוצה שהתכנסה כאן.</p>
-    <div class="big"><span class="num">${G.LP}</span><div><h3>${get(G.LP,"title")}</h3><p class="muted" style="margin:2px 0 0">${get(G.LP,"kw")}</p></div></div>
+    <div class="big"><span class="num">${G.LP}</span><div><h3>${get(G.LP,"title")}</h3><p class="muted" style="margin:2px 0 0">${get(G.LP,"kw")}</p><p class="oneline">${oneLine(G.LP)}</p></div></div>
     <p style="font-size:1.15rem;max-width:60ch">${fam(G.LP,"mission")}</p>`;
     if(G.dom.length)h+=`<h3 style="margin-top:20px;font-size:1.2rem">האנרגיה הדומיננטית: ${G.dom.join(" ו־")}</h3><p>${G.dom.map(n=>fam(n,"dom")).join(" ")}</p>`;
     h+=`<h3 style="margin-top:20px;font-size:1.2rem">שלושת השבטים</h3><p class="muted" style="margin:2px 0 8px">המספרים מתחלקים לשלושה שבטים. מאותו שבט מבינים זה את זה בקלות, גם בלי היכרות מוקדמת.</p>
