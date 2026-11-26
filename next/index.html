@@ -443,6 +443,10 @@ details.deep summary{color:var(--teal)}
 .pairbtns{display:flex;flex-wrap:wrap;gap:6px;margin:2px 0 10px}
 .pairbtn{display:inline-flex;align-items:center;gap:6px;min-height:40px;padding:6px 12px;border:1.5px solid var(--teal);border-radius:20px;background:#fff;color:var(--ink);font:inherit;font-size:.95rem;cursor:pointer}
 .pairbtn:hover{background:var(--teal-soft)}
+.extmap{display:flex;flex-direction:column;gap:2px;margin:0 0 14px;padding:12px 14px;border:2px solid var(--teal);border-radius:8px;background:#fff;color:var(--ink);text-decoration:none}
+.extmap b{color:var(--teal);font-size:1.05rem}
+.extmap span{font-size:.9rem;color:var(--muted)}
+.extmap:hover{background:var(--teal-soft)}
 .fbalt{flex-basis:100%;display:block;margin:6px 0 2px;padding:10px 12px;border:1.5px dashed var(--teal);border-radius:6px;background:#fff}
 .fbalt b{display:block;font-family:var(--f-mono);font-weight:600;font-size:.85rem;color:var(--teal);margin-bottom:2px}
 .fbalt .fbat{display:block;font-size:1rem;line-height:1.6}
@@ -1704,7 +1708,8 @@ function paramHTML(key,p){
 function myMap(p){
   const lp=p.LP;
   const ix=personIx(p);
-  const firstSent=t=>{const m=String(t).replace(/<[^>]+>/g,"").match(/^(.+?[.!?])(\s|$)/);return m?m[1]:t;};
+  /* first sentence, plus the second when the first is only a short label */
+  const firstSent=t=>{const e=String(t).replace(/<[^>]+>/g,"").split(/(?<=[.!?])\s+/);let r=e[0]||"";if(r.length<60&&e[1])r+=" "+e[1];return r;};
   const P4=[["LP","שביל החיים"+qm("shvil"),get(p.LP,"title"),get(p.LP,"essence")],["expr","מספר הביטוי"+qm("bitui"),get(p.expr,"kw").split(",")[0],get(p.expr,"expr")],["soul","דחף הנשמה"+qm("neshama"),get(p.soul,"kw").split(",")[0],get(p.soul,"soul")],["pers","מספר האישיות"+qm("ishiut"),get(p.pers,"kw").split(",")[0],get(p.pers,"persona")]];
   const cards=P4.map(([key,name,title,body],i)=>`<section class="kard" data-ci="${i}">
     <p class="k">${String(i+1).padStart(2,"0")} / 0${P4.length+2} — ${name}</p>
@@ -1722,10 +1727,11 @@ function myMap(p){
     <ul class="ixl"><li><b>חוזקות</b><p>${get(lp,"strengths").join(" · ")}</p></li><li><b>הצל</b><p>${get(lp,"shadow").join(" · ")}</p></li><li><b>אהבה</b><p>${get(lp,"love")}</p></li><li><b>שליחות ועבודה</b><p>${get(lp,"career")}</p></li><li style="border-color:var(--teal)"><b style="color:var(--teal)">שאלה לדרך</b><p>${get(lp,"growth")}</p></li></ul></section>`;
   const ctaCard=`<section class="kard cta" data-ci="6"><p class="k">ומה עכשיו?</p><h2>המקום שלי בקבוצה</h2><p class="x">איך המספרים שלך נפגשים עם המספרים של כולם.</p><button class="btn" type="button" style="margin-top:14px" onclick="famTab='mine';go('fam')">למקום שלי בקבוצה ←</button></section>`;
   const seen=ls.get("grp-deckhint");
-  return `${seen?"":`<p class="deck-hint">זו המפה שלך. החלק/י הצידה כדי לראות את המספר הבא.</p>`}
+  return `<a class="extmap" href="${esc(personalMapURL(p.id))}" target="_blank" rel="noopener"><b>המפה האישית המורחבת ↗</b><span>ניתוח מעמיק יותר: מחזורי חיים, טבלת לידה, שיעורים קרמתיים ועוד</span></a>
+  ${seen?"":`<p class="deck-hint">זו המפה שלך. החלק/י הצידה כדי לראות את המספר הבא.</p>`}
   <div class="deck" id="deck">${cards}${ixCard}${moreCard}${ctaCard}</div>
   <div class="deck-dots" id="deckDots" aria-hidden="true">${Array.from({length:7},(_,i)=>`<i class="${i?"":"on"}"></i>`).join("")}</div>
-  <div class="sec"><h3>לשמור ולשתף</h3><p class="muted" style="margin:0 0 6px;font-size:.92rem">"המפה האישית המורחבת" פותחת את כלי מפת המספרים עם הפרטים שלך, ובו ניתוח מעמיק יותר: מחזורי חיים, טבלת לידה, שיעורים קרמתיים ועוד.</p>${shareBlock(p)}</div>`;
+  <div class="sec"><h3>לשמור ולשתף</h3>${shareBlock(p,true)}</div>`;
 }
 function bindDeck(){
   const d=$("deck"),dots=$("deckDots");if(!d||!dots)return;
@@ -1959,8 +1965,8 @@ function htmlToText(html){
   d.querySelectorAll(".pn").forEach(n=>n.textContent="✦ "+n.textContent);
   return d.textContent.replace(/[ \t]+\n/g,"\n").replace(/\n{3,}/g,"\n\n").trim();
 }
-function shareBlock(p){
-  return `<div class="sharebar"><button type="button" class="btn small" data-sharedlg="${p.id}">שיתוף / שליחה / PDF</button><a class="btn ghost small" style="text-decoration:none" href="${esc(personalMapURL(p.id))}" target="_blank" rel="noopener">למפה האישית המורחבת ↗</a><button type="button" class="btn ghost small" data-edit="${p.id}">✎ עריכת שם ותאריך</button></div>`;
+function shareBlock(p,noMap){
+  return `<div class="sharebar"><button type="button" class="btn small" data-sharedlg="${p.id}">שיתוף / שליחה / PDF</button>${noMap?"":`<a class="btn ghost small" style="text-decoration:none" href="${esc(personalMapURL(p.id))}" target="_blank" rel="noopener">למפה האישית המורחבת ↗</a>`}<button type="button" class="btn ghost small" data-edit="${p.id}">✎ עריכת שם ותאריך</button></div>`;
 }
 function readingText(p){
   return `המפה של ${p.name} · המארג הקבוצתי (${S.meta.name})\n\n`+htmlToText(personReading(p))+`\n\nלמפה האישית המורחבת: ${personalMapURL(p.id)}\nלמעגל: ${joinURL()}`;
