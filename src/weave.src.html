@@ -1550,7 +1550,12 @@ const isMember=()=>{const me=myId();return !!(me&&S.members[me]);};
 const isClosed=()=>!!(S.meta&&S.meta.closed);
 const canAdd=()=>FACIL()||!isClosed();
 const CLOSED_MSG="המעגל סגור להצטרפות. המפגש כבר התחיל, ומי שלא היה בו יכול להצטרף למעגל אחר. אם נותקת באמצע, פנה/י למנחה.";
+@@group
 function defaultView(){return isHost()?"stages":isMember()?"me":"join";}
+@@family
+/* family: often one person types in everyone – the opener lands on the family view (all maps), not the projector board */
+function defaultView(){return isMember()?"me":isHost()?"fam":"join";}
+@@end
 function go(v){
   VIEW=v;closeReader();
   try{const u=new URL(location.href);["board","lead","game"].forEach(k=>u.searchParams.delete(k));u.searchParams.set("v",v);history.replaceState(null,"",u);}catch(e){}
@@ -1824,7 +1829,7 @@ function openAdd(editId){
   $("addTitle").textContent=m?"עריכת פרטים":"הוספת ⟦משתתף/ת¦בן/בת משפחה⟧";
   $("addDlg").querySelector("p.muted").textContent=m?"תיקון השם או תאריך הלידה. הניתוח יתעדכן מיד אצל כולם.":"⟦למשתתף/ת שאין לו/ה טלפון, או חבר/ה שמגיע/ה איתך¦למי שלא מצטרף/ת מהטלפון בעצמו/ה⟧.";
   const selfOpt=!m&&!isMember();
-  $("addForm").innerHTML=`${selfOpt?`<label class="selfme"><input type="checkbox" id="aSelf"> <span><b>זה/זו אני</b> – אני מוסיף/ה את עצמי, ומהמכשיר הזה אראה את המפה שלי</span></label>`:""}<label class="f">שם מלא מהלידה, בעברית<small>כולל שם המשפחה מהלידה</small><input type="text" id="aName" autocomplete="off"></label>
+  $("addForm").innerHTML=`${selfOpt?`<label class="selfme"><input type="checkbox" id="aSelf"⟦¦ checked⟧> <span><b>זה/זו אני</b> – אני מוסיף/ה את עצמי, ומהמכשיר הזה אראה את המפה שלי</span></label>`:""}<label class="f">שם מלא מהלידה, בעברית<small>כולל שם המשפחה מהלידה</small><input type="text" id="aName" autocomplete="off"></label>
   <div style="display:flex;flex-direction:column;gap:5px;font-weight:600;font-size:.95rem;margin-top:14px">תאריך לידה${dateSel("aDate")}</div>
   <label class="f">השם של היום <small>לא חובה</small><input type="text" id="aCur" autocomplete="off"></label>
   <div class="row"><button class="btn small" id="aBtn">${m?"שמירה":"הוספה"}</button><button class="btn ghost small" id="aCancel">ביטול</button></div><p class="err" id="aErr"></p>`;
