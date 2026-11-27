@@ -451,6 +451,7 @@ details.deep summary{color:var(--teal)}
 .kard:has(>.gx:not([hidden]))>.x{display:none}
 .ixl li:has(>.gx:not([hidden]))>p{display:none}
 .param:has(>.gx:not([hidden]))>.pa,.param:has(>.gx:not([hidden]))>.fbk,.ixl li:has(>.gx:not([hidden]))>.fbk{display:none}
+.pc[data-pr]{cursor:pointer}.pc[data-pr]:hover{border-color:var(--teal)}.prgo{font-size:.8rem;color:var(--teal);font-weight:700;margin-inline-start:6px}
 .gxcore{padding:16px 18px;border:2px solid var(--teal);border-radius:10px;background:#fff}
 .gxh{margin:12px 0 4px;font-size:1rem;color:var(--teal)}.gxh .muted{font-family:var(--f-mono);font-weight:400}
 .gxcore h3{margin:0 0 8px;color:var(--teal)}.gxcore p{margin:0 0 10px;line-height:1.7}
@@ -1905,7 +1906,10 @@ function goStage(i){
   if(FACIL()&&i>curStage())store.patch(`rooms/${ROOM}/meta`,Object.assign({stage:i},i>0&&G&&G.n>=2&&!isClosed()&&S.meta.closed===undefined?{closed:true}:{}));
   renderBoard();window.scrollTo({top:0,behavior:"smooth"});
 }
-function personCard(p,body){return `<div class="pc"><div class="who">${dotOf(p)}<b>${esc(p.label)}</b></div>${body}</div>`;}
+function personCard(p,body){return `<div class="pc" data-pr="${esc(p.id)}" role="button" tabindex="0" title="למפה של ${esc(p.label)}"><div class="who">${dotOf(p)}<b>${esc(p.label)}</b> <span class="prgo">למפה ←</span></div>${body}</div>`;}
+/* every participant card (מי אני, תפקידים, משפחה/קבוצה...) opens that person's full map with the heart of the map */
+document.addEventListener("click",e=>{const c=e.target.closest(".pc[data-pr]");if(!c||e.target.closest("button,a,input,select,textarea,details"))return;const i=G&&G.P?G.P.findIndex(x=>x.id===c.dataset.pr):-1;if(i>=0)openReader(personReading(G.P[i]),G.P,i);});
+document.addEventListener("keydown",e=>{if(e.key!=="Enter")return;const c=e.target.closest&&e.target.closest(".pc[data-pr]");if(c)c.click();});
 function stageHTML(st){
   const k=STAGES[st].k,P=G.P;let h=`<h2>${STAGES[st].t}</h2><p class="kicker">שלב ${st} מתוך ${STAGES.length-1}</p>`;
   if(k==="join"){
