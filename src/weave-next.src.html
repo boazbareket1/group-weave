@@ -2092,12 +2092,13 @@ function myMap(p){
   const ctaCard=`<section class="kard cta" data-ci="7"><p class="k">ומה עכשיו?</p><h2>המקום שלי במשפחה</h2><p class="x">איך המספרים שלך נפגשים עם המספרים של כולם.</p><button class="btn" type="button" style="margin-top:14px" onclick="famTab='mine';go('fam')">למקום שלי בקבוצה ←</button></section>`;
   const seen=ls.get("fam-deckhint");
 @@end
-  return `<div data-gme="${esc(p.id)}"><a class="extmap" href="${esc(personalMapURL(p.id))}" target="_blank" rel="noopener"><b>המפה האישית המורחבת ↗</b><span>ניתוח מעמיק יותר: מחזורי חיים, טבלת לידה, שיעורים קרמתיים ועוד</span></a>
+  return `<div data-gme="${esc(p.id)}">
   <div class="sec gxcore" data-gk="core" hidden style="margin-top:0"></div>
   ${seen?"":`<p class="deck-hint">זו המפה שלך. החלק/י הצידה כדי לראות את המספר הבא.</p>`}
   <div class="deck" id="deck">${cards}${ixCard}${moreCard}${⟦¦cycCard}${⟧ctaCard}</div>
   <div class="deck-dots" id="deckDots" aria-hidden="true">${Array.from({length:⟦7¦8⟧},(_,i)=>`<i class="${i?"":"on"}"></i>`).join("")}</div>
 </div>
+  <div class="sec"><a class="extmap" href="${esc(personalMapURL(p.id))}" target="_blank" rel="noopener"><b>המפה האישית המורחבת ↗</b><span>ניתוח מעמיק יותר: מחזורי חיים, טבלת לידה, שיעורים קרמתיים ועוד. נפתחת בלשונית חדשה; חוזרים בכפתור «חזרה למעגל».</span></a></div>
   <div class="sec"><h3>לשמור ולשתף</h3>${shareBlock(p,true)}</div>`;
 }
 function bindDeck(){
