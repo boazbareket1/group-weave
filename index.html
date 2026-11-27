@@ -433,6 +433,37 @@ details.deep summary{color:var(--teal)}
 .sopt:has(input:checked){border-color:var(--ink);background:var(--panel2)}
 .fbk button{border:1.5px solid var(--line2);border-radius:4px;font-family:var(--f-mono);font-size:.72rem}
 .fbk button[aria-pressed="true"]{border-color:var(--teal);background:var(--teal-soft)}
+.trialtag{position:fixed;top:8px;left:8px;z-index:50;font-family:var(--f-mono);font-size:.75rem;padding:3px 8px;border:1px dashed var(--slate);border-radius:4px;background:#fff;color:var(--slate);pointer-events:none}
+.oneline{margin:6px 0 0;font-size:.98rem;line-height:1.55}
+.aibox{margin:14px 0;padding:16px 18px;border:2px solid var(--teal);border-radius:10px;background:#fff}
+.aibox h3{margin:0 0 8px;color:var(--teal)}
+.gx{margin:12px 0 0;padding:10px 0 0;border-top:1.5px dashed var(--line2);width:100%}
+.gx p{margin:0 0 8px;font-size:.95rem;line-height:1.6;color:#2a3540}
+.kard .ixl .gx p{font-size:.88rem}
+.has-deep .toolx{display:none}
+.pairwrap.keep.has-deep>.toolx{display:block}
+.gkeys{margin:0 0 8px;padding:0 18px 0 0;font-weight:700;color:var(--teal);font-size:1rem;line-height:1.45}.gkeys li{margin:0 0 3px}
+.kard .ixl .gkeys li,.ixl .gkeys li{border:0;padding:0;border-radius:0;list-style:disc}
+.gkey{font-weight:700;color:var(--teal);font-size:1.04rem;line-height:1.45;margin:0 0 6px!important}
+.aibox .aitext p>b:first-child{color:var(--teal)}
+.kard:has(>.gx:not([hidden]))>.x{display:none}
+.ixl li:has(>.gx:not([hidden]))>p{display:none}
+.param:has(>.gx:not([hidden]))>.pa,.param:has(>.gx:not([hidden]))>.fbk,.ixl li:has(>.gx:not([hidden]))>.fbk{display:none}
+.gxcore{padding:16px 18px;border:2px solid var(--teal);border-radius:10px;background:#fff}
+.gxh{margin:12px 0 4px;font-size:1rem;color:var(--teal)}.gxh .muted{font-family:var(--f-mono);font-weight:400}
+.gxcore h3{margin:0 0 8px;color:var(--teal)}.gxcore p{margin:0 0 10px;line-height:1.7}
+.aibox p{margin:0 0 10px;line-height:1.7}
+.aigo{min-height:46px;padding:0 18px;border:0;border-radius:8px;background:var(--teal);color:#fff;font:inherit;font-weight:700;cursor:pointer}
+.aihint{font-size:.9rem;margin-top:8px!important}
+.aiwait{color:var(--teal);font-weight:700}
+.aisrc{font-size:.82rem}
+.ixl.deep{margin-bottom:14px;padding-bottom:12px;border-bottom:1.5px dashed var(--line2)}
+.mnums{font-size:.92rem;font-weight:700;color:var(--teal)}
+.deepmore summary{cursor:pointer;color:var(--teal);font-weight:700;padding:6px 0}
+.deepmore details[open] summary{margin-bottom:8px}
+.pairbtns{display:flex;flex-wrap:wrap;gap:6px;margin:2px 0 10px}
+.pairbtn{display:inline-flex;align-items:center;gap:6px;min-height:40px;padding:6px 12px;border:1.5px solid var(--teal);border-radius:20px;background:#fff;color:var(--ink);font:inherit;font-size:.95rem;cursor:pointer}
+.pairbtn:hover{background:var(--teal-soft)}
 .extmap{display:flex;flex-direction:column;gap:2px;margin:0 0 14px;padding:12px 14px;border:2px solid var(--teal);border-radius:8px;background:#fff;color:var(--ink);text-decoration:none}
 .extmap b{color:var(--teal);font-size:1.05rem}
 .extmap span{font-size:.9rem;color:var(--muted)}
@@ -786,6 +817,168 @@ const RT={
 22:"משלב/ת חזון עם שיטה: רואה את הרעיון הגדול ויודע/ת לפרק אותו לתוכנית.",
 33:"חושב/ת דרך הלב: מה יעזור, מה ירפא, מה ילמד. המחשבה מכוונת לטובת אחרים."
 };
+/* ================= depth layer (next) =================
+   Learned from strong readings: (1) find the number that RECURS across positions and make it the
+   person's theme; (2) explain a felt trait as a MECHANISM of 2–3 numbers (what happens, a scene,
+   what helps); (3) in pairs: shared language, complement, processing pace, timing.
+   Same Pythagorean framework as the rest of the tool. No other calculation systems mixed in. */
+const POS={fn:"השם הפרטי",LP:"שביל החיים",expr:"מספר הביטוי",soul:"דחף הנשמה",pers:"מספר האישיות",bday:"יום הלידה",rt:"מספר המחשבה",mat:"מספר הבגרות"};
+const POSQ={LP:"shvil",expr:"bitui",soul:"neshama",pers:"ishiut",bday:"yom",rt:"machshava",mat:"bagrut"};
+/* a number that appears in two or more positions: what it means when it is doubled */
+const REP={
+1:"כשה־1 חוזר במפה, העצמאות היא לא תכונה אחת מני רבות: היא הציר. יש בך צורך עמוק להחליט בעצמך ולפתוח דרכים. החוזק: אומץ להתחיל כשאחרים מחכים. המחיר: קושי לבקש עזרה, ותחושה שהכול עליך. השאלה הפורייה: איפה אפשר להוביל ולהשאיר מקום גם לאחרים?",
+2:"כשה־2 חוזר במפה, את/ה קולט/ת אנשים כמו מכשיר עדין. מצבי רוח, מתחים ודברים שלא נאמרו מגיעים אליך לפני שמישהו מדבר. החוזק: יכולת לחבר, לגשר ולהרגיע. המחיר: קל להתבלבל בין מה שאת/ה מרגיש/ה לבין מה שקלטת מאחרים. מה שעוזר: לשאול 'של מי הרגש הזה?'",
+3:"כשה־3 חוזר במפה, הביטוי הוא אוויר לנשימה. כשאת/ה מדבר/ת, כותב/ת או יוצר/ת, הדברים מסתדרים גם בפנים. החוזק: קלילות, הומור ויכולת להדליק אחרים. המחיר: כשאין במה, מצב הרוח יורד, ויש נטייה להתחיל הרבה ולסיים מעט.",
+4:"כשה־4 חוזר במפה, היציבות היא לא העדפה אלא צורך. את/ה בונה בסבלנות, ונבנה/ית מסדר ומבהירות. החוזק: אמינות שאפשר להישען עליה. המחיר: שינוי פתאומי מערער יותר ממה שנראה מבחוץ, וקשה לשחרר שליטה. מה שעוזר: תוכנית שיש בה גם מרווח.",
+5:"כשה־5 חוזר במפה, התנועה היא הדלק. את/ה מתעורר/ת מחוויה, משינוי ומאנשים חדשים. החוזק: גמישות וחיוניות שמזיזות דברים תקועים. המחיר: שגרה נחווית כמו כלא, ותגובות יוצאות מהר לפני שנבדקו. מה שעוזר: חופש בתוך מסגרת שבחרת בעצמך.",
+6:"כשה־6 חוזר במפה, האחריות לאחרים היא חלק מהזהות. את/ה רואה מה חסר לאנשים שלך לפני שהם רואים בעצמם. החוזק: חום, נאמנות ויכולת לבנות בית. המחיר: קושי לקבל, ונטייה לתקן גם את מה שלא ביקשו לתקן. השאלה: מי דואג/ת לך?",
+7:"כשה־7 חוזר במפה, העומק הוא המקום הטבעי שלך. את/ה צריך/ה שקט כדי לחשוב, ולא מסתפק/ת בתשובות שטחיות. החוזק: הבנה שמגיעה לשורש, ואינטואיציה חדה. המחיר: כשמשהו מטריד, את/ה נוטה להיסגר ולעבד לבד, ומבחוץ זה עלול להיראות כריחוק. מה שעוזר: לומר 'אני צריך/ה רגע עם זה' במקום להיעלם.",
+8:"כשה־8 חוזר במפה, הכוח והאחריות הם ציר מרכזי. את/ה רואה איך דברים צריכים לעבוד, ויודע/ת להוציא אותם לפועל. החוזק: ביצוע, ניהול וכושר החלטה. המחיר: קל להיתפס כקשוח/ה, וקשה להראות חולשה. השאלה: מה הכוח שלך משרת?",
+9:"כשה־9 חוזר במפה, המבט הרחב הוא בית. את/ה מרגיש/ה את העולם ומחפש/ת משמעות במה שאת/ה עושה. החוזק: נדיבות, השראה ויכולת לסלוח. המחיר: קל לתת עד הסוף ולשכוח את עצמך, וקשה לסיים פרקים. מה שעוזר: לתת מתוך מלאות ולא מתוך חובה."
+};
+const NOREP="אין במפה שלך מספר שחוזר. המשמעות: המפה מגוונת, וכל תפקיד מדבר בשפה אחרת. זה נותן גמישות ויכולת לנוע בין עולמות, אבל לפעמים גם תחושה שיש בך כמה אנשים שונים. כדאי לשים לב איזה מהם מוביל בכל רגע.";
+function themeOf(p){
+  const m={};for(const k of ["LP","expr","soul","pers","bday","fn","rt","mat"]){const v=p[k];if(!v)continue;const n=single(v);(m[n]=m[n]||[]).push(k);}
+  const reps=Object.entries(m).filter(([n,ks])=>ks.length>=2).map(([n,ks])=>({n:+n,ks})).sort((a,b)=>b.ks.length-a.ks.length||((b.ks.includes("LP")||b.ks.includes("soul"))-(a.ks.includes("LP")||a.ks.includes("soul"))));
+  return reps;
+}
+function themeHTML(p){
+  const reps=themeOf(p);
+  if(!reps.length)return [["הנושא החוזר שלך",NOREP,"rep0"]];
+  const more=reps.slice(2).map(r=>`גם ה־${r.n} חוזר אצלך (${r.ks.map(k=>POS[k]).join(", ")}): ${REP[r.n].split(". ").slice(1,2).join("")}.`).join(" ");
+  return reps.slice(0,2).map((r,i)=>{
+    const where=r.ks.map(k=>POS[k]).join(", ");
+    const lead=r.ks.length>=3?`ה־${r.n} מופיע אצלך ב־${r.ks.length} מקומות (${where}). זה הצבע החזק ביותר במפה.`:`ה־${r.n} מופיע אצלך פעמיים: ב${where.replace(", "," וב")}.`;
+    return [`הנושא החוזר שלך: ${r.n}`,`${lead} ${REP[r.n]}`+(i===1&&more?`<br><span class="muted">${more}</span>`:""),"rep"+r.n];
+  });
+}
+/* mechanisms: how two or three numbers work together. Each rule: test(p) → slots used; title; how; scene; help */
+const SENS=[2,6,9,11,33],FAST=[1,3,5],INWARD=[4,7],DRIVE=[1,8,22],GIVE=[2,6,9,33],FREE=[3,5],FORM=[4,8,22];
+const IN=(p,k,arr)=>p[k]&&(arr.includes(p[k])||arr.includes(single(p[k])));
+const anyIn=(p,ks,arr)=>ks.find(k=>IN(p,k,arr));
+const MECH=[
+ {id:"sensfast",test:p=>{const a=anyIn(p,["soul","bday"],SENS),b=anyIn(p,["LP","pers","rt"],FAST);return a&&b&&[a,b];},
+  t:"רגישות שנוסעת מהר",
+  how:"את/ה קולט/ת הרבה רגש מבפנים ומסביב, והמנוע של הדרך שלך מהיר. הרגש לא נשאר לנוח, הוא יוצא מיד החוצה.",
+  scene:"משהו קטן נאמר, את/ה מרגיש/ה אותו בעוצמה, ובתוך שניות כבר מגיב/ה. רק אחר כך מבינים כמה זה נגע.",
+  help:"נשימה אחת לפני התגובה, ולשים מילה על הרגש ('נפגעתי', 'נבהלתי') לפני שעושים משהו איתו."},
+ {id:"pressure",test:p=>{const a=anyIn(p,["soul","rt","LP","bday"],INWARD),b=anyIn(p,["pers","expr"],FREE);return a&&b&&a!==b&&[a,b];},
+  t:"קליל מבחוץ, עמוק מבפנים",
+  how:"מבחוץ רואים קלילות, תנועה ויכולת ביטוי. בפנים מתרחש עיבוד שקט ויסודי, שלא תמיד מגיע למילים.",
+  scene:"אנשים חושבים שהכול בסדר, כי את/ה מחייך/ת ומתפקד/ת. בפנים משהו נאגר, ובסוף יוצא בבת אחת, או שאת/ה פשוט נעלם/ת לזמן מה.",
+  help:"ערוץ קבוע לעיבוד: כתיבה, הליכה, שיחה עם אדם אחד שמבין. כשהעומק מקבל מקום, הוא לא צריך להתפרץ."},
+ {id:"givelead",test:p=>{const a=anyIn(p,["soul"],GIVE),b=anyIn(p,["LP","expr"],DRIVE);return a&&b&&[a,b];},
+  t:"מוביל/ה מתוך דאגה",
+  how:"הלב שלך רוצה לתת ולדאוג, והדרך שלך מבקשת להוביל ולהחליט. הכוח שלך מופעל הכי טוב כשהוא בשביל מישהו.",
+  scene:"את/ה לוקח/ת פיקוד כי אכפת לך, ולפעמים מגלה שהחלטת בשביל אחרים יותר ממה שהם ביקשו.",
+  help:"לפני שלוקחים את ההגה, לשאול: 'מה את/ה צריך/ה ממני עכשיו?' לפעמים התשובה היא רק נוכחות."},
+ {id:"freeform",test:p=>{const a=anyIn(p,["soul","LP","pers"],[5]),b=anyIn(p,["LP","expr","rt","soul"],[4,22]);return a&&b&&a!==b&&[a,b];},
+  t:"חופש וסדר באותו אדם",
+  how:"חלק ממך צריך גבולות ברורים ותוכנית, וחלק אחר נחנק מהם. שניהם אמיתיים.",
+  scene:"בונים מסגרת מסודרת, ואחרי זמן קצר בא דחף לשבור אותה. או להפך: יוצאים לחופש, ושם מתגעגעים לסדר.",
+  help:"מסגרת עם 'אזורי חופש' מתוכננים: שגרה קבועה, ובתוכה זמן שבו אין שום תוכנית."},
+ {id:"armor",test:p=>{const a=anyIn(p,["soul"],[2,6,11,33,9]),b=anyIn(p,["pers"],[1,8,4,22]);return a&&b&&[a,b];},
+  t:"שריון על לב רך",
+  how:"מבחוץ את/ה משדר/ת יציבות וכוח. בפנים יש צורך ברוך, בקשר ובהבנה. הפער הזה גורם לאחרים לפספס מה את/ה צריך/ה.",
+  scene:"אנשים פונים אליך כשקשה להם, אבל כשקשה לך, אף אחד לא שואל. הם בטוחים שאת/ה מסתדר/ת.",
+  help:"לתת לאדם אחד או שניים לראות את הצד הרך, ולבקש במפורש."},
+ {id:"quietforce",test:p=>{const a=anyIn(p,["soul"],[1,8,5]),b=anyIn(p,["pers"],[2,6,9,7]);return a&&b&&[a,b];},
+  t:"כוח שקט",
+  how:"מבחוץ את/ה נראה/ית עדין/ה, נעים/ה או שקט/ה. בפנים יש רצון חזק להוביל, להשפיע או להיות חופשי/ה.",
+  scene:"מזלזלים בך בהתחלה, ואז מופתעים מהנחישות. או שאת/ה עצמך מתוסכל/ת שלא רואים כמה את/ה רוצה.",
+  help:"להגיד בקול מה את/ה רוצה, בלי להתנצל. הרכות לא תיעלם, היא רק תפסיק להסתיר."},
+ {id:"stagecave",test:p=>{const a=anyIn(p,["LP","expr","pers","soul"],[3]),b=anyIn(p,["LP","expr","soul","rt","bday"],[7]);return a&&b&&a!==b&&[a,b];},
+  t:"הבמה והמערה",
+  how:"ה־3 אוהב אנשים, דיבור וביטוי. ה־7 צריך שקט ולבד. אצלך שניהם קיימים, ולכן יש תנודות בין תקופות חברתיות לתקופות של הסתגרות.",
+  scene:"שבוע אחד את/ה בלב העניינים, ובשבוע שאחריו לא עונה לאף אחד. זה לא מצב רוח, זה מחזור טבעי.",
+  help:"לתכנן את שני הצרכים מראש, ולהגיד לקרובים שהשקט הוא טעינה ולא ריחוק."},
+ {id:"homeroad",test:p=>{const a=anyIn(p,["LP","soul","expr"],[5]),b=anyIn(p,["LP","soul","expr","pers"],[6]);return a&&b&&a!==b&&[a,b];},
+  t:"הדרך והבית",
+  how:"ה־5 רוצה לצאת לעולם, וה־6 רוצה בית, משפחה ואחריות. המתח הזה עלול להרגיש כמו בחירה בין חופש לבין אהבה.",
+  scene:"כשאת/ה בבית, משהו קורא לך החוצה. כשאת/ה בחוץ, את/ה דואג/ת למי שנשאר.",
+  help:"לבנות בית שיש בו תנועה: לטייל יחד, לחדש הרגלים, ולהביא את העולם הביתה."},
+ {id:"selfpair",test:p=>{const a=anyIn(p,["LP","expr","soul","pers"],[1]),b=anyIn(p,["LP","expr","soul","pers"],[2,11]);return a&&b&&a!==b&&[a,b];},
+  t:"לבד וביחד",
+  how:"ה־1 צריך עצמאות, וה־2 (או ה־11) צריך קשר וקרבה. שני הצרכים חזקים, ולפעמים מושכים לכיוונים הפוכים.",
+  scene:"בזוגיות או בצוות את/ה רוצה קרבה, וכשהיא מגיעה, פתאום צריך/ה מרחב.",
+  help:"לא לבחור ביניהם: שותפות שיש בה תחום אישי ברור לכל אחד."},
+ {id:"reachgive",test:p=>{const a=anyIn(p,["LP","expr","soul","pers"],[8]),b=anyIn(p,["LP","expr","soul","pers"],[9]);return a&&b&&a!==b&&[a,b];},
+  t:"הישג ומשמעות",
+  how:"ה־8 רוצה להצליח ולבנות כוח, וה־9 רוצה שזה ישרת משהו גדול. כשהשניים מתחברים, ההצלחה שלך נעשית מקור לנתינה.",
+  scene:"רגעים של שאפתנות מתחלפים ברגעים של 'בשביל מה כל זה?'.",
+  help:"לחבר כל יעד מעשי לשאלה למי הוא מועיל. כך שני החלקים עובדים יחד."},
+ {id:"master",test:p=>{const a=["LP","expr","soul","pers"].find(k=>MASTER.includes(p[k])),b=anyIn(p,["LP","expr","soul","pers","bday"],[4,8]);return a&&b&&a!==b&&[a,b];},
+  t:"תדר גבוה ורגליים על הקרקע",
+  how:"מספר מאסטר מביא רגישות ופוטנציאל גבוהים, ולצידו יש במפה מספר מעשי שמחזיק אותו. זה שילוב נדיר: חזון שיכול להתממש.",
+  scene:"רעיונות גדולים עולים, ולצידם הקול שאומר 'בוא נראה איך עושים את זה בפועל'.",
+  help:"להקשיב לשני הקולות. החזון בלי הקרקע מתפזר, והקרקע בלי החזון מתייבשת."},
+ {id:"thinkfeel",test:p=>{const a=anyIn(p,["rt"],[7,4,8,1]),b=anyIn(p,["soul"],[2,6,9,11,33]);return a&&b&&[a,b];},
+  t:"ראש מנתח, לב מרגיש",
+  how:"החשיבה שלך שיטתית ומבקשת היגיון, והלב צריך חום וקרבה. לפעמים הראש מנסה לפתור את מה שהלב רק רוצה שיחבקו.",
+  scene:"מישהו משתף בקושי, ואת/ה ממהר/ת לתת פתרון. ובפעם אחרת, כשאת/ה משתף/ת, מקבל/ת פתרונות כשרצית הקשבה.",
+  help:"לשאול את עצמך ואת האחר: 'עכשיו צריך פתרון או הקשבה?'"}
+];
+function mechOf(p){
+  const out=[];for(const r of MECH){const s=r.test(p);if(s){out.push({r,s});if(out.length>=2)break;}}
+  return out;
+}
+function mechHTML(p){
+  return mechOf(p).map(({r,s})=>{
+    const nums=s.map(k=>`${POS[k]} ${p[k]}`).join(" + ");
+    return [`איך זה עובד אצלך: ${r.t}`,`<span class="mnums">${nums}</span><br>${r.how}<br><b>איך זה נראה:</b> ${r.scene}<br><b>מה עוזר:</b> ${r.help}`,"mech-"+r.id];
+  });
+}
+/* ---------- pairs ---------- */
+const OUTP=[1,2,3,5,6,11,33],INP=[4,7];
+function paceOf(p){
+  let out=0,inn=0;
+  for(const k of ["soul","pers","rt","bday","fn","LP"]){if(IN(p,k,OUTP))out+=(k==="soul"||k==="rt")?2:1;if(IN(p,k,INP))inn+=(k==="soul"||k==="rt"||k==="bday"||k==="fn")?2:1;}
+  /* a doubled 7 processes alone under stress, whatever else the map says */
+  if(themeOf(p).some(t=>t.n===7))return "in";
+  return inn>out+1?"in":out>inn+1?"out":"mid";
+}
+const PYPH={1:"שנת התחלה",2:"שנת סבלנות וקשרים",3:"שנת ביטוי",4:"שנת בנייה",5:"שנת שינוי",6:"שנת אחריות ובית",7:"שנת עצירה ולמידה",8:"שנת קציר והישג",9:"שנת סגירה ושחרור"};
+function pairInsight(a,b){
+  const A=esc(a.label),B=esc(b.label),secs=[];
+  // shared language: same number in any core position
+  const ks=["LP","expr","soul","pers","bday","fn","rt"],sh=[];
+  for(const ka of ks)for(const kb of ks){if(!a[ka]||!b[kb])continue;const n=single(a[ka]);if(n===single(b[kb])&&!sh.find(x=>x.n===n))sh.push({n,ka,kb});}
+  if(sh.length){
+    const s=sh.slice(0,2);
+    secs.push(["שפה משותפת",s.map(x=>`ה־${x.n} (${N[x.n].kw.split(",")[0].trim()}) נמצא אצל שניכם: אצל ${A} ב${POS[x.ka]}, אצל ${B} ב${POS[x.kb]}.`).join(" ")+(sh.length>1?" כשיש יותר ממספר משותף אחד, יש ביניכם הבנה שלא צריכה הרבה מילים.":" זו נקודת הבנה טבעית, שאפשר לחזור אליה כשקשה.")]);
+  }
+  // complement on life path
+  const r=relation(a.LP,b.LP);
+  if(r===2)secs.push(["השלמה",`שבילי החיים ${single(a.LP)} ו־${single(b.LP)} נחשבים צמד משלים: ${get(a.LP,"kw").split(",")[0]} פוגש ${get(b.LP,"kw").split(",")[0]}. כל אחד מכניס לקשר את מה שהשני לא מייצר לבד.`]);
+  else if(r===3&&single(a.LP)!==single(b.LP))secs.push(["אותו שבט",`שבילי החיים ${single(a.LP)} ו־${single(b.LP)} מאותה משפחת מספרים (${TRIBE[grp(a.LP)]}). אותו סוג של מנוע, בשתי מהירויות שונות.`]);
+  else if(r===4)secs.push(["אותה דרך",`לשניכם אותו שביל חיים (${single(a.LP)}). אתם מבינים את האתגרים זה של זה מבפנים, וגם עלולים להיתקע באותם מקומות.`]);
+  // processing pace
+  const pa=paceOf(a),pb=paceOf(b);
+  if(pa!==pb&&pa!=="mid"&&pb!=="mid"){
+    const [fast,slow]=pa==="out"?[A,B]:[B,A];
+    secs.push(["קצב העיבוד",`${fast} מעבד/ת דברים החוצה: מדבר/ת, מגיב/ה ומשחרר/ת מיד. ${slow} מעבד/ת פנימה: צריך/ה שקט וזמן לפני שמגיב/ה. ברגעי מתח זה עלול להיראות כמו רדיפה מצד אחד ונסיגה מהצד השני. <b>חשוב לזכור:</b> השתיקה של ${slow} היא דרך לעבד, לא אדישות. והדיבור של ${fast} הוא דרך להירגע, לא התקפה. מה שעוזר: לקבוע מראש 'נדבר על זה בעוד שעה', כדי ששני הקצבים יקבלו מקום.`]);
+  }else if(pa===pb&&pa!=="mid"){
+    secs.push(["קצב העיבוד",pa==="out"?`שניכם מעבדים החוצה, מהר ובקול. יש הרבה כנות וחיות, אבל ריב יכול להתלקח מהר. כדאי שאחד מכם יזכור לעצור.`:`שניכם מעבדים פנימה. יש שקט נעים ביניכם, אבל דברים חשובים עלולים להישאר לא אמורים. כדאי לקבוע זמן קבוע לשיחה.`]);
+  }
+  // timing
+  if(a.py&&b.py){
+    secs.push(["העיתוי עכשיו",a.py===b.py?`שניכם ב${PYPH[a.py]} (${a.py}). אתם מול אותו סוג של משימה, וזה זמן טוב ללוות זה את זה.`:`${A} ב${PYPH[a.py]} (${a.py}), ו${B} ב${PYPH[b.py]} (${b.py}). הקצב השנה שונה, וכדאי לדעת את זה כדי לא לצפות מהשני להיות באותו מקום.`]);
+  }
+  return secs;
+}
+/* one fuller sentence under a title + keywords (board cards) */
+function oneLine(n){const e=(get(n,"essence")||"").split(/(?<=[.!?])\s+/);let t=e[0]||"";if(t.length<60&&e[1])t+=" "+e[1];return t;}
+function deepList(p){
+  const th=themeHTML(p),me=mechHTML(p);
+  const vis=[th[0],me[0]].filter(Boolean),rest=[...th.slice(1),...me.slice(1)];
+  const li=x=>`<li><b>${x[0]}</b><p>${x[1]}</p>${fbBtns(p.id,x[2],x[1].replace(/<[^>]+>/g," "))}</li>`;
+  return `<ul class="ixl deep">${vis.map(li).join("")}${rest.length?`<li class="deepmore"><details><summary>עוד ${rest.length===1?"זווית אחת":rest.length+" זוויות"} על הדרך שבה המספרים שלך עובדים יחד</summary><ul class="ixl">${rest.map(li).join("")}</ul></details></li>`:""}</ul>`;
+}
+function pairHTML(a,b){
+  const secs=pairInsight(a,b);
+  return `<h2>${esc(a.label)} ו${esc(b.label)}</h2><p class="kicker">מה נפגש בינינו</p><div class="pairwrap keep">${aiBox("pair",[a,b],"בתמצית")}<div class="toolx">${secs.map(([h,t])=>`<h3>${h}</h3><p>${t}</p>`).join("")}</div></div>`;
+}
+
 
 
 const CH0="אתגר האפס: אין אתגר מוגדר אחד. כל האפשרויות פתוחות, והמשימה היא לבחור. זה יכול להעיד על חופש גדול או על קושי למצוא כיוון.";
@@ -955,6 +1148,245 @@ const mock={
   listen(p,cb){const f=()=>cb(JSON.parse(JSON.stringify(this.at(p)||{})),true);this.subs.push(f);addEventListener("storage",e=>{if(e.key===this.K)f()});setTimeout(f,30)}
 };
 const store=LOCAL?mock:fb;
+/* ================= AI layer (next) – Gemini through Firebase AI Logic =================
+   The tool computes every number (our method, no mixing). Gemini only WRITES from those facts.
+   Free tier: Gemini Developer API with the Firebase project on Spark (no billing account).
+   Results are cached in rooms/{ROOM}/ai/{key}, so each reading is written once and the whole circle sees the same text. */
+const AI_APPCHECK=false,AI_SITEKEY="6LeMsDMuAAAAABNZjiVg1dvU7vuTS97HsTaE7ziS",AI_VER="13.1.0",AI_MODELS=["gemini-flash-lite-latest","gemini-3.8-flash","gemini-flash-latest"];
+const AI_CFG={apiKey:"AIzaSyBJ42Obu9iyXYnHmTmLXhCKNoBohbQztVA",authDomain:"group-numerology.firebaseapp.com",databaseURL:DB,projectId:"group-numerology",appId:"1:73723083486:web:838839a99a51bd3980a04f"};
+const AI_SYS=`אתה כותב/ת קריאות נומרולוגיות בעברית עבור "המארג", כלי למעגלים קבוצתיים ומשפחתיים שמנחים בעז ויפעת ברקת.
+כללים מחייבים:
+- כל המספרים כבר חושבו בשיטה אחת (גימטריה עברית בשיטת המספר הקטן + תאריך הלידה, מסגרת פיתגוראית: שביל חיים, ביטוי, דחף נשמה = התנועות, אישיות = העיצורים). אל תחשב/י מספרים מחדש, אל תוסיף/י מספרים, ואל תערבב/י שיטות אחרות (לא אסטרולוגיה, לא "אנרגיית אותיות", לא שיטת הפירמידה, לא קבלה).
+- כתוב/י חם, אישי, ספציפי ומדויק – כמו מנחה מנוסה שמכיר/ה את האנשים. לא גנרי, לא מליצי, בלי קלישאות.
+- הצג/י דברים כהזמנה להתבוננות ("ייתכן", "לעיתים", "שווה לבדוק"), לא כאבחנה או גורל.
+- הסבר/י מנגנונים: איך שני מספרים או יותר עובדים יחד, איך זה נראה ביום־יום, ומה עוזר.
+- בלי מידע אינטימי או מביך: הטקסט עשוי להיקרא בקול מול המעגל.
+- פנה/י בשמות הפרטיים. כשהמין הדקדוקי לא ברור מהשם – השתמש/י בניסוח נייטרלי או בלוכסן (את/ה).
+- עברית תקינה וזורמת, משפטים קצרים. בלי כותרות ראשיות, בלי אימוג'ים. מותר הדגשה קצרה עם **כך**.`;
+/* Personal map + pair threads: the model gets the raw data (birth name, birth date, current name) + the tool's numbers only –
+   no keywords/themes – and interprets independently. (Tested 26.11: letting it compute alone gave wrong numbers for most people.)
+   A paragraph is placed only where its number matches the card. */
+const AI_SYS_ME=`את/ה נומרולוג/ית מנוסה שכותב/ת בעברית. מקבלים נתונים גולמיים (שם לידה, תאריך לידה, ולפעמים שם בשימוש היום) ואת המספרים שכבר חושבו מהם בשיטה של הכלי. את הפיענוח כותבים באופן עצמאי, מתוך הידע שלך.
+השיטה: גימטריה עברית בשיטת המספר הקטן ותאריך הלידה, במסגרת הפיתגוראית – שביל החיים מתאריך הלידה, מספר הביטוי מכל אותיות שם הלידה, דחף הנשמה מהתנועות (א, ה, ו, י), מספר האישיות מהעיצורים, מספר יום הלידה, שנה אישית. 11, 22, 33 הם מספרי מאסטר.
+- המספרים שמצורפים הם הנכונים. אל תחשב/י מחדש ואל תשנה/י אותם; ב־n מחזירים בדיוק את המספר שמצורף.
+- אל תערבב/י שיטות אחרות: לא אסטרולוגיה, לא קבלה, לא "אנרגיית אותיות", לא פירמידה.
+איך כותבים קריאה מדויקת:
+- מחפשים את הדפוס המרכזי שעולה מהמפגש בין הרכיבים – השם הפרטי, שם המשפחה, השם של היום, היום, החודש והשנה בתאריך – ומסבירים את המנגנון צעד אחר צעד: איזה רכיב מביא מה, ומה קורה כשהם נפגשים (למשל: רגישות שקולטת הרבה + נטייה לעבד בפנים + קצב מהיר = תגובה חדה ברגע של עומס). מותר לציין איזה רכיב נושא איזה מספר ("יום הלידה 2", "החודש 7"), בלי להציג את החשבון.
+- נשארים ברמת התכונות, הצרכים והדינמיקות. לא קובעים עובדות על החיים: לא מקצועות, תחומים, תחביבים או מקומות מסוימים (לא "תיירות", לא "טיולים", לא "נסיעות", לא "הרפתקאות"), ולא קביעות על שגרה – אל תכתוב/י שמישהו לא אוהב שגרה או בורח ממנה; רבים עם מספרים של תנועה אוהבים סדר ושגרה. כשמספר נוטה לכיוון מסוים, מתארים את המתח בין שני הצדדים (למשל צורך בחופש לצד צורך בעוגן ובסדר) ומשאירים לקורא/ת לזהות את עצמו/ה.
+- עברית קולחת ומדויקת, משפטים שזורמים זה מזה, בלי מליצות וקלישאות. כהזמנה להתבוננות ("ייתכן", "לעיתים", "שווה לבדוק"), לא אבחנה או גורל.
+- פנייה ישירה בשם הפרטי; כשהמין הדקדוקי לא ברור – את/ה. בלי אימוג'ים. מותר הדגשה קצרה עם **כך**. לא לפתוח פסקה במספר.
+- לכל פסקה יש keys: ארבעה משפטי תמצית, כל אחד עד 12 מילים, כל אחד רעיון אחר – משפטים שמנחה יכול/ה לומר בקול במעגל כדי לפתוח שיחה, ושמשתתף/ת מבין/ה מהם בקריאה זריזה. דוגמה לרוח: "שביל החיים מזמין אותך למצוא את האיזון בין תנועה לבין יציבות". ה־text לא חוזר על ה־keys אלא מעמיק אותם.
+מחזירים JSON בלבד.`;
+let AIM=null,aiFail="";
+async function aiModel(name,mode){
+  if(!AIM){
+    const A=await import(`https://www.gstatic.com/firebasejs/${AI_VER}/firebase-app.js`);
+    const X=await import(`https://www.gstatic.com/firebasejs/${AI_VER}/firebase-ai.js`);
+    let app=A.getApps().find(a=>a.name==="maarag-ai");
+    if(!app){
+      app=A.initializeApp(AI_CFG,"maarag-ai");
+      /* App Check (reCAPTCHA v3) – AI Logic is enforced: only requests from our site get through */
+      /* App Check is OFF for now (reCAPTCHA classic is deprecated; Fraud Defense may need billing).
+         Set AI_APPCHECK=true once a no-cost provider is registered. */
+      if(AI_APPCHECK){const C=await import(`https://www.gstatic.com/firebasejs/${AI_VER}/firebase-app-check.js`);
+      C.initializeAppCheck(app,{provider:new C.ReCaptchaV3Provider(AI_SITEKEY),isTokenAutoRefreshEnabled:true});}
+    }
+    const ai=X.getAI(app,{backend:new X.GoogleAIBackend()});
+    AIM={X,ai,models:{}};
+  }
+  const k=name+"|"+(mode||"");
+  return AIM.models[k]||(AIM.models[k]=AIM.X.getGenerativeModel(AIM.ai,mode==="me"?{model:name,systemInstruction:AI_SYS_ME,generationConfig:{temperature:.55,maxOutputTokens:6000,responseMimeType:"application/json"}}:{model:name,systemInstruction:AI_SYS,generationConfig:{temperature:.8,maxOutputTokens:1400}}));
+}
+async function aiWrite(prompt,mode){
+  if(LOCAL){await new Promise(r=>setTimeout(r,500));return "**[טקסט הדגמה במצב מקומי]** כאן תופיע הקריאה המעמיקה. במצב אמיתי הקריאה נשמרת במעגל, וכולם רואים את אותו נוסח.";}
+  let last;
+  for(const m of AI_MODELS){try{const r=await (await aiModel(m,mode)).generateContent(prompt);const t=r.response.text();if(t&&t.trim())return t.trim();}catch(e){last=e;}}
+  throw last||new Error("no text");
+}
+/* facts the model may use, all computed by the tool */
+function aiPersonFacts(p){
+  const L=k=>p[k]?`${POS[k]}: ${p[k]} (${get(p[k],"title")} – ${get(p[k],"kw")})`:"";
+  const th=themeOf(p).map(r=>`המספר ${r.n} חוזר ב: ${r.ks.map(k=>POS[k]).join(", ")}`);
+  const me=mechOf(p).map(({r,s})=>`${r.t} (${s.map(k=>POS[k]+" "+p[k]).join(" + ")}): ${r.how}`);
+  return [`שם: ${p.label}`,...["LP","expr","soul","pers","bday","fn","rt","mat"].map(L).filter(Boolean),
+    p.py?`שנה אישית עכשיו: ${p.py} (${PYPH[p.py]||""})`:"",
+    th.length?"נושאים חוזרים: "+th.join("; "):"אין מספר חוזר במפה",
+    me.length?"מנגנונים שזוהו: "+me.join(" | "):""].filter(Boolean).join("\n");
+}
+function aiPairPrompt(a,b){
+  const ins=pairInsight(a,b).map(([h,t])=>`${h}: ${t.replace(/<[^>]+>/g,"")}`).join("\n");
+  return `כתוב/י את "החוט" בין ${a.label} ל${b.label} במעגל קבוצתי של אנשים שרובם נפגשו עכשיו.
+המטרה: לעזור לשניהם להבין ולהכיר זה את זה טוב יותר, ולהרגיש את החיבור.
+
+נתוני ${a.label}:
+${aiPersonFacts(a)}
+
+נתוני ${b.label}:
+${aiPersonFacts(b)}
+
+מה הכלי כבר זיהה ביניהם:
+${ins}
+
+כתוב/י 170–240 מילים, בארבע פסקאות קצרות:
+1. מה מחבר ביניכם – השפה המשותפת, ספציפי לשניהם.
+2. איך אתם משלימים זה את זה – מה כל אחד/ת מביא/ה לשני, עם דוגמה מהחיים.
+3. איפה עלול להיווצר חיכוך, ולמה זה לא אישי – ומה עוזר.
+4. שאלה אחת פתוחה שכדאי ששניכם תשאלו זה את זה עכשיו במעגל.
+פנה/י אל שניהם ("אתם") ובשמות.`;
+}
+function aiPersonPrompt(p){
+  return `כתוב/י קריאה אישית ל${p.label}, שמשתתף/ת עכשיו במעגל קבוצתי (הקריאה לעיניו/ה בלבד, בטלפון).
+
+${aiPersonFacts(p)}
+
+כתוב/י 180–260 מילים, בארבע פסקאות קצרות:
+1. הלב של המפה – הנושא המרכזי שעולה מהשילוב (לא סיכום של כל מספר בנפרד).
+2. איך זה עובד ביום־יום – מנגנון אחד או שניים, עם דוגמה מוחשית.
+3. מה מבקש לצמוח עכשיו, לאור השנה האישית.
+4. מה את/ה מביא/ה למעגל הזה, ושאלה אחת להתבוננות.
+פנה/י ישירות ובשם הפרטי.`;
+}
+const fmtD=d=>{const [y,m,dd]=d.split("-");return `${+dd}.${+m}.${y}`;};
+function aiWords(an){return an?an.words.map(w=>`${w.letters.map(l=>l.ch).join("")} ${rv(w.sum)}`).join(", "):"";}
+function aiMePrompt(p){
+  const m=S.members[p.id]||{},B=p.B,hasCur=p.cur&&p.curRaw&&p.curRaw!==p.name;
+  return `נתונים:
+שם לידה: ${p.name}
+תאריך לידה: ${fmtD(m.bdate||"")}
+${hasCur?`השם בשימוש היום: ${p.curRaw}
+`:""}השנה הנוכחית: ${TY}
+המספרים: שביל החיים ${p.LP}, מספר הביטוי ${p.expr}, דחף הנשמה ${p.soul}, מספר האישיות ${p.pers}, יום הלידה ${p.bday}, שנה אישית ${p.py}
+רכיבי התאריך: יום ${B.dR}, חודש ${B.mR}, שנה ${B.yR}
+המילים בשם הלידה: ${aiWords(p.an)}
+${hasCur?`השם של היום: מילים – ${aiWords(p.cur)}; ביטוי ${p.cur.expr.v}, דחף הנשמה ${p.cur.soul.v||"-"}, אישיות ${p.cur.pers.v||"-"}
+`:""}${p.lessons.length?`מספרים שאין להם אות בשם: ${p.lessons.join(", ")}
+`:""}
+הקשר: ${p.first} משתתף/ת במעגל קבוצתי. הקריאה לעיניו/ה בלבד, בטלפון.
+
+החזר/י JSON במבנה הזה בדיוק:
+{"core":{"keys":["","","",""],"text":""},"LP":{"n":0,"keys":["","","",""],"text":""},"expr":{"n":0,"keys":["","","",""],"text":""},"soul":{"n":0,"keys":["","","",""],"text":""},"pers":{"n":0,"keys":["","","",""],"text":""},"bday":{"n":0,"keys":["","","",""],"text":""},"py":{"n":0,"keys":["","","",""],"text":""},"lpx":{"gift":"","challenge":"","family":"","work":""}${hasCur?`,"names":{"keys":["","","",""],"text":""}`:""}}
+- LP שביל החיים, expr מספר הביטוי, soul דחף הנשמה, pers מספר האישיות, bday מספר יום הלידה, py השנה האישית – בכל אחד n הוא המספר שצורף, ו־text פסקה של 60–100 מילים שמפענחת אותו אצל ${p.first}.
+- lpx – העמקה בשביל החיים, 40–70 מילים לכל אחד: gift המתנה העמוקה, challenge האתגר המרכזי, family בבית ובמשפחה, work בעבודה ובעשייה.
+- core "הלב של המפה" (כותבים אותו ראשון): 130–190 מילים – משפט פתיחה שמתאר את השילוב המרכזי במפה, ואחריו המנגנון: אילו רכיבים יוצרים אותו ואיך הוא נראה ביום־יום; ובסוף מה עוזר, ושאלה אחת להתבוננות.
+- lpx family ו־work: לתאר איך זה מתבטא, בלי לנחש תחום עיסוק.${hasCur?`
+- names: 50–90 מילים – מה השם של היום שומר מהמפה ומה הוא מוסיף או מחזק, לעומת שם הלידה.`:""}`;
+}
+function aiPairRaw(a,b){
+  const L=p=>{const m=S.members[p.id]||{};return `- ${p.first}: שם לידה ${p.name}, תאריך לידה ${fmtD(m.bdate||"")}${p.curRaw&&p.curRaw!==p.name?`, השם בשימוש היום ${p.curRaw}`:""}. המספרים: שביל החיים ${p.LP}, ביטוי ${p.expr}, דחף הנשמה ${p.soul}, אישיות ${p.pers}, שנה אישית ${p.py}`;};
+  return `נתונים של שני משתתפים במעגל קבוצתי – אנשים שרובם נפגשו עכשיו:
+${L(a)}
+${L(b)}
+השנה הנוכחית: ${TY}
+המטרה: החוט ביניהם, בתמצית. הטקסט עשוי להיקרא בקול במעגל, לכן בלי שום דבר אינטימי או מביך, ובלי הנחות על היכרות קודמת ביניהם.
+
+החזר/י JSON במבנה הזה בדיוק:
+{"together":{"key":"","text":""}}
+- key: משפט תמצית אחד, עד 12 מילים – העיקר בחיבור ביניהם.
+- text: עד שלושה משפטים קצרים בלבד – הדבר החשוב ביותר בחיבור בין ${a.first} ל${b.first}: מה מחבר או משלים ביניהם, ומה כדאי שיגלו זה על זה. אפשר לסיים בשאלה קצרה אחת ששניהם יכולים לשאול זה את זה.
+פנה/י אל שניהם ("אתם") ובשמות הפרטיים.`;
+}
+const PKN={LP:"שביל החיים",expr:"מספר הביטוי",soul:"דחף הנשמה",pers:"מספר האישיות",py:"השנה האישית"};
+function aiPairHTML(d,a,b){
+  const eq=(x,y)=>+x===+y||single(+x)===single(y);
+  const ok=k=>d[k]&&d[k].text&&eq(d[k].a,a[k])&&eq(d[k].b,b[k]);
+  const off=Object.keys(PKN).filter(k=>d[k]&&!ok(k));if(off.length)console.info("pair reading skipped",off.join(","));
+  return Object.keys(PKN).filter(ok).map(k=>`<h4 class="gxh">${PKN[k]} <span class="muted">${a[k]} · ${b[k]}</span></h4>${aiKeyLine(d[k])}${aiFmt(d[k].text)}`).join("")+(d.together&&d.together.text?(Object.keys(PKN).some(ok)?`<h4 class="gxh">החוט ביניכם</h4>`:"")+aiKeyLine(d.together)+aiFmt(d.together.text):"");
+}
+function aiMeKey(p){const m=S.members[p.id]||{};let h=0;for(const c of p.id+"|"+p.name+"|"+p.curRaw+"|"+m.bdate+"|"+TY)h=(h*31+c.charCodeAt(0))|0;return "me8_"+(h>>>0).toString(36);}
+const AI_GLITCH=/[\u0591-\u05BD\u05BF\u05C1\u05C2\u05C4-\u05C7\u0600-\u06FF\u0400-\u04FF\u0370-\u03FF]|[א-ת][A-Za-z]|[A-Za-z][א-ת]|[ךםןףץ][א-ת]/;
+function aiClean(t){return String(t).replace(/[\u0591-\u05BD\u05BF\u05C1\u05C2\u05C4-\u05C7\u0600-\u06FF\u0400-\u04FF\u0370-\u03FF]/g,"").replace(/([א-ת])[A-Za-z]+|[A-Za-z]+(?=[א-ת])/g,"$1");}
+function aiBad(d){return Object.values(d||{}).some(v=>v&&Object.values(v).some(t=>(Array.isArray(t)?t:[t]).some(x=>typeof x==="string"&&AI_GLITCH.test(x))));}
+function aiTidy(d){Object.values(d).forEach(v=>{if(v&&typeof v==="object")for(const k in v){if(typeof v[k]==="string")v[k]=aiClean(v[k]);else if(Array.isArray(v[k]))v[k]=v[k].map(x=>typeof x==="string"?aiClean(x):x);}});return d;}
+function aiMeParse(t){const a=t.indexOf("{"),b=t.lastIndexOf("}");return JSON.parse(t.slice(a,b+1));}
+function aiMePlace(root,p,d){
+  const ok=k=>d[k]&&d[k].text&&(k==="core"||k==="names"||+d[k].n===+p[k]||single(+d[k].n)===single(p[k]));
+  if(ok("core"))root.classList.add("has-deep");
+  root.querySelectorAll("[data-gk]").forEach(el=>{const k=el.dataset.gk;if(ok(k)){el.innerHTML=(k==="core"?"<h3>הלב של המפה</h3>":"")+aiKeyLine(d[k])+aiFmt(d[k].text);el.hidden=false;}else if(k==="core")el.hidden=true;});
+  if(d.lpx&&ok("LP"))root.querySelectorAll("[data-lx]").forEach(el=>{const t=d.lpx[el.dataset.lx];if(t)el.innerHTML=esc(t).replace(/\*\*([^*]+)\*\*/g,"<b>$1</b>");});
+  const off=["LP","expr","soul","pers","bday","py"].filter(k=>d[k]&&!ok(k)).map(k=>`${k}: ${d[k].n}≠${p[k]}`);if(off.length)console.info("deep reading skipped",off.join(", "));
+}
+async function aiMeFill(root){
+  const p=G.P.find(x=>x.id===root.dataset.gme);if(!p||!ROOM)return;
+  if(!root.isConnected)return;
+  const key=aiMeKey(p),path=`rooms/${ROOM}/ai/${key}`,core=root.querySelector('[data-gk="core"]');
+  try{const c=await store.get(path);if(c&&c.data&&!aiBad(c.data)){aiMePlace(root,p,c.data);return;}}catch(e){}
+  if(core){core.hidden=false;core.innerHTML=`<p class="aiwait">מעמיקים את הקריאה שלך… זה לוקח כמה שניות</p>`;}
+  try{
+    let d;
+    if(LOCAL){await new Promise(r=>setTimeout(r,500));d={core:{text:"**[הדגמה במצב מקומי]** כאן תופיע הקריאה המעמיקה, וכל פסקה תיכנס לכרטיס שלה."}};["LP","expr","soul","pers","bday","py"].forEach(k=>d[k]={n:p[k],text:"[הדגמה] פסקה מעמיקה לכרטיס הזה."});}
+    else{let err;for(let i=0;i<3;i++){try{const x=aiMeParse(await aiWrite(aiMePrompt(p),"me"));d=x;if(!aiBad(x))break;}catch(e){err=e;}}if(!d)throw err;aiTidy(d);}
+    try{await store.put(path,{data:d,kind:"me2",t:Date.now()});}catch(e){}
+    aiMePlace(root,p,d);
+  }catch(e){aiFail=String(e&&e.message||e);console.warn("deep",aiFail);if(core)core.hidden=true;}
+}
+function aiGroupPrompt(){
+  const P=G.P;
+  const ppl=P.map(p=>`- ${p.label}: שביל חיים ${p.LP} (${get(p.LP,"title")}), ביטוי ${p.expr}, דחף נשמה ${p.soul}, אישיות ${p.pers}, שבט ${TRIBE[p.tribe]}`).join("\n");
+  const th=(G.threads||[]).filter(t=>t.text).slice(0,10).map(t=>"- "+t.text).join("\n");
+  const fr=(G.frictions||[]).slice(0,4).map(f=>`- ${f.a.label} ו${f.b.label} (שבילי חיים ${f.a.LP} ו־${f.b.LP})`).join("\n");
+  return `כתוב/י את תמונת המעגל הקבוצתי "${S.meta.name}" – ${G.n} משתתפים. הטקסט מוקרן ונקרא בקול מול כולם, לכן נשאר ברמת המעגל והקשרים, בלי ניתוח אישי חושפני של אף אחד.
+
+המשתתפים:
+${ppl}
+
+המספר של המעגל (סכום שבילי החיים): ${G.LP} – ${get(G.LP,"title")} (${get(G.LP,"kw")})
+מספרים דומיננטיים במעגל: ${(G.dom||[]).join(", ")||"אין"}
+מספרים חסרים במעגל (האתגר המשותף): ${(G.missing||[]).join(", ")||"אין"}
+מספרים נדירים (רק אצל אחד): ${(G.rare||[]).join(", ")||"אין"}
+שבטים: ${[0,1,2].map(t=>`${TRIBE[t]} ${(G.tribes&&G.tribes[t]||[]).length}`).join(", ")}
+השנה המשותפת של המעגל: ${G.year}
+חוטים שהכלי זיהה:
+${th||"-"}
+${fr?"מקומות שעלול להיווצר בהם חיכוך:\n"+fr:""}
+
+כתוב/י 230–330 מילים, בחמש פסקאות קצרות:
+1. מי המעגל הזה – הלב והשליחות שלו, מתוך המספר של המעגל.
+2. במה המעגל עשיר, ומה חסר בו – ואיך זה עשוי להיראות כשהם יחד.
+3. ההצלבות: 3–4 חיבורים בולטים בין אנשים בשמותיהם – מי משלים את מי, מי מדבר באותה שפה. חם וחיובי.
+4. איפה עלול להיווצר חיכוך במעגל, ואיך הוא יכול להפוך למקור צמיחה (בלי להאשים איש).
+5. מה המעגל יכול לייצר יחד – ושאלה אחת פתוחה לכל המעגל.
+כל פסקה נפתחת במשפט תמצית מודגש (**כך**), עד 12 מילים – משפט שהמנחים יכולים לומר בקול כדי לפתוח שיחה. אחריו 2–3 משפטים שמעמיקים.`;
+}
+function aiKey(kind,ps){
+  const sig=ps.map(p=>p.id+":"+p.label+":"+p.LP+p.expr+p.soul+p.pers+p.bday).sort().join("|");
+  let h=0;for(const c of sig)h=(h*31+c.charCodeAt(0))|0;
+  return kind+"_"+(h>>>0).toString(36);
+}
+const aiKeyLine=v=>{if(!v)return "";const k=(Array.isArray(v.keys)?v.keys:v.key?[v.key]:[]).filter(Boolean).slice(0,4);if(!k.length)return "";return k.length===1?`<p class="gkey">${esc(k[0]).replace(/\*\*/g,"")}</p>`:`<ul class="gkeys">${k.map(x=>`<li>${esc(x).replace(/\*\*/g,"")}</li>`).join("")}</ul>`;};
+function aiFmt(t){return esc(t).replace(/\*\*([^*]+)\*\*/g,"<b>$1</b>").split(/\n{2,}/).map(x=>`<p>${x.replace(/\n/g,"<br>")}</p>`).join("");}
+function aiBox(kind,ps,label){
+  return `<div class="aibox" data-ai="${kind}" data-ids="${ps.map(p=>esc(p.id)).join(",")}"><h3>${label}</h3><div class="aitext"><button type="button" class="aigo">${kind==="group"?"כתבו את תמונת המעגל ✦":"כתבו לי קריאה אישית ✦"}</button><p class="muted aihint">${kind==="group"?"תמונה של המעגל כולו וההצלבות בו. הקריאה נשמרת במעגל ומתאימה להקראה.":kind==="pair"?"החוט ביניכם, לעומק. הקריאה נשמרת במעגל.":"קריאה אישית לעומק. רק את/ה רואה אותה."}</p></div></div>`;
+}
+function aiPeople(box){return box.dataset.ids.split(",").map(id=>G.P.find(p=>p.id===id)).filter(Boolean);}
+async function aiFill(box,make){
+  const ps=aiPeople(box);if(!ps.length||!ROOM)return;
+  const kind=box.dataset.ai,key=(kind==="pair"?"p6":kind==="group"?"g2":"")+aiKey(kind,ps),tx=box.querySelector(".aitext");
+  const show=c=>{tx.innerHTML=c.data?aiPairHTML(c.data,ps[0],ps[1]):aiFmt(c.text);};
+  try{const c=await store.get(`rooms/${ROOM}/ai/${key}`);if(c&&(c.text||c.data)){show(c);if(kind==="pair"&&box.parentElement)box.parentElement.classList.add("has-deep");return;}}catch(e){}
+  if(!make)return;
+  tx.innerHTML=`<p class="aiwait">כותבים בשבילכם… זה לוקח כמה שניות</p>`;
+  try{
+    let rec;
+    if(kind==="pair"){
+      let d,err;
+      if(LOCAL){await new Promise(r=>setTimeout(r,500));d={together:{text:"**[הדגמה במצב מקומי]** כאן יופיע החוט ביניכם לעומק, מחולק לפי שביל החיים, הביטוי, הנשמה, האישיות והשנה."}};}
+      else{for(let i=0;i<3;i++){try{const x=aiMeParse(await aiWrite(aiPairRaw(ps[0],ps[1]),"me"));d=x;if(!aiBad(x))break;}catch(e){err=e;}}if(d)aiTidy(d);}
+      if(!d)throw err;rec={data:d,kind,t:Date.now()};
+    }else rec={text:await aiWrite(kind==="group"?aiGroupPrompt():aiPersonPrompt(ps[0])),kind,t:Date.now()};
+    try{await store.put(`rooms/${ROOM}/ai/${key}`,rec);}catch(e){}
+    show(rec);if(kind==="pair"&&box.parentElement)box.parentElement.classList.add("has-deep");
+  }catch(e){
+    aiFail=String(e&&e.message||e);
+    tx.innerHTML=`<p class="err">לא הצלחנו לכתוב את הקריאה כרגע. נסו שוב בעוד רגע.</p><button type="button" class="aigo">לנסות שוב</button>`;
+    console.warn("AI",aiFail);
+  }
+}
+function aiHydrate(root){(root||document).querySelectorAll(".aibox").forEach(b=>{if(!b.dataset.h){b.dataset.h=1;aiFill(b,false);}});
+  (root||document).querySelectorAll('.aibox[data-ai="pair"]:not([data-h2])').forEach(b=>{b.dataset.h2=1;setTimeout(()=>{if(b.isConnected&&!b.querySelector(".aitext p:not(.aihint)"))aiFill(b,true);},50);});
+  (root||document).querySelectorAll("[data-gme]").forEach(b=>{if(!b.dataset.h){b.dataset.h=1;aiMeFill(b);}});}
+document.addEventListener("click",e=>{const b=e.target.closest(".aigo");if(!b)return;e.preventDefault();aiFill(b.closest(".aibox"),true);});
+new MutationObserver(()=>aiHydrate()).observe(document.documentElement,{childList:true,subtree:true});
+
 
 /* ================= helpers ================= */
 let ctx=null;
@@ -995,7 +1427,7 @@ function personOf(id,m){
   return {id,name:m.name.trim(),curRaw:(m.cur||"").trim(),first,short,an,B,LP:B.LP,
     expr:an?an.expr.v:B.LP,soul:an&&an.soul.v?an.soul.v:B.LP,pers:an&&an.pers.v?an.pers.v:B.LP,
     bday:rv(B.d),lessons:an?an.lessons:[],py,cur,
-    mat:rv((an?an.expr.v:B.LP)+B.LP),rt:an&&an.words[0]?rv(rv(an.words[0].sum)+rv(B.d)):null,tribe:grp(B.LP),t:m.t||0};
+    mat:rv((an?an.expr.v:B.LP)+B.LP),fn:an&&an.words[0]?rv(an.words[0].sum):null,rt:an&&an.words[0]?rv(rv(an.words[0].sum)+rv(B.d)):null,tribe:grp(B.LP),t:m.t||0};
 }
 function analyzeFamily(members){
   const P=Object.entries(members||{}).filter(([id,m])=>m&&m.name&&/^\d{4}-\d{2}-\d{2}$/.test(m.bdate)).map(([id,m])=>personOf(id,m)).sort((a,b)=>a.t-b.t);
@@ -1438,11 +1870,11 @@ function stageHTML(st){
     const mp=P[mysteryIdx];
     h+=mp?`<div class="mystery">"${esc(N[single(mp.LP)].essence.split(". ").slice(0,2).join(". ").replace(/את\/ה/g,"הוא/היא"))}."${mysteryShown?`<div style="margin-top:12px;font-family:var(--f-body);font-size:1.1rem;color:var(--teal)">זה ${esc(mp.label)}: ${get(mp.LP,"title")}, שביל חיים ${mp.LP}</div>`:""}</div>`:"";
     if(!tabHidden("game")||FACIL())h+=`<div class="row" style="margin-top:6px"><button class="btn ghost small" data-go="game" type="button">משחק הזיהוי</button><button class="btn small" id="mysteryBtn">${mysteryIdx<0?"משפט מסתורי: על מי מדובר?":mysteryShown?"המשפט הבא":"חשיפה"}</button></div>`;
-    h+=`<div class="grid" style="margin-top:18px">${P.map(p=>personCard(p,`<p><span class="num">${p.LP}</span> <b>${get(p.LP,"title")}</b></p><p class="muted">${get(p.LP,"kw")}</p>`)).join("")}</div>`;
+    h+=`<div class="grid" style="margin-top:18px">${P.map(p=>personCard(p,`<p><span class="num">${p.LP}</span> <b>${get(p.LP,"title")}</b></p><p class="muted">${get(p.LP,"kw")}</p><p class="oneline">${oneLine(p.LP)}</p>`)).join("")}</div>`;
   }
   if(k==="num"){
     h+=`<p class="lead">מחברים את מספרי הדרך של כולם (${P.map(p=>p.LP).join(" + ")} = ${G.sumLP}) ומצמצמים למספר אחד: הכיוון המשותף של הקבוצה שהתכנסה כאן.</p>
-    <div class="big"><span class="num">${G.LP}</span><div><h3>${get(G.LP,"title")}</h3><p class="muted" style="margin:2px 0 0">${get(G.LP,"kw")}</p></div></div>
+    <div class="big"><span class="num">${G.LP}</span><div><h3>${get(G.LP,"title")}</h3><p class="muted" style="margin:2px 0 0">${get(G.LP,"kw")}</p><p class="oneline">${oneLine(G.LP)}</p></div></div>
     <p style="font-size:1.15rem;max-width:60ch">${fam(G.LP,"mission")}</p>`;
     if(G.dom.length)h+=`<h3 style="margin-top:20px;font-size:1.2rem">האנרגיה הדומיננטית: ${G.dom.join(" ו־")}</h3><p>${G.dom.map(n=>fam(n,"dom")).join(" ")}</p>`;
     h+=`<h3 style="margin-top:20px;font-size:1.2rem">שלושת השבטים</h3><p class="muted" style="margin:2px 0 8px">המספרים מתחלקים לשלושה שבטים. מאותו שבט מבינים זה את זה בקלות, גם בלי היכרות מוקדמת.</p>
@@ -1513,6 +1945,7 @@ function renderFamily(){
     <p class="muted" style="margin:6px 0 12px">לחיצה על כרטיס פותחת את המפה המלאה של אותו משתתף. ${G.n>1?`המספר של הקבוצה: <b style="color:var(--teal)">${G.LP}</b> · ${get(G.LP,"title")}`:""}</p>
     <div id="leadList" style="margin-top:0">${P.map((p,i)=>cardHTML(p,i,null,0)).join("")||'<div class="locked">עוד אין משתתפים במעגל.</div>'}</div>
     ${G.n>1?`<div class="lead-actions" style="margin-top:16px"><button data-g="mission">המספר שלנו</button><button data-g="miss">האתגר שלנו</button><button data-g="links">כל החיווטים</button></div>`:""}`}
+   ${G.n>1&&!(me&&famTab==="mine")?aiBox("group",P,"תמונת הקבוצה וההצלבות – קריאה מעמיקה"):""}
    <p style="margin-top:24px;text-align:center"><button class="btn small" type="button" data-sharedlg="">שיתוף / שליחה / PDF</button></p>
    <p style="margin-top:10px;text-align:center">${G.n>=MAXP?`<span class="muted">המעגל מלא (${MAXP} משתתפים)</span>`:canAdd()?`<button class="link" id="fAdd">+ הוספת משתתף/ת</button>`:`<span class="muted">המעגל סגור להצטרפות</span>`}</p>
   </div>`;
@@ -1542,36 +1975,41 @@ const PARAMS={
  soul:{n:"דחף הנשמה",d:"סכום התנועות בשם: מה שמניע אותך מבפנים, כשאף אחד לא רואה."},
  pers:{n:"מספר האישיות",d:"סכום העיצורים בשם: הרושם הראשון שאנשים מקבלים ממך."}
 };
-function paramHTML(key,p){
+function paramHTML(key,p,slot){
   const v=p[key],P=PARAMS[key];
   const body={LP:`<span class="pt">${get(v,"title")}.</span> ${get(v,"essence")}`,expr:get(v,"expr"),soul:get(v,"soul"),pers:get(v,"persona")}[key];
   const term={LP:"shvil",expr:"bitui",soul:"neshama",pers:"ishiut"}[key];
-  return `<div class="param"><div class="ph"><span class="pn">${P.n}</span><span class="pv">${v}</span><button type="button" class="qterm" data-term="${term}" aria-label="מה זה ${P.n}?">?</button></div><p class="pd">${P.d}</p><p class="pa">${body}</p>${fbBtns(p.id,key+":"+v,body)}${key==="LP"?lpDeep(p):""}</div>`;
+  return `<div class="param"><div class="ph"><span class="pn">${P.n}</span><span class="pv">${v}</span><button type="button" class="qterm" data-term="${term}" aria-label="מה זה ${P.n}?">?</button></div><p class="pd">${P.d}</p><p class="pa">${body}</p>${slot?`<div class="gx" data-gk="${key}" hidden></div>`:""}${fbBtns(p.id,key+":"+v,body)}${key==="LP"?lpDeep(p):""}</div>`;
 }
 function myMap(p){
   const lp=p.LP;
   const ix=personIx(p);
-  const firstSent=t=>{const m=String(t).replace(/<[^>]+>/g,"").match(/^(.+?[.!?])(\s|$)/);return m?m[1]:t;};
+  /* first sentence, plus the second when the first is only a short label */
+  const firstSent=t=>{const e=String(t).replace(/<[^>]+>/g,"").split(/(?<=[.!?])\s+/);let r=e[0]||"";if(r.length<60&&e[1])r+=" "+e[1];return r;};
   const P4=[["LP","שביל החיים"+qm("shvil"),get(p.LP,"title"),get(p.LP,"essence")],["expr","מספר הביטוי"+qm("bitui"),get(p.expr,"kw").split(",")[0],get(p.expr,"expr")],["soul","דחף הנשמה"+qm("neshama"),get(p.soul,"kw").split(",")[0],get(p.soul,"soul")],["pers","מספר האישיות"+qm("ishiut"),get(p.pers,"kw").split(",")[0],get(p.pers,"persona")]];
   const cards=P4.map(([key,name,title,body],i)=>`<section class="kard" data-ci="${i}">
     <p class="k">${String(i+1).padStart(2,"0")} / 0${P4.length+2} — ${name}</p>
     <span class="big">${p[key]}</span>
     <h2>${esc(title)}</h2>
     <p class="x">${esc(firstSent(body))}</p>
+    <div class="gx" data-gk="${key}" hidden></div>
     <details><summary>עוד על זה</summary>${paramHTML(key,p)}</details>
   </section>`).join("");
   let curH="";
-  if(p.cur){const a=p.an,c=p.cur;curH=`<li><b>השם של היום</b><p>${c.expr.v===a.expr.v?"מספר הביטוי נשאר זהה.":`השם של היום מוסיף ${get(c.expr.v,"kw")}.`} ${c.soul.v&&single(c.soul.v)!==single(a.soul.v)?`מבפנים נוספה כמיהה ל${get(c.soul.v,"kw")}.`:""}</p></li>`;}
+  if(p.cur){const a=p.an,c=p.cur;curH=`<li><b>השם של היום</b><p>${c.expr.v===a.expr.v?"מספר הביטוי נשאר זהה.":`השם של היום מוסיף ${get(c.expr.v,"kw")}.`} ${c.soul.v&&single(c.soul.v)!==single(a.soul.v)?`מבפנים נוספה כמיהה ל${get(c.soul.v,"kw")}.`:""}</p><div class="gx" data-gk="names" hidden></div></li>`;}
   const ixCard=`<section class="kard soft" data-ci="4"><p class="k">05 / 06 — הצמתים שלך</p><h2 style="margin-top:4px">איפה המספרים נפגשים</h2>
-    <ul class="ixl">${ix.map((x,i)=>`<li><b>${x[0]}</b><p>${x[1]}</p>${fbBtns(p.id,"ix"+i+":"+(x[2]||[p.LP+"/"+p.expr,p.soul+"/"+p.pers,"bday"+p.bday,"py"+p.py][i]),x[1])}</li>`).join("")}${curH}</ul></section>`;
+    <div class="toolx">${deepList(p)}</div>
+    <ul class="ixl">${ix.map((x,i)=>`<li${i<2?' class="toolx"':""}><b>${x[0]}</b><p>${x[1]}</p>${/^המתנה של יום/.test(x[0])?'<div class="gx" data-gk="bday" hidden></div>':/^השנה שלך/.test(x[0])?'<div class="gx" data-gk="py" hidden></div>':""}${fbBtns(p.id,"ix"+i+":"+(x[2]||[p.LP+"/"+p.expr,p.soul+"/"+p.pers,"bday"+p.bday,"py"+p.py][i]),x[1])}</li>`).join("")}${curH}</ul></section>`;
   const moreCard=`<section class="kard soft" data-ci="5"><p class="k">06 / 06 — עוד עליי</p><h2 style="margin-top:4px">חוזקות, צל וכיוונים</h2>
     <ul class="ixl"><li><b>חוזקות</b><p>${get(lp,"strengths").join(" · ")}</p></li><li><b>הצל</b><p>${get(lp,"shadow").join(" · ")}</p></li><li><b>אהבה</b><p>${get(lp,"love")}</p></li><li><b>שליחות ועבודה</b><p>${get(lp,"career")}</p></li><li style="border-color:var(--teal)"><b style="color:var(--teal)">שאלה לדרך</b><p>${get(lp,"growth")}</p></li></ul></section>`;
   const ctaCard=`<section class="kard cta" data-ci="6"><p class="k">ומה עכשיו?</p><h2>המקום שלי בקבוצה</h2><p class="x">איך המספרים שלך נפגשים עם המספרים של כולם.</p><button class="btn" type="button" style="margin-top:14px" onclick="famTab='mine';go('fam')">למקום שלי בקבוצה ←</button></section>`;
   const seen=ls.get("grp-deckhint");
-  return `<a class="extmap" href="${esc(personalMapURL(p.id))}" target="_blank" rel="noopener"><b>המפה האישית המורחבת ↗</b><span>ניתוח מעמיק יותר: מחזורי חיים, טבלת לידה, שיעורים קרמתיים ועוד</span></a>
+  return `<div data-gme="${esc(p.id)}"><a class="extmap" href="${esc(personalMapURL(p.id))}" target="_blank" rel="noopener"><b>המפה האישית המורחבת ↗</b><span>ניתוח מעמיק יותר: מחזורי חיים, טבלת לידה, שיעורים קרמתיים ועוד</span></a>
+  <div class="sec gxcore" data-gk="core" hidden style="margin-top:0"></div>
   ${seen?"":`<p class="deck-hint">זו המפה שלך. החלק/י הצידה כדי לראות את המספר הבא.</p>`}
   <div class="deck" id="deck">${cards}${ixCard}${moreCard}${ctaCard}</div>
   <div class="deck-dots" id="deckDots" aria-hidden="true">${Array.from({length:7},(_,i)=>`<i class="${i?"":"on"}"></i>`).join("")}</div>
+</div>
   <div class="sec"><h3>לשמור ולשתף</h3>${shareBlock(p,true)}</div>`;
 }
 function bindDeck(){
@@ -1589,7 +2027,7 @@ function meInFamily(p){
   items.push([3,"האתגר שלנו"+qm("chaser"),lacks.length?`בקבוצה חסרים המספרים ${lacks.join(", ")}.`:"בקבוצה נמצאים כל המספרים מ־1 עד 9.",
     keeps.length?`את/ה שומר/ת בקבוצה את ה־${keeps.join(" וה־")}: ${keeps.map(n=>fam(n,"give")).join(" ")}`:(lacks.length?`גם את/ה יכול/ה להשלים את מה שחסר. מה מתוך "${N[lacks[0]].kw}" מתאים לך לקחת על עצמך במפגש?`:"את/ה חלק מארגז כלים מלא. מה הכלי שאת/ה הכי אוהב/ת להביא?")]);
   items.push([4,"התפקיד שלי"+qm("tafkid"),`לכל אחד בקבוצה תפקיד טבעי לפי מספר הדרך שלו.`,`את/ה <b>${fam(p.LP,"role")}</b>. ${fam(p.LP,"give")} <br><b>מה הקבוצה יכולה ללמד אותך:</b> ${fam(p.LP,"learn")}`]);
-  items.push([5,"החוטים שלי"+qm("notenmekabel"),`בקבוצה ${G.threads.filter(t=>t.text).length} חוטים של השלמה, נשמה ומראה.`,th.length?th.map(t=>esc(t.text)).join("<br>"):"החוטים שלך עדינים: את/ה מביא/ה צבע משלך. עם מי במעגל הרגשת חיבור, ולמה?"]);
+  items.push([5,"החוטים שלי"+qm("notenmekabel"),`בקבוצה ${G.threads.filter(t=>t.text).length} חוטים של השלמה, נשמה ומראה.`,`<span class="pairbtns">${G.P.filter(o=>o!==p).map(o=>`<button type="button" class="pairbtn" data-pair="${esc(o.id)}">${dotOf(o)} אני ו${esc(o.label)}</button>`).join("")}</span>`+(th.length?th.map(t=>esc(t.text)).join("<br>"):"החוטים שלך עדינים: את/ה מביא/ה צבע משלך. עם מי במעגל הרגשת חיבור, ולמה?")]);
   let h="";let shown=0;
   items.forEach(([s,t,g,m])=>{if(!open&&s>cs)return;shown++;h+=`<div class="st${s===cs?" now":""}" id="pst${s}"><h3>${t}${s===cs&&!open?'<span class="now-pill">עכשיו במעגל</span>':""}</h3><p class="grp">${g}</p><div class="me"><b>ואצלך:</b> ${m}</div></div>`;});
   if(open||cs>=CL){h+=`<div class="st${cs===CL?" now":""}" id="pst${CL}"><h3>מה אני לוקח/ת</h3><label class="f">מה אני לוקח/ת מהמפגש<input type="text" id="noteTake" maxlength="240" autocomplete="off"></label><label class="f">מה נתתי לקבוצה<input type="text" id="noteGive" maxlength="240" autocomplete="off"></label><div class="row"><button class="btn small" id="noteBtn">שליחה למעגל</button><span class="status" id="noteSt"></span></div></div>`;shown++;}
@@ -1603,20 +2041,27 @@ function meInFamily(p){
 const short=(n,k=2)=>get(n,"kw").split(",").slice(0,k).join(",").trim();
 function personReading(p){
   const ix=personIx(p),th=myThreads(G,p);
-  let h=`<h2><span class="pre">המפה של </span>${esc(p.name)}</h2>
-  ${["LP","expr","soul"].map(k=>paramHTML(k,p)).join("")}
-  <h3>${ix[0][0]}</h3><p>${ix[0][1]}</p>
-  <h3>${ix[1][0]}</h3><p>${ix[1][1]}</p>`;
+  let h=`<div data-gme="${esc(p.id)}"><h2><span class="pre">המפה של </span>${esc(p.name)}</h2>
+  <div class="gxcore" data-gk="core" hidden></div>
+  ${["LP","expr","soul"].map(k=>paramHTML(k,p,1)).join("")}
+
+  <div class="toolx"><h3>${ix[0][0]}</h3><p>${ix[0][1]}</p>
+  <h3>${ix[1][0]}</h3><p>${ix[1][1]}</p>`+[...themeHTML(p),...mechHTML(p)].map(x=>`<h3>${x[0]}</h3><p>${x[1]}</p>`).join("")+`</div>`;
   if(G.n>1){
     h+=`<h3>במעגל: ${fam(p.LP,"role")}</h3><p>${fam(p.LP,"give")}</p><p class="muted">מה המעגל מלמד: ${fam(p.LP,"learn")}</p>`;
     if(th.length)h+=`<h3>החוטים</h3>${th.map(t=>`<p>${esc(t.text)}</p>`).join("")}`;
   }
-  h+=`<h3>שאלה לדרך</h3><p>${get(p.LP,"growth")}</p>`;
+  h+=`<h3>שאלה לדרך</h3><p>${get(p.LP,"growth")}</p>`+`</div>`;
   return h;
 }
 const LINKLAB={give:"נותן־מקבל",soul:"תאומי נשמה",mirror:"מראה",friction:"חיכוך וצמיחה",echo:"הד",tribe:"אותו שבט",flow:"זורמים יחד",year:"אותה שנה"};
 let moreLinks=false;
 function linkReading(t){
+  const base=linkReading0(t),r=t.ref||t;
+  if(r.a&&r.b&&!r.members){const extra=`<div class="pairwrap keep">${aiBox("pair",[r.a,r.b],"בתמצית")}<div class="toolx">${pairInsight(r.a,r.b).map(([h,x])=>`<h3>${h}</h3><p>${x}</p>`).join("")}</div></div>`;return base.includes('class="ask"')?base.replace(/<div class="ask">/,extra+'<div class="ask">'):base+extra;}
+  return base;
+}
+function linkReading0(t){
   if(t.type==="friction"){const f=t;return `<h2>${esc(f.a.label)} ו${esc(f.b.label)}</h2><p class="kicker">${LINKLAB.friction}</p>
     <p>${f.lead?`שני אנשים עם כוח הובלה (${f.a.LP}). כל אחד רוצה לקבוע את הכיוון.`:`${get(f.a.LP,"kw")} מול ${get(f.b.LP,"kw")}: שתי דרכים שונות לראות את העולם.`}</p>
     <h3>${esc(f.a.label)} יכול/ה ללמוד מ${esc(f.b.label)}</h3><p>${get(f.b.LP,"gift")}. ${fam(f.b.LP,"give")}</p>
@@ -1658,6 +2103,7 @@ function renderLead(){
    <div class="lead-top"><h1>${esc(S.meta.name)} <span class="muted" style="font-size:.6em">· תצוגת הנחיה</span></h1>
     <div class="lead-actions"><button data-g="mission">המספר שלנו</button><button data-g="miss">האתגר שלנו</button><button data-g="links">כל החיווטים</button><button data-ml type="button">${moreLinks?"פחות חיווטים":"עוד חיווטים"}</button><button data-cm type="button">${colorMode==="person"?"צביעה לפי שבט":"צביעה לפי משתתף"}</button><button type="button" data-sharedlg="">שיתוף / PDF</button><button type="button" data-fbopen>משוב</button></div></div>
    <div id="leadStage"></div><div id="leadList"></div>
+   ${G.n>1?`<div style="max-width:900px;margin:18px auto 0">${aiBox("group",G.P,"תמונת המעגל וההצלבות – קריאה מעמיקה")}</div>`:""}
    <p class="muted" style="text-align:center;font-size:.88rem;margin-top:8px">לחיצה על כרטיס פותחת את הניתוח המלא להקראה. לחיצה על קו במרכז מקריאה את החיבור.</p></div>`;
   app.querySelectorAll("[data-g]").forEach(b=>b.onclick=()=>openReader(groupReading(b.dataset.g)));
   const ml=app.querySelector("[data-ml]");if(ml)ml.onclick=()=>{moreLinks=!moreLinks;renderLead();};
@@ -1868,6 +2314,7 @@ async function doShare(how){
     else location.href="mailto:?subject="+encodeURIComponent(title)+"&body="+encodeURIComponent(text);return;}
   if(await copy())st.textContent="הועתק ✓ אפשר להדביק בכל מקום.";else prompt("העתיקו:",text);
 }
+document.addEventListener("click",e=>{const b=e.target.closest("[data-pair]");if(!b)return;e.preventDefault();const me=G.P.find(x=>x.id===myId()),o=G.P.find(x=>x.id===b.dataset.pair);if(me&&o)openReader(pairHTML(me,o));});
 document.addEventListener("click",e=>{const b=e.target.closest("[data-edit]");if(!b)return;e.preventDefault();openAdd(b.dataset.edit);});
 document.addEventListener("click",e=>{const b=e.target.closest("[data-sharedlg]");if(!b)return;e.preventDefault();openShare(b.dataset.sharedlg||null);});
 function printHTML(html,title){
@@ -1967,10 +2414,10 @@ function lpDeep(p){
   const shade=lpShade(p),debt=p.B.debt&&DEBT[p.B.debt];
   return `<details class="deep"><summary>להעמקה: עוד על שביל החיים שלך</summary>
    ${shade?`<div class="dx"><b>הגוון שלך</b><p>${shade}</p></div>`:""}
-   <div class="dx"><b>המתנה העמוקה</b><p>${X.gift}</p></div>
-   <div class="dx"><b>האתגר המרכזי</b><p>${X.challenge}</p></div>
-   <div class="dx"><b>בבית ובמשפחה</b><p>${X.family}</p></div>
-   <div class="dx"><b>בעבודה ובעשייה</b><p>${X.work}</p></div>
+   <div class="dx"><b>המתנה העמוקה</b><p data-lx="gift">${X.gift}</p></div>
+   <div class="dx"><b>האתגר המרכזי</b><p data-lx="challenge">${X.challenge}</p></div>
+   <div class="dx"><b>בבית ובמשפחה</b><p data-lx="family">${X.family}</p></div>
+   <div class="dx"><b>בעבודה ובעשייה</b><p data-lx="work">${X.work}</p></div>
    ${debt?`<div class="dx"><b>חוב קרמתי בשביל החיים</b><p>${debt}</p></div>`:""}
    <div class="dx"><b>סימן שאת/ה בדרך</b><p>${X.sign}</p></div>
    <div class="dx"><b>תרגול קטן</b><p>${X.practice}</p></div>
