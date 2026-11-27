@@ -450,6 +450,7 @@ details.deep summary{color:var(--teal)}
 .ixl li:has(>.gx:not([hidden]))>p{display:none}
 .param:has(>.gx:not([hidden]))>.pa,.param:has(>.gx:not([hidden]))>.fbk,.ixl li:has(>.gx:not([hidden]))>.fbk{display:none}
 .pc[data-pr]{cursor:pointer}.pc[data-pr]:hover{border-color:var(--teal)}.prgo{font-size:.8rem;color:var(--teal);font-weight:700;margin-inline-start:6px}
+.selfme{display:flex;gap:10px;align-items:flex-start;margin:12px 0 4px;padding:10px 12px;border:2px solid var(--teal);border-radius:8px;background:var(--teal-soft);font-size:.95rem;line-height:1.45;cursor:pointer}.selfme input{width:20px;height:20px;margin-top:2px;flex:none}
 .gxcore{padding:16px 18px;border:2px solid var(--teal);border-radius:10px;background:#fff}
 .gxh{margin:12px 0 4px;font-size:1rem;color:var(--teal)}.gxh .muted{font-family:var(--f-mono);font-weight:400}
 .gxcore h3{margin:0 0 8px;color:var(--teal)}.gxcore p{margin:0 0 10px;line-height:1.7}
@@ -1779,7 +1780,8 @@ function openAdd(editId){
   if(!m&&!canAdd()){alert(CLOSED_MSG);return;}
   $("addTitle").textContent=m?"עריכת פרטים":"הוספת משתתף/ת";
   $("addDlg").querySelector("p.muted").textContent=m?"תיקון השם או תאריך הלידה. הניתוח יתעדכן מיד אצל כולם.":"למשתתף/ת שאין לו/ה טלפון, או חבר/ה שמגיע/ה איתך.";
-  $("addForm").innerHTML=`<label class="f">שם מלא מהלידה, בעברית<small>כולל שם המשפחה מהלידה</small><input type="text" id="aName" autocomplete="off"></label>
+  const selfOpt=!m&&!isMember();
+  $("addForm").innerHTML=`${selfOpt?`<label class="selfme"><input type="checkbox" id="aSelf"> <span><b>זה/זו אני</b> – אני מוסיף/ה את עצמי, ומהמכשיר הזה אראה את המפה שלי</span></label>`:""}<label class="f">שם מלא מהלידה, בעברית<small>כולל שם המשפחה מהלידה</small><input type="text" id="aName" autocomplete="off"></label>
   <div style="display:flex;flex-direction:column;gap:5px;font-weight:600;font-size:.95rem;margin-top:14px">תאריך לידה${dateSel("aDate")}</div>
   <label class="f">השם של היום <small>לא חובה</small><input type="text" id="aCur" autocomplete="off"></label>
   <div class="row"><button class="btn small" id="aBtn">${m?"שמירה":"הוספה"}</button><button class="btn ghost small" id="aCancel">ביטול</button></div><p class="err" id="aErr"></p>`;
@@ -1789,7 +1791,9 @@ function openAdd(editId){
   $("aBtn").onclick=async()=>{const name=$("aName").value.trim(),bd=dateVal("aDate"),cur=$("aCur").value.trim();
     if(!validPerson(name,bd,$("aErr")))return;$("aBtn").disabled=true;
     try{if(m){await store.patch(`rooms/${ROOM}/members/${editId}`,{name:name.slice(0,70),bdate:bd,cur:cur.slice(0,70)});closeReader();}
-        else await store.post(`rooms/${ROOM}/members`,{name:name.slice(0,70),bdate:bd,cur:cur.slice(0,70),t:Date.now(),self:false});d.close();}
+        else{const self=!!($("aSelf")&&$("aSelf").checked);const id=await store.post(`rooms/${ROOM}/members`,{name:name.slice(0,70),bdate:bd,cur:cur.slice(0,70),t:Date.now(),self});
+          if(self&&id){ls.set("grp-me:"+ROOM,id);S.members[id]={name,bdate:bd,cur,t:Date.now()};G=analyzeFamily(S.members);d.close();view="";go("me");return;}}
+        d.close();}
     catch(e){$("aErr").textContent=m?"השמירה לא הצליחה. נסו שוב.":"ההוספה לא הצליחה. נסו שוב.";$("aBtn").disabled=false;}};
 }
 
