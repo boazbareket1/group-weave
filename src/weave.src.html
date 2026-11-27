@@ -1657,12 +1657,9 @@ function renderHome(){
   <p class="muted" style="font-size:.85rem;margin-top:22px">החישוב מבוסס על גימטריה עברית בשיטת המספר הקטן ועל תאריך הלידה. זהו כלי להתבוננות ולשיחה, לא אבחון. הפרטים נשמרים רק בתוך המעגל, ומי שיש לו את הקישור יכול לראות אותם.</p>
   </div>`;
   if(LOCAL||ls.get("⟦grp¦fam⟧-unlocked")===HOST_HASH)$("hostCode").closest("label").hidden=true;
-  /* gift link (?gift=1): workshop participants open ONE circle of their own – code prefilled, one per device */
+  /* gift link (?gift=1): workshop participants open circles of their own – launch code prefilled and hidden, no limit */
   if(qs.get("gift")&&LAUNCH_CODE&&ls.get("⟦grp¦fam⟧-unlocked")!==HOST_HASH){
-    const used=ls.get("⟦grp¦fam⟧-gift");
-    if(used){const box=$("createBtn").closest("section");box.querySelectorAll("label.f,#createBtn,#homeErr").forEach(e=>e.hidden=true);
-      $("createBtn").insertAdjacentHTML("afterend",`<p style="margin:6px 0 14px">כבר פתחת מעגל מהמכשיר הזה. <a href="${BASE}?r=${esc(used)}" style="color:inherit;font-weight:700">למעגל שלך ←</a></p>`);}
-    else{$("hostCode").value=LAUNCH_CODE;$("hostCode").closest("label").hidden=true;$("createBtn").textContent="פתיחת המעגל שלי ←";window.__gift=1;}
+    $("hostCode").value=LAUNCH_CODE;$("hostCode").closest("label").hidden=true;$("createBtn").textContent="פתיחת מעגל ←";window.__gift=1;
   }
   $("createBtn").onclick=createRoom;
   refreshMyCircles();
@@ -1708,7 +1705,6 @@ async function createRoom(){
     await store.put(`rooms/${code}/meta`,Object.assign({name:name.slice(0,60),created:Date.now(),stage:0,open:false,type:"⟦group¦family⟧"},voucher?{voucher:window.__gift&&voucher==="launch"?"gift":voucher}:{}));
     if(voucher&&voucher!=="launch")await store.patch(`vouchers/${voucher}`,{used:true,usedAt:Date.now(),room:code,tool:"⟦group¦family⟧"});
     ls.set("⟦grp¦fam⟧-host:"+code,"1");ls.set("⟦grp¦fam⟧-name:"+code,name.slice(0,60));
-    if(window.__gift)ls.set("⟦grp¦fam⟧-gift",code);
     location.href=BASE+"?r="+code+(LOCAL?"&local=1":"");
   }catch(e){$("homeErr").textContent="לא הצלחנו לפתוח מעגל. בדקו את החיבור לאינטרנט ונסו שוב.";$("createBtn").disabled=false;}
 }
